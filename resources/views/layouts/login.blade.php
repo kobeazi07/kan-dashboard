@@ -14,7 +14,7 @@
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ asset('assets/images/favicon.ico') }}">
+    <link rel="icon" type="image/png" href="{{ asset('assets/images/favicon.png') }}">
 
     <!-- Local Third-Party Libraries (100% Offline Compatible) -->
     <link rel="stylesheet" href="{{ asset('assets/libs/bootstrap/css/bootstrap.min.css') }}">
@@ -40,12 +40,18 @@
             <div class="login-card">
 
                 <!-- Brand Identity -->
-                <a href="index.html" class="login-brand text-decoration-none">
-                    <i class="bi bi-asterisk"></i>
-                    <span>Spark Admin</span>
-                </a>
 
-                <p class="login-subtitle">Please sign in to access your dashboard</p>
+                <div class="row g-3 justify-content-center">
+                    <div class="col-3">
+                        <img src="{{ asset('assets/images/ptkan.png') }}" alt="Monitoring Proyek"
+                            class="img-fluid  dashboard-image">
+                    </div>
+                    <div class="col-3">
+                        <img src="{{ asset('assets/images/rpnp-dashboardfix.png') }}" alt="Dashboard Project"
+                            class="img-fluid  dashboard-image">
+                    </div>
+                </div>
+                <p class="mt-4">Please sign in to access your dashboard</p>
 
                 <!-- Login Form -->
                 <form action="index.html" method="GET" id="loginForm" class="needs-validation" novalidate>

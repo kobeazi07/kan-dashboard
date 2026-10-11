@@ -12,6 +12,7 @@ use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\Format;
@@ -19,20 +20,74 @@ use App\Models\User;
 
 class DashboardController extends Controller
 {
+    // public function index(GoogleSheetService $googleSheet)
+    // {
+    //     // $start = microtime(true);
+    //     // Ambil data progres dari cache
+    //     $data = Cache::get('dashboard_progress_data');
+
+    //     // Fallback jika cache belum tersedia
+    //     if ($data === null) {
+    //         $data = $googleSheet->getDashboardData();
+    //     }
+
+
+    //     // logger('Waktu getDashboardData: ' . round(microtime(true) - $start, 2) . ' detik');
+
+    //     // $start = microtime(true);
+    //     $pekerjaanFisik = $googleSheet->getDashboardDataPekerjaanFisik();
+    //     // logger('Waktu getDashboardDataPekerjaanFisik: ' . round(microtime(true) - $start, 2) . ' detik');
+    //     // return view('dashboard', compact('data'));
+    //     return view('pages.dashboard', compact('data', 'pekerjaanFisik'));
+    // }
+    // public function index(GoogleSheetService $googleSheet)
+    // {
+    //     $start = microtime(true);
+
+    //     $data = Cache::get('dashboard_progress_data');
+
+    //     if ($data === null) {
+    //         $data = $googleSheet->getDashboardData();
+    //     }
+
+    //     logger('Waktu data progres: ' . round(microtime(true) - $start, 2) . ' detik');
+
+    //     $start = microtime(true);
+
+    //     $pekerjaanFisik = $googleSheet->getDashboardDataPekerjaanFisik();
+
+    //     logger('Waktu pekerjaan fisik: ' . round(microtime(true) - $start, 2) . ' detik');
+
+    //     return view('pages.dashboard', compact('data', 'pekerjaanFisik'));
+    // }
     public function index(GoogleSheetService $googleSheet)
     {
-        // $start = microtime(true);
-        $data = $googleSheet->getDashboardData();
+        // Ambil data progres dari cache
+        $data = Cache::get('dashboard_progress_data');
 
-        // logger('Waktu getDashboardData: ' . round(microtime(true) - $start, 2) . ' detik');
+        // Fallback jika cache belum tersedia
+        if ($data === null) {
+            $data = $googleSheet->getDashboardData();
+        }
 
-        // $start = microtime(true);
-        $pekerjaanFisik = $googleSheet->getDashboardDataPekerjaanFisik();
-        // logger('Waktu getDashboardDataPekerjaanFisik: ' . round(microtime(true) - $start, 2) . ' detik');
-        // return view('dashboard', compact('data'));
-        return view('pages.dashboard', compact('data', 'pekerjaanFisik'));
+        // Ambil data pekerjaan fisik dari cache
+        $pekerjaanFisik = Cache::get('dashboard_pekerjaan_fisik');
+
+        // Fallback jika cache pekerjaan fisik belum tersedia
+        if ($pekerjaanFisik === null) {
+            $pekerjaanFisik = $googleSheet->getDashboardDataPekerjaanFisik();
+
+            Cache::forever(
+                'dashboard_pekerjaan_fisik',
+                $pekerjaanFisik
+            );
+        }
+
+        return view(
+            'pages.dashboard',
+            compact('data', 'pekerjaanFisik')
+        );
     }
-
     public function halamanlogin()
     {
 

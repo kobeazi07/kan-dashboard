@@ -79,16 +79,25 @@
           <div class="dropdown ms-2">
               <button class="navbar-profile-btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
                   aria-expanded="false" id="profile-dropdown">
-                  <img src="{{ asset('assets/images/avatar.png') }}" alt="Profile Image" class="navbar-profile-img">
-                  <span class="navbar-profile-name d-none d-md-inline">Administrator</span>
+                  {{-- <img src="{{ asset('assets/images/avatar.png') }}" alt="Profile Image" class="navbar-profile-img"> --}}
+                  <span class="navbar-profile-name d-none d-md-inline">
+                      {{ Auth::check() ? Auth::user()->name : 'Guest' }}</span>
                   <i class="bi bi-chevron-down navbar-profile-caret"></i>
               </button>
               <ul class="dropdown-menu dropdown-menu-end dropdown-menu-profile" aria-labelledby="profile-dropdown">
-                  <li class="dropdown-header">Welcome !</li>
+                  <li class="dropdown-header">Welcome ! </li>
                   {{-- <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> My Account</a></li> --}}
 
-                  <li><a class="dropdown-item text-danger" href="page-login.html"><i class="bi bi-box-arrow-right"></i>
-                          Logout</a></li>
+                  <li>
+                      <form action="{{ route('Logout') }}" method="POST">
+                          @csrf
+                          <button class="dropdown-item text-danger" type="submit" data-toggle="modal"
+                              data-target="#logoutModal">
+                              <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                              Logout
+                          </button>
+                      </form>
+                  </li>
               </ul>
           </div>
       </div>

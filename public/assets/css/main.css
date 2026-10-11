@@ -148,7 +148,7 @@ a:hover {
 
 .project-info-row {
     display: grid;
-    grid-template-columns: 145px 12px minmax(0, 1fr);
+    grid-template-columns: 145px 20px minmax(0, 1fr);
     align-items: start;
     gap: 6px;
     font-size: 14px;
@@ -157,12 +157,23 @@ a:hover {
 
 .project-info-label {
     font-weight: 500;
+        width: 180PX !important;
 }
 
 .project-info-separator {
     font-weight: 500;
 }
-
+.project-sum {
+    background: rgb(230, 247, 213);
+        display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    color: rgb(56, 107, 20);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+}
 .project-info-value {
     font-weight: 600;
     overflow-wrap: anywhere;
@@ -1325,10 +1336,10 @@ body.sidebar-minimized .sidebar-profile {
     flex-direction: column;
     margin-bottom: 1.5rem;
 }
-
+/* 
 .promo-banner-card {
     min-height: 250px;
-}
+} */
 
 /* Geometric green visual element in bottom right */
 .promo-banner-bg-shape {

@@ -43,53 +43,103 @@
         <div class="col-12">
             <div class="row g-4">
                 <!-- Stat Card 1: Green Alert Banner -->
+                <div class="col-xl-12">
 
-                <div class="col-md-12">
                     <div class="card alert-green-card">
-                        <div class="position-relative z-index-2">
-                            <span class="alert-green-badge">UPDATE</span>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="position-relative z-index-2">
+                                    <span class="alert-green-badge">UPDATE</span>
 
-                            <div class="alert-green-text">PROJECT INFORMATION</div>
+                                    <div class="alert-green-text">PROJECT INFORMATION</div>
 
-                            <div class="project-information">
-                                <div class="project-info-row">
-                                    <span class="project-info-label">Client</span>
-                                    <span class="project-info-separator">:</span>
-                                    <span class="project-info-value">
-                                        PT. KALIMANTAN ALUMINA NUSANTARA
-                                    </span>
+                                    <div class="project-information">
+                                        <div class="project-info-row">
+                                            <span class="project-info-label">Client</span>
+                                            <span class="project-info-separator">:</span>
+                                            <span class="project-info-value">
+                                                PT. KALIMANTAN ALUMINA NUSANTARA
+                                            </span>
+                                        </div>
+
+                                        <div class="project-info-row">
+                                            <span class="project-info-label">Consultant</span>
+                                            <span class="project-info-separator">:</span>
+                                            <span class="project-info-value">
+                                                PT. RPNP DESAIN HIJAU INDONESIA
+                                            </span>
+                                        </div>
+
+                                        <div class="project-info-row">
+                                            <span class="project-info-label">Project</span>
+                                            <span class="project-info-separator">:</span>
+                                            <span class="project-info-value">
+                                                Sertifikat Laik Fungsi (SLF)
+                                            </span>
+                                        </div>
+
+                                        <div class="project-info-row">
+                                            <span class="project-info-label">Location</span>
+                                            <span class="project-info-separator">:</span>
+                                            <span class="project-info-value">
+                                                Desa Sansat, Kec. Toba, Kab. Sanggau,
+                                                Kalimantan Barat
+                                            </span>
+                                        </div>
+
+                                        <div class="project-info-row">
+                                            <span class="project-info-label">Status</span>
+                                            <span class="project-info-separator">:</span>
+                                            <span class="project-status">On Going</span>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="project-info-row">
-                                    <span class="project-info-label">Consultant</span>
-                                    <span class="project-info-separator">:</span>
-                                    <span class="project-info-value">
-                                        PT. RPNP DESAIN HIJAU INDONESIA
-                                    </span>
+                            </div>
+                            <div class="col-md-5 ms-3">
+
+
+                                <div class="position-relative z-index-2">
+
+
+                                    <div class="alert-green-text mt-5">
+                                        ESTIMASI PROGRESS PEKERJAAN FISIK
+                                    </div>
+
+                                    <div class="project-information">
+                                        @foreach ($pekerjaanFisik as $item)
+                                            @if ($item['nama'] === 'Progress Keseluruhan')
+                                                <div class="project-info-row progress-total">
+                                                    <span class="project-info-label">
+                                                        {{ $item['nama'] }}
+                                                    </span>
+
+                                                    <span class="project-info-separator">:</span>
+
+                                                    <span class="project-info-value">
+                                                        <span class="progress-total-badge project-sum fw-bold ">
+                                                            {{ $item['progress'] }} %
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                            @else
+                                                <div class="project-info-row">
+                                                    <span class="project-info-label">
+                                                        {{ $item['nama'] }}
+                                                    </span>
+
+                                                    <span class="project-info-separator">:</span>
+
+                                                    <span class="project-info-value">
+                                                        {{ $item['progress'] }} %
+                                                    </span>
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    </div>
                                 </div>
 
-                                <div class="project-info-row">
-                                    <span class="project-info-label">Project</span>
-                                    <span class="project-info-separator">:</span>
-                                    <span class="project-info-value">
-                                        Sertifikat Laik Fungsi (SLF)
-                                    </span>
-                                </div>
 
-                                <div class="project-info-row">
-                                    <span class="project-info-label">Location</span>
-                                    <span class="project-info-separator">:</span>
-                                    <span class="project-info-value">
-                                        Desa Sansat, Kec. Toba, Kab. Sanggau,
-                                        Kalimantan Barat
-                                    </span>
-                                </div>
-
-                                <div class="project-info-row">
-                                    <span class="project-info-label">Status</span>
-                                    <span class="project-info-separator">:</span>
-                                    <span class="project-status">On Going</span>
-                                </div>
                             </div>
                         </div>
 
@@ -110,24 +160,54 @@
 
                 {{-- disimpan --}}
                 <!-- Stat Card 2: Net Income -->
-
                 <!-- Stat Card 3: Total Return -->
-
             </div>
         </div>
         <!-- END: TOP AREA -->
+        {{-- tombol dokumen --}}
+        {{-- <pre>{{ print_r($pekerjaanFisik, true) }}</pre> --}}
+        <div class="col-lg-12">
+            <div class="promo-banner-card">
+                <div class="row">
+                    <div class="col-6">
+                        <a href="https://docs.google.com/spreadsheets/d/15XrPzw5rFvcewhdaV6bJvJt9_42DvuHGACRV9ZBs7iQ/edit?usp=sharing"
+                            target="_blank" rel="noopener noreferrer">
+                            <button class="btn-promo">
+                                <i class="bi bi-file-earmark-text-fill me-3"></i>
+                                Document Transmittal Log
+                            </button>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="https://docs.google.com/spreadsheets/d/1f1bXlR_JbZon0BKWKjRMUqGxIdkkIEcHv5PJ2Z8xBBs/edit?usp=sharing"
+                            target="_blank" rel="noopener noreferrer">
+                            <button class="btn-promo">
+                                <i class="bi bi-file-earmark-text-fill me-3"></i>
+                                Document Submission Tracker
+                            </button>
+                        </a>
+                    </div>
+                </div>
+                <!-- Inline SVG geometric decoration (Lime green 6-pointed star/asterisk with rounded caps) -->
 
+                {{-- <a href="https://docs.google.com/spreadsheets/d/1ecvWfIpjhryFk_i0VQo0bL3AmySO4Q-R/edit?usp=sharing&ouid=106394931469940063034&rtpof=true&sd=true"
+                    target="_blank" rel="noopener noreferrer">
+                    <button class="btn-promo">
+                        <i class="bi bi-file-earmark-text-fill me-3"></i>
+                        Progress Pekerjaan Fisik PT. KAI
+                    </button>
+                </a> --}}
+
+            </div>
+        </div>
         <!-- LEFT AREA: Primary Dashboard Stats & Tables -->
         <div class="col-xl-12 col-lg-12">
 
             <!-- START: Details Area (Transactions + Performance Charts) -->
             <div class="row g-4">
                 <!-- Column: Revenue Chart (Full Width / Wider) -->
-
                 <!-- Column: Transaction List -->
-
                 <!-- Column: Product Overview Progress -->
-
                 @foreach ($data as $division => $documents)
                     <div class="col-md-4 d-flex flex-column">
                         <div class="card h-100 flex-grow-1">
@@ -143,73 +223,79 @@
                                     </button>
 
                                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom">
-                                        <li>
-                                            <a class="dropdown-item" href="#" onclick="return false;">
-                                                <i class="bi bi-file-earmark-text"></i>
-                                                Documents ({{ count($documents) }})
-                                            </a>
-                                        </li>
+                                        @foreach ($documents as $document)
+                                            @if (($document['type'] ?? null) === 'additional' && !empty($document['url']))
+                                                <li>
+                                                    <a class="dropdown-item" href="{{ $document['url'] }}"
+                                                        target="_blank" rel="noopener noreferrer">
+                                                        <i class="bi bi-file-earmark-text"></i>
+                                                        {{ $document['label'] ?? $document['name'] }}
+                                                    </a>
+                                                </li>
+                                            @endif
+                                        @endforeach
                                     </ul>
                                 </div>
                             </div>
 
                             {{-- Daftar Dokumen --}}
                             @foreach ($documents as $document)
-                                <div class="progress-container">
+                                @if (($document['type'] ?? null) !== 'additional')
+                                    <div class="progress-container">
 
-                                    {{-- Nama Dokumen dan Persentase --}}
-                                    <div class="progress-label-row">
-                                        <span class="progress-label">
-                                            {{ $document['name'] }}
-                                        </span>
-
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span
-                                                class="progress-value
-                                {{ $document['progress'] === null ? 'unavailable' : '' }}">
-
-                                                @if ($document['progress'] !== null)
-                                                    {{ rtrim(rtrim(number_format($document['progress'], 2, '.', ''), '0'), '.') }}%
-                                                @else
-                                                    Belum tersedia
-                                                @endif
-
+                                        {{-- Nama Dokumen dan Persentase --}}
+                                        <div class="progress-label-row">
+                                            <span class="progress-label">
+                                                {{ $document['name'] }}
                                             </span>
 
-                                            {{-- Tombol Dokumen --}}
-                                            @if (!empty($document['url']))
-                                                <a href="{{ $document['url'] }}" class="progress-action-btn"
-                                                    aria-label="Lihat {{ $document['name'] }}" title="Lihat dokumen"
-                                                    target="_blank" rel="noopener noreferrer">
-                                                    <i class="bi bi-file-earmark-text-fill"></i>
-                                                </a>
-                                            @endif
-                                        </div>
-                                    </div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span
+                                                    class="progress-value
+                                {{ $document['progress'] === null ? 'unavailable' : '' }}">
 
-                                    {{-- Progress Bar --}}
-                                    <div class="progress" role="progressbar" aria-label="Progres {{ $document['name'] }}"
-                                        aria-valuenow="{{ max(0, min(100, $document['progress'] ?? 0)) }}"
-                                        aria-valuemin="0" aria-valuemax="100">
-                                        <div class="progress-bar bg-lime-accent"
-                                            style="width: {{ max(0, min(100, $document['progress'] ?? 0)) }}%">
-                                        </div>
-                                    </div>
+                                                    @if ($document['progress'] !== null)
+                                                        {{ rtrim(rtrim(number_format($document['progress'], 2, '.', ''), '0'), '.') }}%
+                                                    @else
+                                                        Belum tersedia
+                                                    @endif
 
-                                </div>
+                                                </span>
+
+                                                {{-- Tombol Dokumen --}}
+                                                @if (!empty($document['url']))
+                                                    <a href="{{ $document['url'] }}" class="progress-action-btn"
+                                                        aria-label="Lihat {{ $document['name'] }}" title="Lihat dokumen"
+                                                        target="_blank" rel="noopener noreferrer">
+                                                        <i class="bi bi-file-earmark-text-fill"></i>
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        {{-- Progress Bar --}}
+                                        <div class="progress" role="progressbar"
+                                            aria-label="Progres {{ $document['name'] }}"
+                                            aria-valuenow="{{ max(0, min(100, $document['progress'] ?? 0)) }}"
+                                            aria-valuemin="0" aria-valuemax="100">
+                                            <div class="progress-bar bg-lime-accent"
+                                                style="width: {{ max(0, min(100, $document['progress'] ?? 0)) }}%">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                @endif
                             @endforeach
 
                         </div>
                     </div>
                 @endforeach
-
-
             </div>
             <!-- END: Details Area -->
 
         </div>
         <div class="row ">
-            <div class="col-xl-8 col-lg-8 mb-5">
+            {{-- <div class="col-xl-8 col-lg-8 mb-5">
                 <div class="right-panel-wrapper d-flex flex-column gap-4 h-100">
 
                     <!-- Performance Donut Chart card -->
@@ -229,38 +315,16 @@
                     <!-- Level Up Promotion CTA banner -->
 
                 </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="promo-banner-card">
-                    <!-- Inline SVG geometric decoration (Lime green 6-pointed star/asterisk with rounded caps) -->
-                    <a href="https://docs.google.com/spreadsheets/d/15XrPzw5rFvcewhdaV6bJvJt9_42DvuHGACRV9ZBs7iQ/edit?usp=sharing"
-                        target="_blank" rel="noopener noreferrer">
-                        <button class="btn-promo">
-                            <i class="bi bi-file-earmark-text-fill me-3"></i>
-                            Document Transmittal Log
-                        </button>
-                    </a>
+            </div> --}}
 
-                    <a href="https://docs.google.com/spreadsheets/d/1f1bXlR_JbZon0BKWKjRMUqGxIdkkIEcHv5PJ2Z8xBBs/edit?usp=sharing"
-                        target="_blank" rel="noopener noreferrer">
-                        <button class="btn-promo">
-                            <i class="bi bi-file-earmark-text-fill me-3"></i>
-                            Document Submission Tracker
-                        </button>
-                    </a>
-
-                    <a href="https://docs.google.com/spreadsheets/d/1ecvWfIpjhryFk_i0VQo0bL3AmySO4Q-R/edit?usp=sharing&ouid=106394931469940063034&rtpof=true&sd=true"
-                        target="_blank" rel="noopener noreferrer">
-                        <button class="btn-promo">
-                            <i class="bi bi-file-earmark-text-fill me-3"></i>
-                            Progress Pekerjaan Fisik PT. KAI
-                        </button>
-                    </a>
-
-                </div>
-            </div>
         </div>
-
+        <div class="row mt-3">
+            <h2 class="fw-bold dashboard-title">11 Sep 2026</h2>
+        </div>
+        <div class="row mt-3">
+            <iframe src="https://www.720yun.com/vr/016jestu5w8" frameborder=0 allowfullscreen height='1000px'
+                width='100%'></iframe>
+        </div>
         <!-- RIGHT AREA: Performance Details Sidebar Panel -->
         {{-- <div class="col-xl-3 col-lg-4">
             <div class="right-panel-wrapper d-flex flex-column gap-4 h-100">

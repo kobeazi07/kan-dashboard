@@ -26,13 +26,6 @@
                 </div>
             </div>
         </div>
-
-
-        {{-- <button class="btn-date-picker" type="button" id="date-picker-trigger">
-            <i class="bi bi-calendar4-event"></i>
-            <span id="selected-date-range">January 12, 2026 - January 23, 2026</span>
-            <i class="bi bi-chevron-down ms-1"></i>
-        </button> --}}
     </div>
     <!-- END: Dashboard Header Banner -->
 
@@ -103,10 +96,10 @@
 
 
                                     <div class="alert-green-text mt-5">
-                                        ESTIMASI PROGRESS PEKERJAAN FISIK
+                                        ESTIMASI PROGRESS PEKERJAAN.
                                     </div>
 
-                                    <div class="project-information">
+                                    <div class="project-information" id="pekerjaan-fisik-container">
                                         @foreach ($pekerjaanFisik as $item)
                                             @if ($item['nama'] === 'Progress Keseluruhan')
                                                 <div class="project-info-row progress-total">
@@ -117,7 +110,8 @@
                                                     <span class="project-info-separator">:</span>
 
                                                     <span class="project-info-value">
-                                                        <span class="progress-total-badge project-sum fw-bold ">
+                                                        <span class="progress-total-badge project-sum fw-bold "
+                                                            data-pekerjaan-fisik="{{ $item['nama'] }}">
                                                             {{ $item['progress'] }} %
                                                         </span>
                                                     </span>
@@ -130,7 +124,8 @@
 
                                                     <span class="project-info-separator">:</span>
 
-                                                    <span class="project-info-value">
+                                                    <span class="project-info-value"
+                                                        data-pekerjaan-fisik="{{ $item['nama'] }}">
                                                         {{ $item['progress'] }} %
                                                     </span>
                                                 </div>
@@ -188,16 +183,6 @@
                         </a>
                     </div>
                 </div>
-                <!-- Inline SVG geometric decoration (Lime green 6-pointed star/asterisk with rounded caps) -->
-
-                {{-- <a href="https://docs.google.com/spreadsheets/d/1ecvWfIpjhryFk_i0VQo0bL3AmySO4Q-R/edit?usp=sharing&ouid=106394931469940063034&rtpof=true&sd=true"
-                    target="_blank" rel="noopener noreferrer">
-                    <button class="btn-promo">
-                        <i class="bi bi-file-earmark-text-fill me-3"></i>
-                        Progress Pekerjaan Fisik PT. KAI
-                    </button>
-                </a> --}}
-
             </div>
         </div>
         <!-- LEFT AREA: Primary Dashboard Stats & Tables -->
@@ -205,9 +190,6 @@
 
             <!-- START: Details Area (Transactions + Performance Charts) -->
             <div class="row g-4">
-                <!-- Column: Revenue Chart (Full Width / Wider) -->
-                <!-- Column: Transaction List -->
-                <!-- Column: Product Overview Progress -->
                 @foreach ($data as $division => $documents)
                     <div class="col-md-4 d-flex flex-column">
                         <div class="card h-100 flex-grow-1">
@@ -295,27 +277,6 @@
 
         </div>
         <div class="row ">
-            {{-- <div class="col-xl-8 col-lg-8 mb-5">
-                <div class="right-panel-wrapper d-flex flex-column gap-4 h-100">
-
-                    <!-- Performance Donut Chart card -->
-                    <div class="card flex-grow-1 d-flex flex-column justify-content-between mb-0">
-                        <div class="card-header mb-1">
-                            <h2 class="card-title">PROJECT SITEPLAN</h2>
-                        </div>
-
-                        <div class="row">
-                            <img src="{{ asset('assets/images/siteplan.jpeg') }}" alt="">
-                        </div>
-
-                        <!-- Custom Legends below the chart -->
-
-                    </div>
-
-                    <!-- Level Up Promotion CTA banner -->
-
-                </div>
-            </div> --}}
 
         </div>
         <div class="row mt-3">
@@ -325,58 +286,65 @@
             <iframe src="https://www.720yun.com/vr/016jestu5w8" frameborder=0 allowfullscreen height='1000px'
                 width='100%'></iframe>
         </div>
-        <!-- RIGHT AREA: Performance Details Sidebar Panel -->
-        {{-- <div class="col-xl-3 col-lg-4">
-            <div class="right-panel-wrapper d-flex flex-column gap-4 h-100">
 
-                <!-- Performance Donut Chart card -->
-                <div class="card flex-grow-1 d-flex flex-column justify-content-between mb-0">
-                    <div class="card-header mb-1">
-                        <h2 class="card-title">Total View Performance</h2>
-                    </div>
-
-                    <div id="views-chart"></div>
-
-                    <!-- Custom Legends below the chart -->
-                    <div class="chart-legends-container">
-                        <div class="chart-legend-item">
-                            <span class="legend-dot bg-lime-accent"></span>
-                            <span class="text-muted-green">View Count</span>
-                        </div>
-                        <div class="chart-legend-item">
-                            <span class="legend-dot bg-forest-medium"></span>
-                            <span class="text-muted-green">Percentage</span>
-                        </div>
-                        <div class="chart-legend-item">
-                            <span class="legend-dot bg-brand-orange"></span>
-                            <span class="text-muted-green">Sales</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Level Up Promotion CTA banner -->
-                <div class="promo-banner-card">
-                    <!-- Inline SVG geometric decoration (Lime green 6-pointed star/asterisk with rounded caps) -->
-                    <svg class="promo-banner-bg-shape" viewBox="0 0 100 100" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <g transform="translate(50,50)">
-                            <rect x="-6" y="-45" width="12" height="90" rx="6" ry="6"
-                                fill="#B4F105" />
-                            <rect x="-6" y="-45" width="12" height="90" rx="6" ry="6"
-                                fill="#B4F105" transform="rotate(60)" />
-                            <rect x="-6" y="-45" width="12" height="90" rx="6" ry="6"
-                                fill="#B4F105" transform="rotate(120)" />
-                        </g>
-                    </svg>
-
-                    <h3 class="promo-title">Level up your sales managing to the next level.</h3>
-                    <p class="promo-desc">An easy way to manage sales with care and precision.</p>
-                    <button class="btn-promo" id="btn-promo-action">Check the updates now</button>
-                </div>
-            </div>
-        </div> --}}
-        {{-- disimpan2 --}}
-        <!-- END: RIGHT AREA -->
 
     </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            async function updatePekerjaanFisik() {
+                try {
+                    const response = await fetch(
+                        '{{ route('dashboard.progress-data') }}', {
+                            headers: {
+                                'Accept': 'application/json'
+                            },
+                            cache: 'no-store'
+                        }
+                    );
+
+                    if (!response.ok) {
+                        throw new Error('Gagal mengambil data dashboard');
+                    }
+
+                    const result = await response.json();
+                    const data = result.pekerjaanFisik || [];
+
+                    data.forEach(function(item) {
+                        const element = document.querySelector(
+                            '[data-pekerjaan-fisik="' + item.nama + '"]'
+                        );
+
+                        if (!element) return;
+
+                        if (item.nama === 'Progress Keseluruhan') {
+                            const badge = element.querySelector(
+                                '.progress-total-badge'
+                            );
+
+                            if (badge) {
+                                badge.textContent = item.progress + ' %';
+                            } else {
+                                element.textContent = item.progress + ' %';
+                            }
+                        } else {
+                            element.textContent = item.progress + ' %';
+                        }
+                    });
+                } catch (error) {
+                    console.error(
+                        'Gagal memperbarui progres pekerjaan fisik:',
+                        error
+                    );
+                }
+            }
+
+            // Ambil data terbaru saat halaman dibuka.
+            updatePekerjaanFisik();
+
+            // Periksa kembali setiap 15 detik tanpa refresh halaman.
+            setInterval(updatePekerjaanFisik, 15000);
+        });
+    </script>
 @endsection()

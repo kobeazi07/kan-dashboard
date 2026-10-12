@@ -260,49 +260,141 @@ class GoogleSheetService
     //     return $data;
     // }
 
+    // public function getDashboardDataPekerjaanFisik(): array
+    // {
+    //     $fileId = '1ecvWfIpjhryFk_i0VQo0bL3AmySO4Q-R';
+
+
+    //     $client = new \Google\Client();
+
+    //     $client->setApplicationName('KAN Dashboard');
+
+    //     $client->setAuthConfig(
+    //         storage_path('app/private/google-service-account.json')
+    //     );
+
+    //     $client->setScopes([
+    //         \Google\Service\Drive::DRIVE_READONLY,
+    //     ]);
+
+    //     $drive = new \Google\Service\Drive($client);
+    //     $file = $drive->files->get($fileId, [
+    //         'fields' => 'id,name,mimeType,webViewLink',
+    //     ]);
+
+
+
+    //     // Ambil konten file Excel dari Google Drive.
+    //     $response = $drive->files->get($fileId, [
+    //         'alt' => 'media',
+    //     ]);
+
+    //     // $response = $drive->files->get($fileId, [
+    //     //     'alt' => 'media',
+    //     // ]);
+
+    //     $content = $response instanceof \Psr\Http\Message\ResponseInterface
+    //         ? $response->getBody()->getContents()
+    //         : (string) $response;
+    //     // Simpan sementara agar dapat dibaca PhpSpreadsheet.
+    //     $tempFile = tempnam(sys_get_temp_dir(), 'kan_excel_');
+
+    //     if ($tempFile === false) {
+    //         throw new \RuntimeException(
+    //             'Gagal membuat file sementara.'
+    //         );
+    //     }
+
+    //     try {
+    //         if (file_put_contents($tempFile, $content) === false) {
+    //             throw new \RuntimeException(
+    //                 'Gagal menulis file Excel sementara.'
+    //             );
+    //         }
+
+    //         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
+    //         $reader->setReadDataOnly(false);
+
+    //         $spreadsheet = $reader->load($tempFile);
+
+    //         $sheet = $spreadsheet->getSheetByName(
+    //             'PROGRESS PEKERJAAN'
+    //         );
+
+    //         if ($sheet === null) {
+    //             throw new \RuntimeException(
+    //                 'Sheet PROGRESS PEKERJAAN tidak ditemukan.'
+    //             );
+    //         }
+
+    //         $labels = [
+    //             3 => 'Kawasan Jetty',
+    //             4 => 'Kawasan Power Plant',
+    //             5 => 'Kawasan Refinery',
+    //             6 => 'Kawasan Redmud',
+    //         ];
+
+    //         $data = [];
+
+    //         foreach ($labels as $row => $label) {
+    //             $progress = trim(
+    //                 (string) $sheet->getCell("G{$row}")
+    //                     ->getFormattedValue()
+    //             );
+
+    //             $data[] = [
+    //                 'nama' => $label,
+    //                 'progress' => $progress !== '' ? $progress : '-',
+    //             ];
+    //         }
+
+    //         $total = trim(
+    //             (string) $sheet->getCell('G7')->getFormattedValue()
+    //         );
+
+    //         $data[] = [
+    //             'nama' => 'Progress Keseluruhan',
+    //             'progress' => $total !== '' ? $total : '-',
+    //         ];
+
+    //         $spreadsheet->disconnectWorksheets();
+
+    //         return $data;
+    //     } finally {
+    //         if (file_exists($tempFile)) {
+    //             unlink($tempFile);
+    //         }
+    //     }
+    // }
+
+
     public function getDashboardDataPekerjaanFisik(): array
     {
         $fileId = '1ecvWfIpjhryFk_i0VQo0bL3AmySO4Q-R';
 
-
         $client = new \Google\Client();
-
         $client->setApplicationName('KAN Dashboard');
-
         $client->setAuthConfig(
             storage_path('app/private/google-service-account.json')
         );
-
         $client->setScopes([
             \Google\Service\Drive::DRIVE_READONLY,
         ]);
 
         $drive = new \Google\Service\Drive($client);
-        $file = $drive->files->get($fileId, [
-            'fields' => 'id,name,mimeType,webViewLink',
-        ]);
 
-
-
-        // Ambil konten file Excel dari Google Drive.
         $response = $drive->files->get($fileId, [
             'alt' => 'media',
         ]);
 
-        // $response = $drive->files->get($fileId, [
-        //     'alt' => 'media',
-        // ]);
-
         $content = $response instanceof \Psr\Http\Message\ResponseInterface
             ? $response->getBody()->getContents()
             : (string) $response;
-        // Simpan sementara agar dapat dibaca PhpSpreadsheet.
+
         $tempFile = tempnam(sys_get_temp_dir(), 'kan_excel_');
 
         if ($tempFile === false) {
-            throw new \RuntimeException(
-                'Gagal membuat file sementara.'
-            );
+            throw new \RuntimeException('Gagal membuat file sementara.');
         }
 
         try {
@@ -317,9 +409,7 @@ class GoogleSheetService
 
             $spreadsheet = $reader->load($tempFile);
 
-            $sheet = $spreadsheet->getSheetByName(
-                'PROGRESS PEKERJAAN'
-            );
+            $sheet = $spreadsheet->getSheetByName('PROGRESS PEKERJAAN');
 
             if ($sheet === null) {
                 throw new \RuntimeException(
@@ -335,26 +425,51 @@ class GoogleSheetService
             ];
 
             $data = [];
+            $total = 0;
 
             foreach ($labels as $row => $label) {
-                $progress = trim(
-                    (string) $sheet->getCell("G{$row}")
-                        ->getFormattedValue()
-                );
+                $cell = $sheet->getCell("G{$row}");
 
+                // Ambil nilai sel untuk ditampilkan.
+                $value = $cell->getCalculatedValue();
+
+                // Jika sel berisi referensi sederhana seperti =I11,
+                // ambil hasil dari sel sumbernya.
+                if (
+                    is_string($value)
+                    && preg_match('/^=([A-Z]+[0-9]+)$/i', trim($value), $matches)
+                ) {
+                    $value = $sheet->getCell($matches[1])->getCalculatedValue();
+                }
+
+                // Normalisasi nilai progres.
+                $progress = is_numeric($value)
+                    ? (float) $value
+                    : null;
+
+                // $data[] = [
+                //     'nama' => $label,
+                //     'progress' => $progress !== null
+                //         ? number_format($progress, 2, '.', '')
+                //         : '-',
+                // ];
                 $data[] = [
                     'nama' => $label,
-                    'progress' => $progress !== '' ? $progress : '-',
+                    'progress' => $progress !== ''
+                        ? (string) round((float) $progress)
+                        : '-',
                 ];
+
+                // Total berasal dari angka yang sama dengan tampilan.
+                if ($progress !== null) {
+                    $total += $progress;
+                }
             }
 
-            $total = trim(
-                (string) $sheet->getCell('G7')->getFormattedValue()
-            );
-
+            // Hitung total dari empat kawasan.
             $data[] = [
                 'nama' => 'Progress Keseluruhan',
-                'progress' => $total !== '' ? $total : '-',
+                'progress' => (string) round($total),
             ];
 
             $spreadsheet->disconnectWorksheets();
@@ -366,6 +481,7 @@ class GoogleSheetService
             }
         }
     }
+
 
 
     // public function getDashboardDataPekerjaanFisik(): array

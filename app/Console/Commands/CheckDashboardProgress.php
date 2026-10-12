@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Events\DashboardProgressUpdated;
+// use App\Events\DashboardProgressUpdated;
 use App\Services\GoogleSheetService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
@@ -52,38 +52,37 @@ class CheckDashboardProgress extends Command
     {
         // 1. Ambil data terbaru dari Google Sheets
         $data = $googleSheet->getDashboardData();
+        $pekerjaanFisik = $googleSheet->getDashboardDataPekerjaanFisik();
 
-        // 2. Buat snapshot untuk mendeteksi perubahan
-        $snapshot = md5(json_encode($data));
+        // 2. Buat snapshot untuk kedua jenis data
+        $snapshot = md5(json_encode([
+            'data' => $data,
+            'pekerjaanFisik' => $pekerjaanFisik,
+        ]));
 
         $previousSnapshot = Cache::get(
             'dashboard_progress_snapshot'
         );
 
-        // 3. Jika tidak ada perubahan, hentikan proses
-        if ($snapshot === $previousSnapshot) {
-            $this->info('Tidak ada perubahan data.');
-
-            return self::SUCCESS;
-        }
-
-        // 4. Simpan isi data spreadsheet ke cache
+        // 3. Simpan kedua data ke cache
         Cache::forever('dashboard_progress_data', $data);
 
-        // 5. Simpan snapshot terbaru
+        Cache::forever(
+            'dashboard_pekerjaan_fisik',
+            $pekerjaanFisik
+        );
+
+        // 4. Simpan snapshot terbaru
         Cache::forever('dashboard_progress_snapshot', $snapshot);
 
-        // 6. Snapshot pertama hanya menyimpan data
-        if ($previousSnapshot === null) {
-            $this->info('Data awal berhasil disimpan ke cache.');
+        // 5. Tampilkan hasil sinkronisasi
+        if ($previousSnapshot === $snapshot) {
+            $this->info('Tidak ada perubahan data. Cache telah disinkronkan.');
 
             return self::SUCCESS;
         }
 
-        // 7. Kirim event setelah cache diperbarui
-        event(new DashboardProgressUpdated($data));
-
-        $this->info('Data berubah. Cache diperbarui dan event dikirim.');
+        $this->info('Data berubah. Cache dokumen dan pekerjaan fisik berhasil diperbarui.');
 
         return self::SUCCESS;
     }

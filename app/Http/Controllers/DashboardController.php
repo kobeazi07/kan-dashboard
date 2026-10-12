@@ -60,20 +60,52 @@ class DashboardController extends Controller
 
     //     return view('pages.dashboard', compact('data', 'pekerjaanFisik'));
     // }
+    // public function index(GoogleSheetService $googleSheet)
+    // {
+    //     // Ambil data progres dari cache
+    //     // $data = Cache::get('dashboard_progress_data');
+    //     $data = $googleSheet->getDashboardData();
+    //     // Fallback jika cache belum tersedia
+    //     if ($data === null) {
+    //         $data = $googleSheet->getDashboardData();
+    //     }
+
+    //     // Ambil data pekerjaan fisik dari cache
+    //     // $pekerjaanFisik = Cache::get('dashboard_pekerjaan_fisik');
+    //     $pekerjaanFisik = $googleSheet->getDashboardDataPekerjaanFisik();
+    //     // Fallback jika cache pekerjaan fisik belum tersedia
+    //     if ($pekerjaanFisik === null) {
+    //         $pekerjaanFisik = $googleSheet->getDashboardDataPekerjaanFisik();
+
+    //         Cache::forever(
+    //             'dashboard_pekerjaan_fisik',
+    //             $pekerjaanFisik
+    //         );
+    //     }
+
+    //     return view(
+    //         'pages.dashboard',
+    //         compact('data', 'pekerjaanFisik')
+    //     );
+    // }
+
+
     public function index(GoogleSheetService $googleSheet)
     {
-        // Ambil data progres dari cache
+        // Ambil data dokumen dari cache
         $data = Cache::get('dashboard_progress_data');
 
-        // Fallback jika cache belum tersedia
+        // Ambil langsung dari Google Sheets hanya jika cache kosong
         if ($data === null) {
             $data = $googleSheet->getDashboardData();
+
+            Cache::forever('dashboard_progress_data', $data);
         }
 
         // Ambil data pekerjaan fisik dari cache
         $pekerjaanFisik = Cache::get('dashboard_pekerjaan_fisik');
 
-        // Fallback jika cache pekerjaan fisik belum tersedia
+        // Ambil dari Google Drive hanya jika cache kosong
         if ($pekerjaanFisik === null) {
             $pekerjaanFisik = $googleSheet->getDashboardDataPekerjaanFisik();
 
@@ -83,10 +115,20 @@ class DashboardController extends Controller
             );
         }
 
+        // Tampilkan dashboard menggunakan cache
         return view(
             'pages.dashboard',
             compact('data', 'pekerjaanFisik')
         );
+    }
+
+
+    public function getProgressData()
+    {
+        return response()->json([
+            'data' => Cache::get('dashboard_progress_data', []),
+            'pekerjaanFisik' => Cache::get('dashboard_pekerjaan_fisik', []),
+        ]);
     }
     public function halamanlogin()
     {

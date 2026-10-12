@@ -12,4 +12,8 @@ Route::post('/logout', [DashboardController::class, 'user_logout'])->name('Logou
 
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/HalamanDashboard', [DashboardController::class, 'index'])->name('HalamanDashboard');
+    Route::get('/dashboard/progress-data', [
+        DashboardController::class,
+        'getProgressData'
+    ])->name('dashboard.progress-data');
 });

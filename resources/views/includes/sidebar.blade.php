@@ -12,7 +12,8 @@
              <div class="sidebar-menu-title">Menu</div>
              <ul class="sidebar-menu-list">
                  <li class="sidebar-menu-item">
-                     <a href="index.html" class="sidebar-menu-link active" id="menu-overview" title="Overview">
+                     <a href="{{ Route('HalamanDashboard') }}" class="sidebar-menu-link active" id="menu-overview"
+                         title="Overview">
                          <i class="bi bi-grid-fill"></i>
                          <span>Dashboard</span>
                      </a>

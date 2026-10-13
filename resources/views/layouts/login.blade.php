@@ -51,7 +51,7 @@
                             class="img-fluid  dashboard-image">
                     </div>
                 </div>
-                <p class="mt-4">Please sign in to access your dashboard...!...</p>
+                <p class="mt-4">Please sign in to access your dashboard</p>
 
                 <!-- Login Form -->
                 <form action="index.html" method="GET" id="loginForm" class="needs-validation" novalidate>

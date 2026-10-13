@@ -96,7 +96,7 @@
 
 
                                     <div class="alert-green-text mt-5">
-                                        ESTIMASI PROGRESS PEKERJAAN.
+                                        ESTIMASI PROGRESS PEKERJAAN
                                     </div>
 
                                     <div class="project-information" id="pekerjaan-fisik-container">

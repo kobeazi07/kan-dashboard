@@ -10,15 +10,27 @@
          <!-- Group: Menu -->
          <div class="sidebar-menu-section">
              <div class="sidebar-menu-title">Menu</div>
+
              <ul class="sidebar-menu-list">
                  <li class="sidebar-menu-item">
-                     <a href="{{ Route('HalamanDashboard') }}" class="sidebar-menu-link active" id="menu-overview"
-                         title="Overview">
+                     <a href="{{ route('HalamanDashboard') }}"
+                         class="sidebar-menu-link {{ request()->routeIs('HalamanDashboard') ? 'active' : '' }}"
+                         id="menu-dashboard" title="Dashboard">
                          <i class="bi bi-grid-fill"></i>
                          <span>Dashboard</span>
                      </a>
                  </li>
+
+                 <li class="sidebar-menu-item">
+                     <a href="{{ route('HalamanAdminmaps') }}"
+                         class="sidebar-menu-link {{ request()->routeIs('HalamanAdminmaps') ? 'active' : '' }}"
+                         id="menu-maps" title="Maps">
+                         <i class="bi bi-map-fill"></i>
+                         <span>Maps</span>
+                     </a>
+                 </li>
              </ul>
+
          </div>
 
      </div>

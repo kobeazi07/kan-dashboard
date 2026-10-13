@@ -16,4 +16,9 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
         DashboardController::class,
         'getProgressData'
     ])->name('dashboard.progress-data');
+
+    Route::get('admin_maps', [DashboardController::class, 'admin_maps'])->name('HalamanAdminmaps');
+    Route::post('/tambah_maps', [DashboardController::class, 'tambah_maps'])->name('Tambah_maps');
+    Route::post('/edit_maps/{id}', [DashboardController::class, 'edit_maps'])->name('Edit_maps');
+    Route::delete('/maps/{maps}', [DashboardController::class, 'maps_destroy'])->name('maps.destroy');
 });

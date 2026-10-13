@@ -4,3 +4,7 @@
 
    <!-- Local dashboard interactions controller -->
    <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+
+   <!-- JavaScript DataTables -->
+   <script src="https://cdn.datatables.net/2.3.5/js/dataTables.min.js"></script>
+   <script src="https://cdn.datatables.net/2.3.5/js/dataTables.bootstrap5.min.js"></script>

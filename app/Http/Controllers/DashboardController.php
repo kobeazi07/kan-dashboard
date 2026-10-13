@@ -17,6 +17,7 @@ use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\Format;
 use App\Models\User;
+use App\Models\Maps;
 
 class DashboardController extends Controller
 {
@@ -170,5 +171,84 @@ class DashboardController extends Controller
         request()->session()->invalidate();
         request()->session()->regenerateToken();
         return redirect('/');
+    }
+
+    // maps
+    public function admin_maps()
+    {
+        $maps = Maps::get();
+        return view('pages.maps', compact('maps'));
+    }
+    public function tambah_maps(Request $request)
+    {
+
+        DB::beginTransaction();
+
+        try {
+
+
+            $maps = Maps::create([
+                'date' => $request->date,
+                'embed' => $request->embed,
+            ]);
+
+            DB::commit();
+            return response()->json([
+                'status' => 1,
+                'message' => 'maps berhasil ditambahkan'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 0,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function edit_maps(Request $request, $id)
+    {
+
+        $maps = Maps::findOrFail($id);
+        $data = [
+            'date' => $request->date,
+            'embed' => $request->embed,
+        ];
+
+        Maps::where('id', $id)->update($data);
+        return response()->json([
+            'status'  => 1,
+            'message' => 'Data maps berhasil diupdate'
+        ]);
+    }
+    public function maps_destroy(Maps $maps)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            // hapus file gambar jika ada
+            if ($maps->logo && file_exists(public_path($maps->logo))) {
+                unlink(public_path($maps->logo));
+            }
+
+            // hapus data
+            $maps->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'status'  => 1,
+                'message' => 'Data maps berhasil dihapus'
+            ]);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'status'  => 0,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

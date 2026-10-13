@@ -280,12 +280,15 @@
 
         </div>
         <div class="row mt-3">
-            <h2 class="fw-bold dashboard-title">11 Sep 2026</h2>
+            <h2 class="fw-bold dashboard-title">
+                {{ $maps->date ?? '-' }}
+            </h2>
         </div>
+
         <div class="row mt-3">
-            <iframe src="https://www.720yun.com/vr/016jestu5w8" frameborder=0 allowfullscreen height='1000px'
-                width='100%'></iframe>
+            {!! $maps->embed ?? '' !!}
         </div>
+
 
 
     </div>

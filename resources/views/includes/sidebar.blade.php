@@ -21,14 +21,80 @@
                      </a>
                  </li>
 
+
                  <li class="sidebar-menu-item">
-                     <a href="{{ route('HalamanAdminmaps') }}"
-                         class="sidebar-menu-link {{ request()->routeIs('HalamanAdminmaps') ? 'active' : '' }}"
-                         id="menu-maps" title="Maps">
-                         <i class="bi bi-map-fill"></i>
-                         <span>Maps</span>
+                     <a href="#" class="sidebar-menu-link" data-bs-toggle="collapse" data-bs-target="#menu-file"
+                         aria-expanded="false" aria-controls="menu-file" id="menu-file-toggle" title="File">
+                         <i class="bi bi-folder-fill"></i>
+                         <span>Data PBG</span>
+                         <i class="bi bi-chevron-down ms-auto"></i>
                      </a>
+
+                     <ul class="sidebar-menu-list collapse" id="menu-file">
+
+                         <li class="sidebar-menu-item">
+                             <a href="{{ $setting->link_jetty ?? '#' }}" class="sidebar-menu-link" id="menu-jetty"
+                                 title="Jetty">
+                                 <i class="bi bi-water"></i>
+                                 <span>Jetty</span>
+                             </a>
+                         </li>
+
+                         <li class="sidebar-menu-item">
+                             <a href="{{ $setting->link_refinery ?? '#' }}" class="sidebar-menu-link" id="menu-refinery"
+                                 title="Refinery">
+                                 <i class="bi bi-building"></i>
+                                 <span>Refinery</span>
+                             </a>
+                         </li>
+
+                         <li class="sidebar-menu-item">
+                             <a href="{{ $setting->link_power_plant ?? '#' }}" class="sidebar-menu-link"
+                                 id="menu-power-plant" title="Power Plant">
+                                 <i class="bi bi-lightning-charge-fill"></i>
+                                 <span>Power Plant</span>
+                             </a>
+                         </li>
+
+                         <li class="sidebar-menu-item">
+                             <a href="{{ $setting->link_redmud ?? '#' }}" class="sidebar-menu-link" id="menu-redmud"
+                                 title="Redmud">
+                                 <i class="bi bi-recycle"></i>
+                                 <span>Redmud</span>
+                             </a>
+                         </li>
+
+                         <li class="sidebar-menu-item">
+                             <a href="{{ $setting->link_jembatan ?? '#' }}" class="sidebar-menu-link" id="menu-jembatan"
+                                 title="Jembatan">
+                                 <i class="bi bi-cone-striped"></i>
+                                 <span>Jembatan</span>
+                             </a>
+                         </li>
+
+                     </ul>
                  </li>
+
+
+                 @if (auth()->check() && auth()->user()->role === 'Admin')
+                     <li class="sidebar-menu-item">
+                         <a href="{{ route('HalamanAdminmaps') }}"
+                             class="sidebar-menu-link {{ request()->routeIs('HalamanAdminmaps') ? 'active' : '' }}"
+                             id="menu-maps" title="Maps">
+                             <i class="bi bi-map-fill"></i>
+                             <span>Maps</span>
+                         </a>
+                     </li>
+                     <li class="sidebar-menu-item">
+                         <a href="{{ route('HalamanAdminsettings') }}"
+                             class="sidebar-menu-link {{ request()->routeIs('HalamanAdminsettings') ? 'active' : '' }}"
+                             id="menu-maps" title="Maps">
+                             <i class="bi bi-gear-fill"></i>
+                             <span>Setting</span>
+                         </a>
+                     </li>
+                 @endif
+
              </ul>
 
          </div>

@@ -18,6 +18,8 @@ use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\Format;
 use App\Models\User;
 use App\Models\Maps;
+use App\Models\Setting;
+use Illuminate\Support\Facades\View;
 
 class DashboardController extends Controller
 {
@@ -116,10 +118,13 @@ class DashboardController extends Controller
             );
         }
 
+        // maps
+        $maps = Maps::orderByDesc('id')->first();
+
         // Tampilkan dashboard menggunakan cache
         return view(
             'pages.dashboard',
-            compact('data', 'pekerjaanFisik')
+            compact('data', 'pekerjaanFisik', 'maps')
         );
     }
 
@@ -250,5 +255,41 @@ class DashboardController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    // settings
+    public function boot(): void
+    {
+        View::composer('*', function ($view) {
+            $view->with('setting', Setting::first());
+        });
+    }
+    public function admin_setting()
+    {
+        $setting = Setting::first();
+        return view('pages.setting', compact('setting'));
+        // return view('pages.setting');
+    }
+
+    public function edit_setting(Request $request, $id)
+    {
+        $setting =   Setting::find($id);
+        $data = [
+
+            'link_jetty' => $request->link_jetty,
+            'link_refinery' => $request->link_refinery,
+            'link_power_plant' => $request->link_power_plant,
+            'link_redmud' => $request->link_redmud,
+            // Otomatis tambahkan class rounded-image
+
+            'link_jembatan' => $request->link_jembatan,
+
+        ];
+        Setting::where('id', $id)->update($data);
+
+        return response()->json([
+            'status' => 1,
+            'message' => 'Portfolio berhasil diupdate'
+        ]);
     }
 }

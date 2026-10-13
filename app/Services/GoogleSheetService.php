@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Google\Client;
 use Google\Service\Sheets;
+use Illuminate\Support\Facades\DB;
 
 class GoogleSheetService
 {
@@ -426,6 +427,7 @@ class GoogleSheetService
 
             $data = [];
             $total = 0;
+            $jumlahKawasan = 0;
 
             foreach ($labels as $row => $label) {
                 $cell = $sheet->getCell("G{$row}");
@@ -463,13 +465,16 @@ class GoogleSheetService
                 // Total berasal dari angka yang sama dengan tampilan.
                 if ($progress !== null) {
                     $total += $progress;
+                    $jumlahKawasan++;
                 }
             }
 
             // Hitung total dari empat kawasan.
             $data[] = [
                 'nama' => 'Progress Keseluruhan',
-                'progress' => (string) round($total),
+                'progress' => $jumlahKawasan > 0
+                    ? (string) round($total / $jumlahKawasan)
+                    : '0',
             ];
 
             $spreadsheet->disconnectWorksheets();

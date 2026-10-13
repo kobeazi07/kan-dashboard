@@ -78,7 +78,7 @@
 
                  <li class="sidebar-menu-item">
                      <span class="fw-bold text-light">Data PBG</span>
-                     <hr style="border-top: 3px solid #ffffff; opacity: 1;">
+                     <hr style="border-top: 0.5px solid #ffffff; opacity: 1;">
                      <ul class="sidebar-menu-list">
                          <li class="sidebar-menu-item">
                              <a href="{{ $setting->link_jetty ?? '#' }}" class="sidebar-menu-link" id="menu-jetty"
@@ -120,7 +120,7 @@
                              </a>
                          </li>
                      </ul>
-                     <hr style="border-top: 3px solid #ffffff; opacity: 1;">
+                     <hr style="border-top: 0.5px solid #ffffff; opacity: 1;">
                  </li>
 
 

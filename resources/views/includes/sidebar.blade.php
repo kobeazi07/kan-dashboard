@@ -22,9 +22,10 @@
                  </li>
 
 
-                 <li class="sidebar-menu-item">
-                     <a href="#" class="sidebar-menu-link" data-bs-toggle="collapse" data-bs-target="#menu-file"
-                         aria-expanded="false" aria-controls="menu-file" id="menu-file-toggle" title="File">
+                 {{-- <li class="sidebar-menu-item">
+                     <a href="#menu-file" class="sidebar-menu-link" data-bs-toggle="collapse"
+                         data-bs-target="#menu-file" aria-expanded="false" aria-controls="menu-file"
+                         id="menu-file-toggle" title="Data PBG">
                          <i class="bi bi-folder-fill"></i>
                          <span>Data PBG</span>
                          <i class="bi bi-chevron-down ms-auto"></i>
@@ -73,6 +74,53 @@
                          </li>
 
                      </ul>
+                 </li> --}}
+
+                 <li class="sidebar-menu-item">
+                     <span class="fw-bold text-light">Data PBG</span>
+                     <hr style="border-top: 3px solid #ffffff; opacity: 1;">
+                     <ul class="sidebar-menu-list">
+                         <li class="sidebar-menu-item">
+                             <a href="{{ $setting->link_jetty ?? '#' }}" class="sidebar-menu-link" id="menu-jetty"
+                                 title="Jetty">
+                                 <i class="bi bi-water"></i>
+                                 <span>Jetty</span>
+                             </a>
+                         </li>
+
+                         <li class="sidebar-menu-item">
+                             <a href="{{ $setting->link_refinery ?? '#' }}" class="sidebar-menu-link" id="menu-refinery"
+                                 title="Refinery">
+                                 <i class="bi bi-building"></i>
+                                 <span>Refinery</span>
+                             </a>
+                         </li>
+
+                         <li class="sidebar-menu-item">
+                             <a href="{{ $setting->link_power_plant ?? '#' }}" class="sidebar-menu-link"
+                                 id="menu-power-plant" title="Power Plant">
+                                 <i class="bi bi-lightning-charge-fill"></i>
+                                 <span>Power Plant</span>
+                             </a>
+                         </li>
+
+                         <li class="sidebar-menu-item">
+                             <a href="{{ $setting->link_redmud ?? '#' }}" class="sidebar-menu-link" id="menu-redmud"
+                                 title="Redmud">
+                                 <i class="bi bi-recycle"></i>
+                                 <span>Redmud</span>
+                             </a>
+                         </li>
+
+                         <li class="sidebar-menu-item">
+                             <a href="{{ $setting->link_jembatan ?? '#' }}" class="sidebar-menu-link" id="menu-jembatan"
+                                 title="Jembatan">
+                                 <i class="bi bi-cone-striped"></i>
+                                 <span>Jembatan</span>
+                             </a>
+                         </li>
+                     </ul>
+                     <hr style="border-top: 3px solid #ffffff; opacity: 1;">
                  </li>
 
 

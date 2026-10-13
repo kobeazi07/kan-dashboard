@@ -19,7 +19,6 @@ use Intervention\Image\Format;
 use App\Models\User;
 use App\Models\Maps;
 use App\Models\Setting;
-use Illuminate\Support\Facades\View;
 
 class DashboardController extends Controller
 {
@@ -258,12 +257,7 @@ class DashboardController extends Controller
     }
 
     // settings
-    public function boot(): void
-    {
-        View::composer('*', function ($view) {
-            $view->with('setting', Setting::first());
-        });
-    }
+
     public function admin_setting()
     {
         $setting = Setting::first();

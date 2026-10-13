@@ -94,6 +94,7 @@ class GoogleSheetService
     }
 
 
+
     public function getDashboardData(): array
     {
         $spreadsheetId = '1s7HqchxwI99SLmercIENi7DWRZZbjaM3Tbkvt_EDi9k';
@@ -117,6 +118,7 @@ class GoogleSheetService
             ?int $progressColumn = null
         ) use (&$grid): array {
             $nameCell = $grid[$row][$nameColumn] ?? [];
+
             $progressCell = $progressColumn !== null
                 ? ($grid[$row][$progressColumn] ?? [])
                 : [];
@@ -125,7 +127,11 @@ class GoogleSheetService
 
             // Contoh: "63%" menjadi 63.
             $progress = is_string($progressText)
-                && preg_match('/^\s*(-?\d+(?:[.,]\d+)?)\s*%\s*$/', $progressText, $matches)
+                && preg_match(
+                    '/^\s*(-?\d+(?:[.,]\d+)?)\s*%\s*$/',
+                    $progressText,
+                    $matches
+                )
                 ? (float) str_replace(',', '.', $matches[1])
                 : null;
 
@@ -136,17 +142,13 @@ class GoogleSheetService
             ];
         };
 
-
-        return [
+        // Susun data dashboard.
+        $result = [
             'Dermaga Jetty' => [
-                $getDocument(3, 0, 2), // Baris 15
-                $getDocument(4, 0, 2), // Baris 16
-                $getDocument(5, 0, 2), // Baris 17
-                // data dokumentasi
-                // $getDocument(6, 0, 2), // Baris 18
-                // akhir data dokumentasi
-
-                // $getDocument(0, 0, 2), // Tambahan: KLM baris 12-14
+                $getDocument(3, 0, 2),
+                $getDocument(4, 0, 2),
+                $getDocument(5, 0, 2),
+                $getDocument(7, 0, 2),
 
                 array_merge($getDocument(0, 0, 2), [
                     'type' => 'additional',
@@ -160,15 +162,10 @@ class GoogleSheetService
             ],
 
             'Refinery' => [
-                $getDocument(3, 5, 7), // Baris 15
-                $getDocument(4, 5, 7), // Baris 16
-                $getDocument(5, 5, 7), // Baris 17
-                // data dokumentasi
-                // $getDocument(6, 5, 7), // Baris 18
-                // akhir data dokumentasi
-
-                $getDocument(7, 5, 7), // Baris 19
-                // $getDocument(0, 5, 7), // Tambahan: PQR baris 12-14
+                $getDocument(3, 5, 7),
+                $getDocument(4, 5, 7),
+                $getDocument(5, 5, 7),
+                $getDocument(7, 5, 7),
 
                 array_merge($getDocument(0, 5, 7), [
                     'type' => 'additional',
@@ -182,15 +179,10 @@ class GoogleSheetService
             ],
 
             'Power Plant' => [
-                $getDocument(11, 0, 2), // Baris 23
-                $getDocument(12, 0, 2), // Baris 24
-                $getDocument(13, 0, 2), // Baris 25
-                // data dokumentasi
-                // $getDocument(14, 0, 2), // Baris 26
-                // akhir data dokumentasi
-
-                $getDocument(15, 0, 2), // Baris 27
-                // $getDocument(8, 0, 2),  // Tambahan: KLM baris 20-22
+                $getDocument(11, 0, 2),
+                $getDocument(12, 0, 2),
+                $getDocument(13, 0, 2),
+                $getDocument(15, 0, 2),
 
                 array_merge($getDocument(8, 0, 2), [
                     'type' => 'additional',
@@ -203,170 +195,166 @@ class GoogleSheetService
                 ]),
             ],
         ];
+
+        // Normalisasi kategori dan nama dokumen.
+        $normalize = function ($value): string {
+            $value = mb_strtolower(trim((string) $value));
+
+            // Samakan perbedaan spasi dan tanda hubung.
+            return preg_replace('/[\s-]+/u', '', $value) ?? '';
+        };
+
+        // Ambil data URL unduhan dari database.
+        $documents = DB::table('download_dokumen_tables')
+            ->select('nama', 'kategori', 'download_dokumen')
+            ->get();
+
+        // Buat indeks berdasarkan kategori dan nama dokumen.
+        $lookup = [];
+
+        foreach ($documents as $document) {
+            $key = $normalize($document->kategori)
+                . '|'
+                . $normalize($document->nama);
+
+            $lookup[$key] = $document->download_dokumen;
+        }
+
+        // Hubungkan setiap item dashboard dengan URL database.
+        foreach ($result as $kategori => &$items) {
+            foreach ($items as &$item) {
+                $namaDokumen = $item['label']
+                    ?? $item['name']
+                    ?? '';
+
+                $key = $normalize($kategori)
+                    . '|'
+                    . $normalize($namaDokumen);
+
+                $item['download_dokumen'] = $lookup[$key] ?? null;
+            }
+
+            unset($item);
+        }
+
+        unset($items);
+
+        return $result;
     }
 
-    // public function getDashboardDataPekerjaanFisik(): array
+
+    // public function getDashboardData(): array
     // {
-    //     $spreadsheetId = '1QivYB914J3OR6wdnj9Sb4y0SNYYRzT6jQ4590X-e-Bo';
+    //     $spreadsheetId = '1s7HqchxwI99SLmercIENi7DWRZZbjaM3Tbkvt_EDi9k';
 
     //     $cells = $this->readDashboardLinks(
     //         $spreadsheetId,
-    //         "'PROGRESS PEKERJAAN'!D3:G7"
-    //     );
-    //     return $cells;
-    // }
-
-    // public function getDashboardDataPekerjaanFisik(): array
-    // {
-    //     $spreadsheetId = '1QivYB914J3OR6wdnj9Sb4y0SNYYRzT6jQ4590X-e-Bo';
-
-    //     $cells = $this->readDashboardLinks(
-    //         $spreadsheetId,
-    //         "'PROGRESS PEKERJAAN'!D3:G7"
+    //         'Dashboard!K12:R28'
     //     );
 
+    //     // Susun hasil berdasarkan nomor baris dan kolom.
     //     $grid = [];
 
     //     foreach ($cells as $cell) {
-    //         $grid[$cell['row']][$cell['column']] = trim(
-    //             (string) ($cell['value'] ?? '')
-    //         );
+    //         $grid[$cell['row']][$cell['column']] = $cell;
     //     }
 
-    //     // Label berdasarkan baris spreadsheet
-    //     $labels = [
-    //         0 => 'Kawasan Jetty',       // D3
-    //         1 => 'Kawasan Power Plant', // D4
-    //         2 => 'Refinery',            // D5
-    //         3 => 'Redmud',              // D6
-    //     ];
+    //     // Ambil nama, URL, dan progres dari baris tertentu.
+    //     $getDocument = function (
+    //         int $row,
+    //         int $nameColumn,
+    //         ?int $progressColumn = null
+    //     ) use (&$grid): array {
+    //         $nameCell = $grid[$row][$nameColumn] ?? [];
+    //         $progressCell = $progressColumn !== null
+    //             ? ($grid[$row][$progressColumn] ?? [])
+    //             : [];
 
-    //     $data = [];
+    //         $progressText = $progressCell['value'] ?? null;
 
-    //     foreach ($labels as $row => $label) {
-    //         $progress = $grid[$row][3] ?? '';
+    //         // Contoh: "63%" menjadi 63.
+    //         $progress = is_string($progressText)
+    //             && preg_match('/^\s*(-?\d+(?:[.,]\d+)?)\s*%\s*$/', $progressText, $matches)
+    //             ? (float) str_replace(',', '.', $matches[1])
+    //             : null;
 
-    //         $data[] = [
-    //             'nama' => $label,
-    //             'progress' => $progress !== '' ? $progress : '-',
+    //         return [
+    //             'name' => $nameCell['value'] ?? null,
+    //             'url' => $nameCell['url'] ?? null,
+    //             'progress' => $progress,
     //         ];
-    //     }
+    //     };
 
-    //     // Progress keseluruhan dari baris D7:G7
-    //     $data[] = [
-    //         'nama' => 'Progress Keseluruhan',
-    //         'progress' => $grid[4][3] ?? '-',
+
+    //     return [
+    //         'Dermaga Jetty' => [
+    //             $getDocument(3, 0, 2), // Baris 15
+    //             $getDocument(4, 0, 2), // Baris 16
+    //             $getDocument(5, 0, 2), // Baris 17
+    //             $getDocument(7, 0, 2), // Baris 17
+    //             // data dokumentasi
+    //             // $getDocument(6, 0, 2), // Baris 18
+    //             // akhir data dokumentasi
+
+    //             // $getDocument(0, 0, 2), // Tambahan: KLM baris 12-14
+
+    //             array_merge($getDocument(0, 0, 2), [
+    //                 'type' => 'additional',
+    //                 'label' => 'Master Schedule',
+    //             ]),
+
+    //             array_merge($getDocument(6, 0, 2), [
+    //                 'type' => 'additional',
+    //                 'label' => 'Data Dokumentasi',
+    //             ]),
+    //         ],
+
+    //         'Refinery' => [
+    //             $getDocument(3, 5, 7), // Baris 15
+    //             $getDocument(4, 5, 7), // Baris 16
+    //             $getDocument(5, 5, 7), // Baris 17
+    //             // data dokumentasi
+    //             // $getDocument(6, 5, 7), // Baris 18
+    //             // akhir data dokumentasi
+
+    //             $getDocument(7, 5, 7), // Baris 19
+    //             // $getDocument(0, 5, 7), // Tambahan: PQR baris 12-14
+
+    //             array_merge($getDocument(0, 5, 7), [
+    //                 'type' => 'additional',
+    //                 'label' => 'Master Schedule',
+    //             ]),
+
+    //             array_merge($getDocument(6, 5, 7), [
+    //                 'type' => 'additional',
+    //                 'label' => 'Data Dokumentasi',
+    //             ]),
+    //         ],
+
+    //         'Power Plant' => [
+    //             $getDocument(11, 0, 2), // Baris 23
+    //             $getDocument(12, 0, 2), // Baris 24
+    //             $getDocument(13, 0, 2), // Baris 25
+    //             // data dokumentasi
+    //             // $getDocument(14, 0, 2), // Baris 26
+    //             // akhir data dokumentasi
+
+    //             $getDocument(15, 0, 2), // Baris 27
+    //             // $getDocument(8, 0, 2),  // Tambahan: KLM baris 20-22
+
+    //             array_merge($getDocument(8, 0, 2), [
+    //                 'type' => 'additional',
+    //                 'label' => 'Master Schedule',
+    //             ]),
+
+    //             array_merge($getDocument(14, 0, 2), [
+    //                 'type' => 'additional',
+    //                 'label' => 'Data Dokumentasi',
+    //             ]),
+    //         ],
     //     ];
-
-    //     return $data;
     // }
 
-    // public function getDashboardDataPekerjaanFisik(): array
-    // {
-    //     $fileId = '1ecvWfIpjhryFk_i0VQo0bL3AmySO4Q-R';
-
-
-    //     $client = new \Google\Client();
-
-    //     $client->setApplicationName('KAN Dashboard');
-
-    //     $client->setAuthConfig(
-    //         storage_path('app/private/google-service-account.json')
-    //     );
-
-    //     $client->setScopes([
-    //         \Google\Service\Drive::DRIVE_READONLY,
-    //     ]);
-
-    //     $drive = new \Google\Service\Drive($client);
-    //     $file = $drive->files->get($fileId, [
-    //         'fields' => 'id,name,mimeType,webViewLink',
-    //     ]);
-
-
-
-    //     // Ambil konten file Excel dari Google Drive.
-    //     $response = $drive->files->get($fileId, [
-    //         'alt' => 'media',
-    //     ]);
-
-    //     // $response = $drive->files->get($fileId, [
-    //     //     'alt' => 'media',
-    //     // ]);
-
-    //     $content = $response instanceof \Psr\Http\Message\ResponseInterface
-    //         ? $response->getBody()->getContents()
-    //         : (string) $response;
-    //     // Simpan sementara agar dapat dibaca PhpSpreadsheet.
-    //     $tempFile = tempnam(sys_get_temp_dir(), 'kan_excel_');
-
-    //     if ($tempFile === false) {
-    //         throw new \RuntimeException(
-    //             'Gagal membuat file sementara.'
-    //         );
-    //     }
-
-    //     try {
-    //         if (file_put_contents($tempFile, $content) === false) {
-    //             throw new \RuntimeException(
-    //                 'Gagal menulis file Excel sementara.'
-    //             );
-    //         }
-
-    //         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
-    //         $reader->setReadDataOnly(false);
-
-    //         $spreadsheet = $reader->load($tempFile);
-
-    //         $sheet = $spreadsheet->getSheetByName(
-    //             'PROGRESS PEKERJAAN'
-    //         );
-
-    //         if ($sheet === null) {
-    //             throw new \RuntimeException(
-    //                 'Sheet PROGRESS PEKERJAAN tidak ditemukan.'
-    //             );
-    //         }
-
-    //         $labels = [
-    //             3 => 'Kawasan Jetty',
-    //             4 => 'Kawasan Power Plant',
-    //             5 => 'Kawasan Refinery',
-    //             6 => 'Kawasan Redmud',
-    //         ];
-
-    //         $data = [];
-
-    //         foreach ($labels as $row => $label) {
-    //             $progress = trim(
-    //                 (string) $sheet->getCell("G{$row}")
-    //                     ->getFormattedValue()
-    //             );
-
-    //             $data[] = [
-    //                 'nama' => $label,
-    //                 'progress' => $progress !== '' ? $progress : '-',
-    //             ];
-    //         }
-
-    //         $total = trim(
-    //             (string) $sheet->getCell('G7')->getFormattedValue()
-    //         );
-
-    //         $data[] = [
-    //             'nama' => 'Progress Keseluruhan',
-    //             'progress' => $total !== '' ? $total : '-',
-    //         ];
-
-    //         $spreadsheet->disconnectWorksheets();
-
-    //         return $data;
-    //     } finally {
-    //         if (file_exists($tempFile)) {
-    //             unlink($tempFile);
-    //         }
-    //     }
-    // }
 
 
     public function getDashboardDataPekerjaanFisik(): array

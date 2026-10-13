@@ -252,10 +252,14 @@
                                                         <i class="bi bi-file-earmark-text-fill"></i>
                                                     </a>
                                                 @endif
-                                                <a href="" class="progress-action-btn" aria-label="Download"
-                                                    title="Download dokumen" target="_blank" rel="noopener noreferrer">
-                                                    <i class="bi bi-download"></i>
-                                                </a>
+                                                @if (!empty($document['download_dokumen']))
+                                                    <a href="{{ $document['download_dokumen'] }}"
+                                                        class="progress-action-btn" aria-label="Download"
+                                                        title="Download dokumen" target="_blank"
+                                                        rel="noopener noreferrer">
+                                                        <i class="bi bi-download"></i>
+                                                    </a>
+                                                @endif
                                             </div>
                                         </div>
 

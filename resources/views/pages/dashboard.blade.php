@@ -223,8 +223,9 @@
                             {{-- Daftar Dokumen --}}
                             @foreach ($documents as $document)
                                 @if (($document['type'] ?? null) !== 'additional')
-                                    <div class="progress-container" data-document-name="{{ $document['name'] }}"
-                                        data-document-progress="{{ $document['progress'] ?? '' }}">
+                                    <div class="progress-container" data-document-location="{{ $division }}"
+                                        data-document-name="{{ $document['name'] }}"
+                                        data-document-progress="{{ $document['progress'] ?? 0 }}">
                                         {{-- Nama Dokumen dan Persentase --}}
                                         <div class="progress-label-row">
                                             <span class="progress-label">
@@ -243,27 +244,28 @@
                                                     @endif
 
                                                 </span> --}}
-                                                <span
+                                                {{-- <span
                                                     class="progress-value {{ $document['progress'] === null ? 'unavailable' : '' }}"
-                                                    data-document-value>
-
-                                                    {{-- Tombol Dokumen --}}
-                                                    @if (!empty($document['url']))
-                                                        <a href="{{ $document['url'] }}" class="progress-action-btn"
-                                                            aria-label="Lihat {{ $document['name'] }}"
-                                                            title="Lihat dokumen" target="_blank"
-                                                            rel="noopener noreferrer">
-                                                            <i class="bi bi-file-earmark-text-fill"></i>
-                                                        </a>
-                                                    @endif
-                                                    @if (!empty($document['download_dokumen']))
-                                                        <a href="{{ $document['download_dokumen'] }}"
-                                                            class="progress-action-btn" aria-label="Download"
-                                                            title="Download dokumen" target="_blank"
-                                                            rel="noopener noreferrer">
-                                                            <i class="bi bi-download"></i>
-                                                        </a>
-                                                    @endif
+                                                    data-document-value> --}}
+                                                <span data-document-value>
+                                                    {{ $document['progress'] ?? 0 }}%
+                                                </span>
+                                                {{-- Tombol Dokumen --}}
+                                                @if (!empty($document['url']))
+                                                    <a href="{{ $document['url'] }}" class="progress-action-btn"
+                                                        aria-label="Lihat {{ $document['name'] }}" title="Lihat dokumen"
+                                                        target="_blank" rel="noopener noreferrer">
+                                                        <i class="bi bi-file-earmark-text-fill"></i>
+                                                    </a>
+                                                @endif
+                                                @if (!empty($document['download_dokumen']))
+                                                    <a href="{{ $document['download_dokumen'] }}"
+                                                        class="progress-action-btn" aria-label="Download"
+                                                        title="Download dokumen" target="_blank"
+                                                        rel="noopener noreferrer">
+                                                        <i class="bi bi-download"></i>
+                                                    </a>
+                                                @endif
                                             </div>
                                         </div>
 
@@ -350,32 +352,77 @@
                     });
 
                     // Update progres dokumen
+                    // const dokumen = result.data || {};
+
+                    // document.querySelectorAll('[data-document-name]').forEach(function(container) {
+                    //     const lokasi = container.dataset.documentLocation;
+                    //     const namaDokumen = container.dataset.documentName;
+
+                    //     const daftarDokumen = dokumen[lokasi] || [];
+
+                    //     const item = daftarDokumen.find(function(d) {
+                    //         return d.type !== 'additional' &&
+                    //             d.name.trim().replace(/\s+/g, ' ') ===
+                    //             namaDokumen.trim().replace(/\s+/g, ' ');
+                    //     });
+
+                    //     if (!item || item.progress === null || item.progress === undefined) {
+                    //         return;
+                    //     }
+
+                    //     const progress = Number(item.progress);
+                    //     const value = container.querySelector('[data-document-value]');
+                    //     const bar = container.querySelector('[data-document-bar]');
+
+                    //     if (!Number.isFinite(progress)) return;
+
+                    //     if (value) {
+                    //         value.textContent = progress + '%';
+                    //     }
+
+                    //     if (bar) {
+                    //         bar.style.width = progress + '%';
+                    //         bar.setAttribute('aria-valuenow', progress);
+                    //     }
+                    // });
                     const dokumen = result.data || {};
 
-                    Object.values(dokumen).flat().forEach(function(item) {
-                        if (item.type === 'additional') return;
+                    document.querySelectorAll('.progress-container[data-document-location]').forEach(function(
+                        container) {
+                        const division = container.dataset.documentLocation;
+                        const documentName = container.dataset.documentName;
 
-                        document.querySelectorAll('[data-document-name]').forEach(function(container) {
-                            if (container.dataset.documentName !== item.name) return;
+                        const documents = dokumen[division] || [];
 
-                            const value = container.querySelector('[data-document-value]');
-                            const bar = container.querySelector('[data-document-bar]');
-                            const progress = Number(item.progress);
-                            const valid = item.progress !== null &&
-                                item.progress !== '' &&
-                                Number.isFinite(progress);
-
-                            if (value) {
-                                value.textContent = valid ? progress + '%' : 'Belum tersedia';
-                                value.classList.toggle('unavailable', !valid);
-                            }
-
-                            if (bar) {
-                                const width = valid ? Math.max(0, Math.min(100, progress)) : 0;
-                                bar.style.width = width + '%';
-                                bar.parentElement.setAttribute('aria-valuenow', width);
-                            }
+                        const item = documents.find(function(d) {
+                            return d.type !== 'additional' &&
+                                d.name.trim().replace(/\s+/g, ' ') ===
+                                documentName.trim().replace(/\s+/g, ' ');
                         });
+
+                        if (!item || item.progress == null) return;
+
+                        const progress = Number(item.progress);
+                        if (!Number.isFinite(progress)) return;
+
+                        const value = container.querySelector('[data-document-value]');
+                        const bar = container.querySelector('[data-document-bar]');
+                        const progressContainer = container.querySelector(
+                            '.progress[role="progressbar"]');
+
+                        if (value) {
+                            value.textContent = progress + '%';
+                        }
+
+                        if (bar) {
+                            bar.style.width = progress + '%';
+                        }
+
+                        if (progressContainer) {
+                            progressContainer.setAttribute('aria-valuenow', progress);
+                        }
+
+                        container.dataset.documentProgress = progress;
                     });
 
                 } catch (error) {

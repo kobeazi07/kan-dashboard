@@ -223,8 +223,7 @@
                             {{-- Daftar Dokumen --}}
                             @foreach ($documents as $document)
                                 @if (($document['type'] ?? null) !== 'additional')
-                                    <div class="progress-container">
-                                        data-document-name="{{ $document['name'] }}"
+                                    <div class="progress-container" data-document-name="{{ $document['name'] }}"
                                         data-document-progress="{{ $document['progress'] ?? '' }}">
                                         {{-- Nama Dokumen dan Persentase --}}
                                         <div class="progress-label-row">

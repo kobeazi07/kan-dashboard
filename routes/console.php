@@ -8,4 +8,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('app:check-dashboard-progress')->everyTenSeconds()->withoutOverlapping();
+// Schedule::command('app:check-dashboard-progress')->everyTenSeconds()->withoutOverlapping();
+Schedule::command('app:check-dashboard-progress')
+    ->everyMinute()
+    ->withoutOverlapping();

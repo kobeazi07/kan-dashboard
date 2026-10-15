@@ -94,6 +94,11 @@ class DashboardController extends Controller
 
     public function index(GoogleSheetService $googleSheet)
     {
+        dd([
+            'cache_store' => config('cache.default'),
+            'cache_path' => config('cache.stores.file.path'),
+            'cache_data' => Cache::get('dashboard_progress_data'),
+        ]);
         // Ambil data dokumen dari cache
         $data = Cache::get('dashboard_progress_data');
 

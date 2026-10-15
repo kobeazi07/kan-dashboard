@@ -80,7 +80,7 @@
                  </li> --}}
 
                  <li class="sidebar-menu-item">
-                     {{ dd($setting->link_jetty, $setting->link_refinery, $setting->link_power_plant) }}
+                     {{-- {{ dd($setting->link_jetty, $setting->link_refinery, $setting->link_power_plant) }} --}}
                      <span class="fw-bold text-light">Data PBG</span>
                      <hr style="border-top: 0.5px solid #ffffff; opacity: 1;">
                      <ul class="sidebar-menu-list">

@@ -224,7 +224,8 @@
                             @foreach ($documents as $document)
                                 @if (($document['type'] ?? null) !== 'additional')
                                     <div class="progress-container">
-
+                                        data-document-name="{{ $document['name'] }}"
+                                        data-document-progress="{{ $document['progress'] ?? '' }}">
                                         {{-- Nama Dokumen dan Persentase --}}
                                         <div class="progress-label-row">
                                             <span class="progress-label">
@@ -232,7 +233,7 @@
                                             </span>
 
                                             <div class="d-flex align-items-center gap-2">
-                                                <span
+                                                {{-- <span
                                                     class="progress-value
                                 {{ $document['progress'] === null ? 'unavailable' : '' }}">
 
@@ -242,33 +243,45 @@
                                                         Belum tersedia
                                                     @endif
 
-                                                </span>
+                                                </span> --}}
+                                                <span
+                                                    class="progress-value {{ $document['progress'] === null ? 'unavailable' : '' }}"
+                                                    data-document-value>
 
-                                                {{-- Tombol Dokumen --}}
-                                                @if (!empty($document['url']))
-                                                    <a href="{{ $document['url'] }}" class="progress-action-btn"
-                                                        aria-label="Lihat {{ $document['name'] }}" title="Lihat dokumen"
-                                                        target="_blank" rel="noopener noreferrer">
-                                                        <i class="bi bi-file-earmark-text-fill"></i>
-                                                    </a>
-                                                @endif
-                                                @if (!empty($document['download_dokumen']))
-                                                    <a href="{{ $document['download_dokumen'] }}"
-                                                        class="progress-action-btn" aria-label="Download"
-                                                        title="Download dokumen" target="_blank"
-                                                        rel="noopener noreferrer">
-                                                        <i class="bi bi-download"></i>
-                                                    </a>
-                                                @endif
+                                                    {{-- Tombol Dokumen --}}
+                                                    @if (!empty($document['url']))
+                                                        <a href="{{ $document['url'] }}" class="progress-action-btn"
+                                                            aria-label="Lihat {{ $document['name'] }}"
+                                                            title="Lihat dokumen" target="_blank"
+                                                            rel="noopener noreferrer">
+                                                            <i class="bi bi-file-earmark-text-fill"></i>
+                                                        </a>
+                                                    @endif
+                                                    @if (!empty($document['download_dokumen']))
+                                                        <a href="{{ $document['download_dokumen'] }}"
+                                                            class="progress-action-btn" aria-label="Download"
+                                                            title="Download dokumen" target="_blank"
+                                                            rel="noopener noreferrer">
+                                                            <i class="bi bi-download"></i>
+                                                        </a>
+                                                    @endif
                                             </div>
                                         </div>
 
                                         {{-- Progress Bar --}}
-                                        <div class="progress" role="progressbar"
+                                        {{-- <div class="progress" role="progressbar"
                                             aria-label="Progres {{ $document['name'] }}"
                                             aria-valuenow="{{ max(0, min(100, $document['progress'] ?? 0)) }}"
                                             aria-valuemin="0" aria-valuemax="100">
                                             <div class="progress-bar bg-lime-accent"
+                                                style="width: {{ max(0, min(100, $document['progress'] ?? 0)) }}%">
+                                            </div>
+                                        </div> --}}
+                                        <div class="progress" role="progressbar"
+                                            aria-label="Progres {{ $document['name'] }}"
+                                            aria-valuenow="{{ max(0, min(100, $document['progress'] ?? 0)) }}"
+                                            aria-valuemin="0" aria-valuemax="100">
+                                            <div class="progress-bar bg-lime-accent" data-document-bar
                                                 style="width: {{ max(0, min(100, $document['progress'] ?? 0)) }}%">
                                             </div>
                                         </div>
@@ -300,8 +313,6 @@
 
 
     </div>
-
-
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

@@ -302,9 +302,10 @@
     </div>
 
 
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            async function updatePekerjaanFisik() {
+            async function updateDashboard() {
                 try {
                     const response = await fetch(
                         '{{ route('dashboard.progress-data') }}', {
@@ -320,42 +321,60 @@
                     }
 
                     const result = await response.json();
-                    const data = result.pekerjaanFisik || [];
 
-                    data.forEach(function(item) {
+                    // Update progres pekerjaan fisik
+                    (result.pekerjaanFisik || []).forEach(function(item) {
                         const element = document.querySelector(
                             '[data-pekerjaan-fisik="' + item.nama + '"]'
                         );
 
                         if (!element) return;
 
-                        if (item.nama === 'Progress Keseluruhan') {
-                            const badge = element.querySelector(
-                                '.progress-total-badge'
-                            );
+                        const badge = element.querySelector('.progress-total-badge');
 
-                            if (badge) {
-                                badge.textContent = item.progress + ' %';
-                            } else {
-                                element.textContent = item.progress + ' %';
-                            }
+                        if (badge) {
+                            badge.textContent = item.progress + ' %';
                         } else {
                             element.textContent = item.progress + ' %';
                         }
                     });
+
+                    // Update progres dokumen
+                    const dokumen = result.data || {};
+
+                    Object.values(dokumen).flat().forEach(function(item) {
+                        if (item.type === 'additional') return;
+
+                        document.querySelectorAll('[data-document-name]').forEach(function(container) {
+                            if (container.dataset.documentName !== item.name) return;
+
+                            const value = container.querySelector('[data-document-value]');
+                            const bar = container.querySelector('[data-document-bar]');
+                            const progress = Number(item.progress);
+                            const valid = item.progress !== null &&
+                                item.progress !== '' &&
+                                Number.isFinite(progress);
+
+                            if (value) {
+                                value.textContent = valid ? progress + '%' : 'Belum tersedia';
+                                value.classList.toggle('unavailable', !valid);
+                            }
+
+                            if (bar) {
+                                const width = valid ? Math.max(0, Math.min(100, progress)) : 0;
+                                bar.style.width = width + '%';
+                                bar.parentElement.setAttribute('aria-valuenow', width);
+                            }
+                        });
+                    });
+
                 } catch (error) {
-                    console.error(
-                        'Gagal memperbarui progres pekerjaan fisik:',
-                        error
-                    );
+                    console.error('Gagal memperbarui dashboard:', error);
                 }
             }
 
-            // Ambil data terbaru saat halaman dibuka.
-            updatePekerjaanFisik();
-
-            // Periksa kembali setiap 15 detik tanpa refresh halaman.
-            setInterval(updatePekerjaanFisik, 15000);
+            updateDashboard();
+            setInterval(updateDashboard, 15000);
         });
     </script>
 @endsection()

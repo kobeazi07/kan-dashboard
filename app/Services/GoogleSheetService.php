@@ -101,7 +101,7 @@ class GoogleSheetService
 
         $cells = $this->readDashboardLinks(
             $spreadsheetId,
-            'Dashboard!K12:R28'
+            'Dashboard!K12:R35'
         );
 
         // Susun hasil berdasarkan nomor baris dan kolom.
@@ -111,7 +111,7 @@ class GoogleSheetService
             $grid[$cell['row']][$cell['column']] = $cell;
         }
 
-        // Ambil nama, URL, dan progres dari baris tertentu.
+        // Ambil nama, URL, dan progres berdasarkan baris dan kolom.
         $getDocument = function (
             int $row,
             int $nameColumn,
@@ -125,7 +125,6 @@ class GoogleSheetService
 
             $progressText = $progressCell['value'] ?? null;
 
-            // Contoh: "63%" menjadi 63.
             $progress = is_string($progressText)
                 && preg_match(
                     '/^\s*(-?\d+(?:[.,]\d+)?)\s*%\s*$/',
@@ -142,7 +141,6 @@ class GoogleSheetService
             ];
         };
 
-        // Susun data dashboard.
         $result = [
             'Dermaga Jetty' => [
                 $getDocument(3, 0, 2),
@@ -194,22 +192,45 @@ class GoogleSheetService
                     'label' => 'Data Dokumentasi',
                 ]),
             ],
+
+            'Red Mud' => [
+                $getDocument(11, 5, 7), // PQ23 / R23
+                $getDocument(12, 5, 7), // PQ24 / R24
+                $getDocument(13, 5, 7), // PQ25 / R25
+                array_merge($getDocument(14, 5, 7), [ // PQ26 / R26
+                    'type' => 'additional',
+                    'label' => 'Data Dokumentasi',
+                ]),
+                array_merge($getDocument(8, 5, 7), [
+                    'type' => 'additional',
+                    'label' => 'Master Schedule',
+                ]),
+            ],
+
+            'Jembatan' => [
+                $getDocument(20, 0, 2), // KL32 dan M32
+                $getDocument(21, 0, 2), // KL33 dan M33
+                $getDocument(22, 0, 2), // KL34 dan M34
+
+                array_merge($getDocument(23, 0, 2), [
+                    'type' => 'additional',
+                    'label' => 'Data Dokumentasi',
+                ]),
+            ],
         ];
 
         // Normalisasi kategori dan nama dokumen.
         $normalize = function ($value): string {
             $value = mb_strtolower(trim((string) $value));
 
-            // Samakan perbedaan spasi dan tanda hubung.
             return preg_replace('/[\s-]+/u', '', $value) ?? '';
         };
 
-        // Ambil data URL unduhan dari database.
+        // Ambil URL unduhan dari database.
         $documents = DB::table('download_dokumen_tables')
             ->select('nama', 'kategori', 'download_dokumen')
             ->get();
 
-        // Buat indeks berdasarkan kategori dan nama dokumen.
         $lookup = [];
 
         foreach ($documents as $document) {
@@ -220,7 +241,7 @@ class GoogleSheetService
             $lookup[$key] = $document->download_dokumen;
         }
 
-        // Hubungkan setiap item dashboard dengan URL database.
+        // Hubungkan setiap item dashboard dengan URL unduhan.
         foreach ($result as $kategori => &$items) {
             foreach ($items as &$item) {
                 $namaDokumen = $item['label']
@@ -241,6 +262,180 @@ class GoogleSheetService
 
         return $result;
     }
+
+    // public function getDashboardData(): array
+    // {
+    //     $spreadsheetId = '1s7HqchxwI99SLmercIENi7DWRZZbjaM3Tbkvt_EDi9k';
+
+    //     $cells = $this->readDashboardLinks(
+    //         $spreadsheetId,
+    //         'Dashboard!K12:R28'
+    //     );
+
+    //     // Susun hasil berdasarkan nomor baris dan kolom.
+    //     $grid = [];
+
+    //     foreach ($cells as $cell) {
+    //         $grid[$cell['row']][$cell['column']] = $cell;
+    //     }
+
+    //     // Ambil nama, URL, dan progres dari baris tertentu.
+    //     $getDocument = function (
+    //         int $row,
+    //         int $nameColumn,
+    //         ?int $progressColumn = null
+    //     ) use (&$grid): array {
+    //         $nameCell = $grid[$row][$nameColumn] ?? [];
+
+    //         $progressCell = $progressColumn !== null
+    //             ? ($grid[$row][$progressColumn] ?? [])
+    //             : [];
+
+    //         $progressText = $progressCell['value'] ?? null;
+
+    //         // Contoh: "63%" menjadi 63.
+    //         $progress = is_string($progressText)
+    //             && preg_match(
+    //                 '/^\s*(-?\d+(?:[.,]\d+)?)\s*%\s*$/',
+    //                 $progressText,
+    //                 $matches
+    //             )
+    //             ? (float) str_replace(',', '.', $matches[1])
+    //             : null;
+
+    //         return [
+    //             'name' => $nameCell['value'] ?? null,
+    //             'url' => $nameCell['url'] ?? null,
+    //             'progress' => $progress,
+    //         ];
+    //     };
+
+    //     // Susun data dashboard.
+    //     $result = [
+    //         'Dermaga Jetty' => [
+    //             $getDocument(3, 0, 2),
+    //             $getDocument(4, 0, 2),
+    //             $getDocument(5, 0, 2),
+    //             $getDocument(7, 0, 2),
+
+    //             array_merge($getDocument(0, 0, 2), [
+    //                 'type' => 'additional',
+    //                 'label' => 'Master Schedule',
+    //             ]),
+
+    //             array_merge($getDocument(6, 0, 2), [
+    //                 'type' => 'additional',
+    //                 'label' => 'Data Dokumentasi',
+    //             ]),
+    //         ],
+
+    //         'Refinery' => [
+    //             $getDocument(3, 5, 7),
+    //             $getDocument(4, 5, 7),
+    //             $getDocument(5, 5, 7),
+    //             $getDocument(7, 5, 7),
+
+    //             array_merge($getDocument(0, 5, 7), [
+    //                 'type' => 'additional',
+    //                 'label' => 'Master Schedule',
+    //             ]),
+
+    //             array_merge($getDocument(6, 5, 7), [
+    //                 'type' => 'additional',
+    //                 'label' => 'Data Dokumentasi',
+    //             ]),
+    //         ],
+
+    //         'Power Plant' => [
+    //             $getDocument(11, 0, 2),
+    //             $getDocument(12, 0, 2),
+    //             $getDocument(13, 0, 2),
+    //             $getDocument(15, 0, 2),
+
+    //             array_merge($getDocument(8, 0, 2), [
+    //                 'type' => 'additional',
+    //                 'label' => 'Master Schedule',
+    //             ]),
+
+    //             array_merge($getDocument(14, 0, 2), [
+    //                 'type' => 'additional',
+    //                 'label' => 'Data Dokumentasi',
+    //             ]),
+    //         ],
+    //         'Red Mud' => [
+    //             $getDocument(11, 5, 7), // PQ23 / R23
+    //             $getDocument(12, 5, 7), // PQ24 / R24
+    //             $getDocument(13, 5, 7), // PQ25 / R25
+    //             array_merge($getDocument(14, 5, 7), [ // PQ26 / R26
+    //                 'type' => 'additional',
+    //                 'label' => 'Data Dokumentasi',
+    //             ]),
+    //             array_merge($getDocument(8, 5, 7), [
+    //                 'type' => 'additional',
+    //                 'label' => 'Master Schedule',
+    //             ]),
+    //         ],
+
+    //         'Jembatan' => [
+    //             $getDocument(31, 0, 2), // KL32 / M32
+    //             $getDocument(32, 0, 2), // KL33 / M33
+    //             $getDocument(33, 0, 2), // KL34 / M34
+    //             array_merge($getDocument(34, 0, 2), [ // KL35 / M35
+    //                 'type' => 'additional',
+    //                 'label' => 'Data Dokumentasi',
+    //             ]),
+    //             array_merge($getDocument(28, 0, 2), [
+    //                 'type' => 'additional',
+    //                 'label' => 'Master Schedule',
+    //             ]),
+    //         ],
+    //     ];
+
+    //     // Normalisasi kategori dan nama dokumen.
+    //     $normalize = function ($value): string {
+    //         $value = mb_strtolower(trim((string) $value));
+
+    //         // Samakan perbedaan spasi dan tanda hubung.
+    //         return preg_replace('/[\s-]+/u', '', $value) ?? '';
+    //     };
+
+    //     // Ambil data URL unduhan dari database.
+    //     $documents = DB::table('download_dokumen_tables')
+    //         ->select('nama', 'kategori', 'download_dokumen')
+    //         ->get();
+
+    //     // Buat indeks berdasarkan kategori dan nama dokumen.
+    //     $lookup = [];
+
+    //     foreach ($documents as $document) {
+    //         $key = $normalize($document->kategori)
+    //             . '|'
+    //             . $normalize($document->nama);
+
+    //         $lookup[$key] = $document->download_dokumen;
+    //     }
+
+    //     // Hubungkan setiap item dashboard dengan URL database.
+    //     foreach ($result as $kategori => &$items) {
+    //         foreach ($items as &$item) {
+    //             $namaDokumen = $item['label']
+    //                 ?? $item['name']
+    //                 ?? '';
+
+    //             $key = $normalize($kategori)
+    //                 . '|'
+    //                 . $normalize($namaDokumen);
+
+    //             $item['download_dokumen'] = $lookup[$key] ?? null;
+    //         }
+
+    //         unset($item);
+    //     }
+
+    //     unset($items);
+
+    //     return $result;
+    // }
 
 
     // public function getDashboardData(): array

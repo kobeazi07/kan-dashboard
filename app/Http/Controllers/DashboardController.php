@@ -133,6 +133,7 @@ class DashboardController extends Controller
         }
         // Ambil data timeline dari cache.
         $timeline = Cache::get('dashboard_timeline');
+        // dd($timeline);
 
         if ($timeline === null) {
             $timeline = $googleSheet->getDashboardDataTimeline();

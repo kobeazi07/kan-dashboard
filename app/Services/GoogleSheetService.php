@@ -5,6 +5,9 @@ namespace App\Services;
 use Google\Client;
 use Google\Service\Sheets;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+
 
 class GoogleSheetService
 {
@@ -672,9 +675,10 @@ class GoogleSheetService
 
 
     // timeline
+
     public function getDashboardDataTimeline(): array
     {
-        $fileId = '1ecvWfIpjhryFk_i0VQo0bL3AmySO4Q-R';
+        $fileId = '17iAxg27SNC5QEzWvG0jEyXNqVxFC5rDf';
 
         $client = new \Google\Client();
         $client->setApplicationName('KAN Dashboard');
@@ -710,23 +714,45 @@ class GoogleSheetService
                 );
             }
 
-            // Membaca file Excel.
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
             $reader->setReadDataOnly(false);
 
             $spreadsheet = $reader->load($tempFile);
 
-            $sheet = $spreadsheet->getSheetByName('PROGRESS PEKERJAAN');
+            $sheet = $spreadsheet->getSheetByName('JADWAL');
 
             if ($sheet === null) {
                 throw new \RuntimeException(
-                    'Sheet PROGRESS PEKERJAAN tidak ditemukan.'
+                    'Sheet JADWAL tidak ditemukan.'
                 );
             }
+            // dd jadwalatas
+            // dd([
+            //     'F8' => [
+            //         'fill_type' => $sheet->getStyle('F8')->getFill()->getFillType(),
+            //         'rgb' => $sheet->getStyle('F8')->getFill()->getStartColor()->getRGB(),
+            //         'argb' => $sheet->getStyle('F8')->getFill()->getStartColor()->getARGB(),
+            //         'conditional_rules' => count(
+            //             $sheet->getStyle('F8')->getConditionalStyles()
+            //         ),
+            //     ],
+            //     'G8' => [
+            //         'fill_type' => $sheet->getStyle('G8')->getFill()->getFillType(),
+            //         'rgb' => $sheet->getStyle('G8')->getFill()->getStartColor()->getRGB(),
+            //         'argb' => $sheet->getStyle('G8')->getFill()->getStartColor()->getARGB(),
+            //         'conditional_rules' => count(
+            //             $sheet->getStyle('G8')->getConditionalStyles()
+            //         ),
+            //     ],
+            // ]);
+            /*
+        |--------------------------------------------------------------------------
+        | 1. MEMBACA DATA EXCEL
+        |--------------------------------------------------------------------------
+        */
 
-            // Membaca header dan data dari Excel B9:CS133.
             $range = $sheet->rangeToArray(
-                'B9:CS133',
+                'B3:AG53',
                 null,
                 true,
                 true,
@@ -735,68 +761,58 @@ class GoogleSheetService
 
             /*
         |--------------------------------------------------------------------------
-        | 1. MEMBACA HEADER BULAN DAN MINGGU
+        | 2. MEMBACA HEADER BULAN
         |--------------------------------------------------------------------------
         |
-        | Baris Excel 9  = header bulan.
-        | Baris Excel 10 = header minggu M1, M2, M3, M4.
-        | Kolom J sampai CS = 88 kolom mingguan.
+        | Range dimulai dari B.
+        | Indeks 4 = F, yaitu bulan pertama pada timeline.
+        | Indeks 30 = AF, yaitu bulan terakhir pada timeline.
         |
         */
 
-            $headerBulan = $range[0] ?? [];
-            $headerMinggu = $range[1] ?? [];
-
+            $headerBulan = $range[2] ?? [];
             $periode = [];
-            $bulanAktif = null;
+            $tahun = 2025;
 
-            // Indeks 8 pada rentang B:CS dimulai dari kolom J.
-            for ($i = 8; $i < count($headerBulan); $i++) {
-                $bulanDariExcel = trim(
-                    (string) ($headerBulan[$i] ?? '')
-                );
+            for ($kolomExcel = 6; $kolomExcel <= 32; $kolomExcel++) {
+                $indexRange = $kolomExcel - 2;
 
-                // Mengisi bulan aktif, termasuk kolom hasil merge yang kosong.
-                if ($bulanDariExcel !== '') {
-                    $bulanAktif = $bulanDariExcel;
+                $indexBulan = $kolomExcel - 6;
+
+                if ($indexBulan === 3) {
+                    $tahun = 2026;
+                } elseif ($indexBulan === 15) {
+                    $tahun = 2027;
                 }
 
-                $minggu = trim(
-                    (string) ($headerMinggu[$i] ?? '')
-                );
+                $namaBulan = $headerBulan[$indexRange] ?? null;
 
-                $periode[] = [
-                    'bulan' => $bulanAktif,
-                    'minggu' => $minggu !== '' ? $minggu : null,
-                    'kolom_excel' =>
-                    \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(
-                        $i + 2
+                $periode[$tahun][] = [
+                    'bulan' => $namaBulan,
+                    'kolom_excel' => Coordinate::stringFromColumnIndex(
+                        $kolomExcel
                     ),
                 ];
             }
 
             /*
         |--------------------------------------------------------------------------
-        | 2. MEMBACA DATA KAWASAN DAN PEKERJAAN
+        | 3. MEMBACA KAWASAN DAN KEGIATAN
         |--------------------------------------------------------------------------
         */
 
             $data = [];
-
             $kawasanAktif = null;
-            $subbagianAktif = null;
 
             $daftarKawasan = [
-                'KAWASAN JETTY',
-                'KAWASAN POWER PLANT',
-                'KAWASAN REFINERY',
-                'KAWASAN RED MUD',
-                'KAWASAN REDMUD',
+                'DERMAGA JETTY',
+                'REFINERY',
+                'POWER PLANT',
+                'RED MUD',
             ];
 
             foreach ($range as $index => $row) {
-                // Indeks 0 dari $range merupakan baris Excel 9.
-                $excelRow = $index + 9;
+                $excelRow = $index + 3;
 
                 $values = array_map(
                     static fn($value) => is_string($value)
@@ -805,7 +821,6 @@ class GoogleSheetService
                     $row
                 );
 
-                // Melewati baris yang seluruh kolomnya kosong.
                 $isEmpty = count(array_filter(
                     $values,
                     static fn($value) => $value !== null && $value !== ''
@@ -815,26 +830,39 @@ class GoogleSheetService
                     continue;
                 }
 
-                // Kolom F Excel adalah uraian pekerjaan.
-                $uraian = strtoupper(
-                    trim((string) ($values[4] ?? ''))
-                );
-
                 /*
             |--------------------------------------------------------------------------
-            | 2.1. IDENTIFIKASI BARIS KAWASAN
+            | 3.1. IDENTIFIKASI KAWASAN
             |--------------------------------------------------------------------------
             */
 
-                if (in_array($uraian, $daftarKawasan, true)) {
-                    $kawasanAktif = $uraian;
-                    $subbagianAktif = null;
+                $teksBaris = strtoupper(
+                    implode(' ', array_filter(
+                        array_map(
+                            static fn($value) => trim((string) $value),
+                            array_slice($values, 0, 4)
+                        ),
+                        static fn($value) => $value !== ''
+                    ))
+                );
+
+                $kawasanDitemukan = null;
+
+                foreach ($daftarKawasan as $namaKawasan) {
+                    if (str_contains($teksBaris, $namaKawasan)) {
+                        $kawasanDitemukan = $namaKawasan;
+                        break;
+                    }
+                }
+
+                if ($kawasanDitemukan !== null) {
+                    $kawasanAktif = $kawasanDitemukan;
 
                     $data[] = [
                         'jenis' => 'kawasan',
                         'baris_excel' => $excelRow,
-                        'nama' => $uraian,
-                        'progress' => $values[7] ?? null,
+                        'kawasan' => $kawasanAktif,
+                        'nama' => $kawasanDitemukan,
                     ];
 
                     continue;
@@ -842,60 +870,99 @@ class GoogleSheetService
 
                 /*
             |--------------------------------------------------------------------------
-            | 2.2. IDENTIFIKASI BARIS SUBBAGIAN
+            | 3.2. LEWATI HEADER DAN BARIS DI LUAR KAWASAN
             |--------------------------------------------------------------------------
             */
 
-                if (
-                    $uraian === 'BANGUNAN'
-                    || str_starts_with($uraian, 'BANGUNAN ')
-                    || str_starts_with($uraian, 'PRASARANA')
-                ) {
-                    $subbagianAktif = $uraian;
-
-                    $data[] = [
-                        'jenis' => 'subbagian',
-                        'baris_excel' => $excelRow,
-                        'kawasan' => $kawasanAktif,
-                        'nama' => $uraian,
-                    ];
-
+                if ($excelRow <= 6 || $kawasanAktif === null) {
                     continue;
                 }
 
                 /*
             |--------------------------------------------------------------------------
-            | 2.3. MELEWATI HEADER EXCEL   */
-                if ($excelRow <= 10) {
+            | 3.3. MEMBACA NOMOR DAN URAIAN KEGIATAN
+            |--------------------------------------------------------------------------
+            |
+            | B = indeks 0
+            | C = indeks 1
+            | D = indeks 2
+            | AG = indeks 31
+            |
+            */
+
+                $nomor = $values[1] ?? null;
+                $uraian = $values[2] ?? null;
+
+                if ($uraian === null || trim((string) $uraian) === '') {
                     continue;
                 }
 
                 /*
-            | 2.4. MEMBACA BARIS PEKERJAAN */
+            |--------------------------------------------------------------------------
+            | 3.4. MEMBACA JADWAL BERDASARKAN WARNA SEL
+            |--------------------------------------------------------------------------
+            |
+            | F sampai AF adalah kolom jadwal.
+            | Sel hijau menandakan kegiatan terjadwal.
+            |
+            */
+                $jadwal = [];
+
+                for ($baris = 7; $baris <= 53; $baris++) {
+                    for ($kolom = 6; $kolom <= 32; $kolom++) {
+                        $namaKolom = Coordinate::stringFromColumnIndex($kolom);
+                        $koordinat = $namaKolom . $baris;
+
+                        $fill = $sheet->getStyle($koordinat)->getFill();
+
+                        $fillType = $fill->getFillType();
+
+                        $warna = strtoupper(
+                            (string) $fill->getStartColor()->getRGB()
+                        );
+
+                        $jadwal[] = [
+                            'kolom' => $koordinat,
+                            'warna' => $warna,
+                            'terjadwal' => (
+                                $fillType === Fill::FILL_SOLID
+                                && $warna === 'C2D69B'
+                            ),
+                        ];
+                    }
+                }
+
+                // dd($jadwal);
+                /*
+            |--------------------------------------------------------------------------
+            | 3.5. MEMBACA KETERANGAN KOLOM AG
+            |--------------------------------------------------------------------------
+            */
+
+                $keterangan = $sheet
+                    ->getCell('AG' . $excelRow)
+                    ->getFormattedValue();
+
+                $keterangan = is_string($keterangan)
+                    ? trim($keterangan)
+                    : $keterangan;
+
+                /*
+            |--------------------------------------------------------------------------
+            | 3.6. SIMPAN DATA KEGIATAN
+            |--------------------------------------------------------------------------
+            */
+
                 $data[] = [
                     'jenis' => 'pekerjaan',
                     'baris_excel' => $excelRow,
-
                     'kawasan' => $kawasanAktif,
-                    'subbagian' => $subbagianAktif,
-
-                    'no' => $values[0] ?? null,
-                    'kode' => $values[1] ?? null,
-                    'pemisah' => $values[2] ?? null,
-                    'unit_nomor' => $values[3] ?? null,
-                    'uraian' => $values[4] ?? null,
-                    'volume' => $values[5] ?? null,
-                    'satuan' => $values[6] ?? null,
-                    'progress' => $values[7] ?? null,
-
-                    // 88 kolom mingguan dari J sampai CS.
-                    'minggu' => array_slice($values, 8, 88),
+                    'no' => $nomor,
+                    'uraian' => $uraian,
+                    'jadwal' => $jadwal,
+                    'keterangan' => $keterangan,
                 ];
             }
-
-            /*
-     
-        | 3. MENGEMBALIKAN HASIL */
 
             $spreadsheet->disconnectWorksheets();
 
@@ -904,12 +971,259 @@ class GoogleSheetService
                 'data' => $data,
             ];
         } finally {
-            // Menghapus file sementara setelah selesai diproses.
             if (file_exists($tempFile)) {
                 unlink($tempFile);
             }
         }
     }
+
+    // public function getDashboardDataTimeline(): array
+    // {
+    //     $fileId = '17iAxg27SNC5QEzWvG0jEyXNqVxFC5rDf';
+
+    //     $client = new \Google\Client();
+    //     $client->setApplicationName('KAN Dashboard');
+    //     $client->setAuthConfig(
+    //         storage_path('app/private/google-service-account.json')
+    //     );
+    //     $client->setScopes([
+    //         \Google\Service\Drive::DRIVE_READONLY,
+    //     ]);
+
+    //     $drive = new \Google\Service\Drive($client);
+
+    //     $response = $drive->files->get($fileId, [
+    //         'alt' => 'media',
+    //     ]);
+
+    //     $content = $response instanceof \Psr\Http\Message\ResponseInterface
+    //         ? $response->getBody()->getContents()
+    //         : (string) $response;
+
+    //     $tempFile = tempnam(sys_get_temp_dir(), 'kan_timeline_');
+
+    //     if ($tempFile === false) {
+    //         throw new \RuntimeException(
+    //             'Gagal membuat file sementara.'
+    //         );
+    //     }
+
+    //     try {
+    //         if (file_put_contents($tempFile, $content) === false) {
+    //             throw new \RuntimeException(
+    //                 'Gagal menulis file Excel sementara.'
+    //             );
+    //         }
+    //         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xls');
+    //         $reader->setReadDataOnly(false);
+
+    //         $spreadsheet = $reader->load($tempFile);
+
+    //         // Periksa semua nama sheet dalam file Excel.
+    //         $sheet = $spreadsheet->getSheetByName('JADWAL');
+
+    //         if ($sheet === null) {
+    //             throw new \RuntimeException(
+    //                 'Sheet JADWAL tidak ditemukan.'
+    //             );
+    //         }
+    //         /*
+    //     |--------------------------------------------------------------------------
+    //     | 1. MEMBACA HEADER BULAN
+    //     |--------------------------------------------------------------------------
+    //     */
+
+    //         $range = $sheet->rangeToArray(
+    //             'B3:AG53',
+    //             null,
+    //             true,
+    //             true,
+    //             false
+    //         );
+
+    //         // Baris Excel 5 adalah header bulan.
+    //         // Karena range dimulai dari baris 3, indeksnya adalah 2.
+    //         $headerBulan = $range[2] ?? [];
+    //         $periode = [];
+    //         $tahun = 2025;
+
+    //         for ($i = 4; $i <= 30; $i++) {
+    //             $indexBulan = $i - 4;
+
+    //             // 3 bulan pertama masuk tahun 2025.
+    //             // Setelah itu, setiap 12 bulan berganti tahun.
+    //             if ($indexBulan === 3) {
+    //                 $tahun = 2026;
+    //             } elseif ($indexBulan === 15) {
+    //                 $tahun = 2027;
+    //             }
+
+    //             $periode[$tahun][] = [
+    //                 'bulan' => $headerBulan[$i] ?? null,
+    //                 'kolom_excel' => Coordinate::stringFromColumnIndex($i + 2),
+    //             ];
+    //         }
+
+    //         /*
+    //     |--------------------------------------------------------------------------
+    //     | 2. MEMBACA KAWASAN DAN KEGIATAN
+    //     |--------------------------------------------------------------------------
+    //     */
+
+    //         $data = [];
+
+    //         $kawasanAktif = null;
+
+    //         $daftarKawasan = [
+    //             'DERMAGA JETTY',
+    //             'REFINERY',
+    //             'POWER PLANT',
+    //             'RED MUD',
+    //         ];
+
+    //         foreach ($range as $index => $row) {
+    //             $excelRow = $index + 3;
+
+    //             $values = array_map(
+    //                 static fn($value) => is_string($value)
+    //                     ? trim($value)
+    //                     : $value,
+    //                 $row
+    //             );
+
+    //             $isEmpty = count(array_filter(
+    //                 $values,
+    //                 static fn($value) => $value !== null && $value !== ''
+    //             )) === 0;
+
+    //             if ($isEmpty) {
+    //                 continue;
+    //             }
+
+    //             /*
+    //         |--------------------------------------------------------------------------
+    //         | 2.1. IDENTIFIKASI KAWASAN
+    //         |--------------------------------------------------------------------------
+    //         */
+
+    //             $teksBaris = strtoupper(
+    //                 implode(' ', array_filter(
+    //                     array_map(
+    //                         static fn($value) => trim((string) $value),
+    //                         array_slice($values, 0, 4)
+    //                     ),
+    //                     static fn($value) => $value !== ''
+    //                 ))
+    //             );
+
+    //             $kawasanDitemukan = null;
+
+    //             foreach ($daftarKawasan as $namaKawasan) {
+    //                 if (str_contains($teksBaris, $namaKawasan)) {
+    //                     $kawasanDitemukan = $namaKawasan;
+    //                     break;
+    //                 }
+    //             }
+
+    //             if ($kawasanDitemukan !== null) {
+    //                 $kawasanAktif = $kawasanDitemukan;
+
+    //                 $data[] = [
+    //                     'jenis' => 'kawasan',
+    //                     'baris_excel' => $excelRow,
+    //                     'kawasan' => $kawasanAktif,
+    //                     'nama' => $kawasanDitemukan,
+    //                 ];
+
+    //                 continue;
+    //             }
+
+    //             /*
+    //         |--------------------------------------------------------------------------
+    //         | 2.2. LEWATI HEADER DAN BARIS DI LUAR KAWASAN
+    //         |--------------------------------------------------------------------------
+    //         */
+
+    //             if ($excelRow <= 6 || $kawasanAktif === null) {
+    //                 continue;
+    //             }
+
+    //             /*
+    //         |--------------------------------------------------------------------------
+    //         | 2.3. MEMBACA KEGIATAN
+    //         |--------------------------------------------------------------------------
+    //         |
+    //         | Range B:AG:
+    //         | B = indeks 0
+    //         | C = indeks 1
+    //         | D = indeks 2
+    //         | E = indeks 3
+    //         | F = indeks 4
+    //         | AF = indeks 30
+    //         | AG = indeks 31
+    //         |
+    //         */
+
+    //             $nomor = $values[1] ?? null;
+    //             $uraian = $values[2] ?? null;
+
+    //             if ($uraian === null || trim((string) $uraian) === '') {
+    //                 continue;
+    //             }
+
+    //             /*
+    //         |--------------------------------------------------------------------------
+    //         | 2.4. MEMBACA STATUS WARNA JADWAL
+    //         |--------------------------------------------------------------------------
+    //         */
+
+    //             $jadwal = [];
+
+    //             for ($kolom = 6; $kolom <= 32; $kolom++) {
+    //                 $koordinat = $kolom . $excelRow;
+
+    //                 $cell = $sheet->getStyle($koordinat)->getFill();
+    //                 $fillType = $cell->getFillType();
+    //                 $warna = $cell->getStartColor()->getRGB();
+
+    //                 $jadwal[] = [
+    //                     'kolom' => $koordinat,
+    //                     'nilai' => $sheet->getCell($koordinat)->getValue(),
+    //                     'warna' => $warna,
+    //                     'terjadwal' => $fillType !== Fill::FILL_NONE
+    //                         && $warna === '00FF00',
+    //                 ];
+    //             }
+
+    //             /*
+    //         |--------------------------------------------------------------------------
+    //         | 2.5. SIMPAN KEGIATAN
+    //         |--------------------------------------------------------------------------
+    //         */
+
+    //             $data[] = [
+    //                 'jenis' => 'pekerjaan',
+    //                 'baris_excel' => $excelRow,
+    //                 'kawasan' => $kawasanAktif,
+    //                 'no' => $nomor,
+    //                 'uraian' => $uraian,
+    //                 'jadwal' => $jadwal,
+    //                 'keterangan' => $values[31] ?? null,
+    //             ];
+    //         }
+
+    //         $spreadsheet->disconnectWorksheets();
+
+    //         return [
+    //             'periode' => $periode,
+    //             'data' => $data,
+    //         ];
+    //     } finally {
+    //         if (file_exists($tempFile)) {
+    //             unlink($tempFile);
+    //         }
+    //     }
+    // }
 
     // public function getDashboardDataPekerjaanFisik(): array
     // {

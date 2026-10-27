@@ -671,6 +671,245 @@ class GoogleSheetService
     }
 
 
+    // timeline
+    public function getDashboardDataTimeline(): array
+    {
+        $fileId = '1ecvWfIpjhryFk_i0VQo0bL3AmySO4Q-R';
+
+        $client = new \Google\Client();
+        $client->setApplicationName('KAN Dashboard');
+        $client->setAuthConfig(
+            storage_path('app/private/google-service-account.json')
+        );
+        $client->setScopes([
+            \Google\Service\Drive::DRIVE_READONLY,
+        ]);
+
+        $drive = new \Google\Service\Drive($client);
+
+        $response = $drive->files->get($fileId, [
+            'alt' => 'media',
+        ]);
+
+        $content = $response instanceof \Psr\Http\Message\ResponseInterface
+            ? $response->getBody()->getContents()
+            : (string) $response;
+
+        $tempFile = tempnam(sys_get_temp_dir(), 'kan_timeline_');
+
+        if ($tempFile === false) {
+            throw new \RuntimeException(
+                'Gagal membuat file sementara.'
+            );
+        }
+
+        try {
+            if (file_put_contents($tempFile, $content) === false) {
+                throw new \RuntimeException(
+                    'Gagal menulis file Excel sementara.'
+                );
+            }
+
+            // Membaca file Excel.
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
+            $reader->setReadDataOnly(false);
+
+            $spreadsheet = $reader->load($tempFile);
+
+            $sheet = $spreadsheet->getSheetByName('PROGRESS PEKERJAAN');
+
+            if ($sheet === null) {
+                throw new \RuntimeException(
+                    'Sheet PROGRESS PEKERJAAN tidak ditemukan.'
+                );
+            }
+
+            // Membaca header dan data dari Excel B9:CS133.
+            $range = $sheet->rangeToArray(
+                'B9:CS133',
+                null,
+                true,
+                true,
+                false
+            );
+
+            /*
+        |--------------------------------------------------------------------------
+        | 1. MEMBACA HEADER BULAN DAN MINGGU
+        |--------------------------------------------------------------------------
+        |
+        | Baris Excel 9  = header bulan.
+        | Baris Excel 10 = header minggu M1, M2, M3, M4.
+        | Kolom J sampai CS = 88 kolom mingguan.
+        |
+        */
+
+            $headerBulan = $range[0] ?? [];
+            $headerMinggu = $range[1] ?? [];
+
+            $periode = [];
+            $bulanAktif = null;
+
+            // Indeks 8 pada rentang B:CS dimulai dari kolom J.
+            for ($i = 8; $i < count($headerBulan); $i++) {
+                $bulanDariExcel = trim(
+                    (string) ($headerBulan[$i] ?? '')
+                );
+
+                // Mengisi bulan aktif, termasuk kolom hasil merge yang kosong.
+                if ($bulanDariExcel !== '') {
+                    $bulanAktif = $bulanDariExcel;
+                }
+
+                $minggu = trim(
+                    (string) ($headerMinggu[$i] ?? '')
+                );
+
+                $periode[] = [
+                    'bulan' => $bulanAktif,
+                    'minggu' => $minggu !== '' ? $minggu : null,
+                    'kolom_excel' =>
+                    \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(
+                        $i + 2
+                    ),
+                ];
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | 2. MEMBACA DATA KAWASAN DAN PEKERJAAN
+        |--------------------------------------------------------------------------
+        */
+
+            $data = [];
+
+            $kawasanAktif = null;
+            $subbagianAktif = null;
+
+            $daftarKawasan = [
+                'KAWASAN JETTY',
+                'KAWASAN POWER PLANT',
+                'KAWASAN REFINERY',
+                'KAWASAN RED MUD',
+                'KAWASAN REDMUD',
+            ];
+
+            foreach ($range as $index => $row) {
+                // Indeks 0 dari $range merupakan baris Excel 9.
+                $excelRow = $index + 9;
+
+                $values = array_map(
+                    static fn($value) => is_string($value)
+                        ? trim($value)
+                        : $value,
+                    $row
+                );
+
+                // Melewati baris yang seluruh kolomnya kosong.
+                $isEmpty = count(array_filter(
+                    $values,
+                    static fn($value) => $value !== null && $value !== ''
+                )) === 0;
+
+                if ($isEmpty) {
+                    continue;
+                }
+
+                // Kolom F Excel adalah uraian pekerjaan.
+                $uraian = strtoupper(
+                    trim((string) ($values[4] ?? ''))
+                );
+
+                /*
+            |--------------------------------------------------------------------------
+            | 2.1. IDENTIFIKASI BARIS KAWASAN
+            |--------------------------------------------------------------------------
+            */
+
+                if (in_array($uraian, $daftarKawasan, true)) {
+                    $kawasanAktif = $uraian;
+                    $subbagianAktif = null;
+
+                    $data[] = [
+                        'jenis' => 'kawasan',
+                        'baris_excel' => $excelRow,
+                        'nama' => $uraian,
+                        'progress' => $values[7] ?? null,
+                    ];
+
+                    continue;
+                }
+
+                /*
+            |--------------------------------------------------------------------------
+            | 2.2. IDENTIFIKASI BARIS SUBBAGIAN
+            |--------------------------------------------------------------------------
+            */
+
+                if (
+                    $uraian === 'BANGUNAN'
+                    || str_starts_with($uraian, 'BANGUNAN ')
+                    || str_starts_with($uraian, 'PRASARANA')
+                ) {
+                    $subbagianAktif = $uraian;
+
+                    $data[] = [
+                        'jenis' => 'subbagian',
+                        'baris_excel' => $excelRow,
+                        'kawasan' => $kawasanAktif,
+                        'nama' => $uraian,
+                    ];
+
+                    continue;
+                }
+
+                /*
+            |--------------------------------------------------------------------------
+            | 2.3. MELEWATI HEADER EXCEL   */
+                if ($excelRow <= 10) {
+                    continue;
+                }
+
+                /*
+            | 2.4. MEMBACA BARIS PEKERJAAN */
+                $data[] = [
+                    'jenis' => 'pekerjaan',
+                    'baris_excel' => $excelRow,
+
+                    'kawasan' => $kawasanAktif,
+                    'subbagian' => $subbagianAktif,
+
+                    'no' => $values[0] ?? null,
+                    'kode' => $values[1] ?? null,
+                    'pemisah' => $values[2] ?? null,
+                    'unit_nomor' => $values[3] ?? null,
+                    'uraian' => $values[4] ?? null,
+                    'volume' => $values[5] ?? null,
+                    'satuan' => $values[6] ?? null,
+                    'progress' => $values[7] ?? null,
+
+                    // 88 kolom mingguan dari J sampai CS.
+                    'minggu' => array_slice($values, 8, 88),
+                ];
+            }
+
+            /*
+     
+        | 3. MENGEMBALIKAN HASIL */
+
+            $spreadsheet->disconnectWorksheets();
+
+            return [
+                'periode' => $periode,
+                'data' => $data,
+            ];
+        } finally {
+            // Menghapus file sementara setelah selesai diproses.
+            if (file_exists($tempFile)) {
+                unlink($tempFile);
+            }
+        }
+    }
 
     // public function getDashboardDataPekerjaanFisik(): array
     // {

@@ -89,7 +89,7 @@
                                 </div>
 
                             </div>
-                            <div class="col-md-5 ms-3">
+                            <div class="col-md-5 ">
 
 
                                 <div class="position-relative z-index-2">
@@ -159,12 +159,16 @@
             </div>
         </div>
         <!-- END: TOP AREA -->
+        {{-- timeline --}}
+        @include('pages.dashboard-timeline')
+        {{-- akhir timeline --}}
+
         {{-- tombol dokumen --}}
         {{-- <pre>{{ print_r($pekerjaanFisik, true) }}</pre> --}}
         <div class="col-lg-12">
             <div class="promo-banner-card">
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-6 col-lg-4">
                         <a href="https://docs.google.com/spreadsheets/d/15XrPzw5rFvcewhdaV6bJvJt9_42DvuHGACRV9ZBs7iQ/edit?usp=sharing"
                             target="_blank" rel="noopener noreferrer">
                             <button class="btn-promo">
@@ -173,7 +177,7 @@
                             </button>
                         </a>
                     </div>
-                    <div class="col-6">
+                    <div class="col-6 col-lg-4">
                         <a href="https://docs.google.com/spreadsheets/d/1f1bXlR_JbZon0BKWKjRMUqGxIdkkIEcHv5PJ2Z8xBBs/edit?usp=sharing"
                             target="_blank" rel="noopener noreferrer">
                             <button class="btn-promo">
@@ -182,6 +186,16 @@
                             </button>
                         </a>
                     </div>
+                    <div class="col-6 col-lg-4">
+                        <a href="https://drive.google.com/drive/folders/1_IWM5IqYFSYirJ1FiFO4rBbJ40Wrh1Do?usp=sharing"
+                            target="_blank" rel="noopener noreferrer">
+                            <button class="btn-promo">
+                                <i class="bi bi-folder-fill me-3"></i> Folder
+                                Submission Proof & Records
+                            </button>
+                        </a>
+                    </div>
+
                 </div>
             </div>
         </div>

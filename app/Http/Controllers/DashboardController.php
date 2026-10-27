@@ -94,6 +94,16 @@ class DashboardController extends Controller
 
     public function index(GoogleSheetService $googleSheet)
     {
+        // $hasil = app(\App\Services\GoogleSheetService::class)
+        //     ->getDashboardDataTimeline();
+
+        // dd([
+        //     'jumlah_periode' => count($hasil['periode']),
+        //     'periode_awal' => array_slice($hasil['periode'], 0, 4),
+        //     'jumlah_data' => count($hasil['data']),
+        //     'contoh_pekerjaan' => collect($hasil['data'])
+        //         ->firstWhere('jenis', 'pekerjaan'),
+        // ]);
         // dd([
         //     'cache_store' => config('cache.default'),
         //     'cache_path' => config('cache.stores.file.path'),
@@ -121,6 +131,14 @@ class DashboardController extends Controller
                 $pekerjaanFisik
             );
         }
+        // Ambil data timeline dari cache.
+        $timeline = Cache::get('dashboard_timeline');
+
+        if ($timeline === null) {
+            $timeline = $googleSheet->getDashboardDataTimeline();
+
+            Cache::forever('dashboard_timeline', $timeline);
+        }
 
         // maps
         $maps = Maps::orderByDesc('id')->first();
@@ -128,7 +146,7 @@ class DashboardController extends Controller
         // Tampilkan dashboard menggunakan cache
         return view(
             'pages.dashboard',
-            compact('data', 'pekerjaanFisik', 'maps')
+            compact('data', 'pekerjaanFisik', 'timeline', 'maps')
         );
     }
 
@@ -138,6 +156,10 @@ class DashboardController extends Controller
         return response()->json([
             'data' => Cache::get('dashboard_progress_data', []),
             'pekerjaanFisik' => Cache::get('dashboard_pekerjaan_fisik', []),
+            'timeline' => Cache::get('dashboard_timeline', [
+                'periode' => [],
+                'data' => [],
+            ]),
         ]);
     }
     public function halamanlogin()

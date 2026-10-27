@@ -104,7 +104,7 @@ class GoogleSheetService
 
         $cells = $this->readDashboardLinks(
             $spreadsheetId,
-            'Dashboard!K12:R35'
+            'Dashboard!K12:R37'
         );
 
         // Susun hasil berdasarkan nomor baris dan kolom.
@@ -146,82 +146,86 @@ class GoogleSheetService
 
         $result = [
             'Dermaga Jetty' => [
-                $getDocument(3, 0, 2),
-                $getDocument(4, 0, 2),
-                $getDocument(5, 0, 2),
-                $getDocument(7, 0, 2),
-
-                array_merge($getDocument(0, 0, 2), [
+                // $getDocument(6, 0), // Data Dokumentasi: K18
+                $getDocument(3, 0, 2), // K15, progres M15
+                $getDocument(4, 0, 2), // K16, progres M16
+                $getDocument(5, 0, 2), // K17, progres M17
+                $getDocument(7, 0, 2), // K19, progres M19
+                $getDocument(8, 0, 2), // K20, progres M20
+                array_merge($getDocument(0, 0), [
                     'type' => 'additional',
                     'label' => 'Master Schedule',
                 ]),
-
-                array_merge($getDocument(6, 0, 2), [
+                array_merge($getDocument(6, 0), [
                     'type' => 'additional',
                     'label' => 'Data Dokumentasi',
                 ]),
             ],
 
             'Refinery' => [
-                $getDocument(3, 5, 7),
-                $getDocument(4, 5, 7),
-                $getDocument(5, 5, 7),
-                $getDocument(7, 5, 7),
-
-                array_merge($getDocument(0, 5, 7), [
+                // $getDocument(6, 5), // Data Dokumentasi: P18
+                $getDocument(3, 5, 7), // P15, progres R15
+                $getDocument(4, 5, 7), // P16, progres R16
+                $getDocument(5, 5, 7), // P17, progres R17
+                $getDocument(7, 5, 7), // P19, progres R19
+                $getDocument(8, 5, 7), // P20, progres R20
+                array_merge($getDocument(0, 5), [
                     'type' => 'additional',
                     'label' => 'Master Schedule',
                 ]),
-
-                array_merge($getDocument(6, 5, 7), [
+                array_merge($getDocument(6, 5), [
                     'type' => 'additional',
                     'label' => 'Data Dokumentasi',
                 ]),
             ],
 
             'Power Plant' => [
-                $getDocument(11, 0, 2),
-                $getDocument(12, 0, 2),
-                $getDocument(13, 0, 2),
-                $getDocument(15, 0, 2),
-
-                array_merge($getDocument(8, 0, 2), [
+                // $getDocument(15, 0), // Data Dokumentasi: K27
+                $getDocument(12, 0, 2), // K24, progres M24
+                $getDocument(13, 0, 2), // K25, progres M25
+                $getDocument(14, 0, 2), // K26, progres M26
+                $getDocument(16, 0, 2), // K28, progres M28
+                $getDocument(17, 0, 2), // K29, progres M29
+                array_merge($getDocument(9, 0), [
                     'type' => 'additional',
                     'label' => 'Master Schedule',
                 ]),
-
-                array_merge($getDocument(14, 0, 2), [
+                array_merge($getDocument(15, 0), [
                     'type' => 'additional',
                     'label' => 'Data Dokumentasi',
                 ]),
+
             ],
 
             'Red Mud' => [
-                $getDocument(11, 5, 7), // PQ23 / R23
-                $getDocument(12, 5, 7), // PQ24 / R24
-                $getDocument(13, 5, 7), // PQ25 / R25
-                array_merge($getDocument(14, 5, 7), [ // PQ26 / R26
+                // $getDocument(15, 5), // Data Dokumentasi: P27
+                $getDocument(12, 5, 7), // P24, progres R24
+                $getDocument(13, 5, 7), // P25, progres R25
+                $getDocument(14, 5, 7), // P26, progres R26
+                $getDocument(16, 5, 7), // P28, progres R28
+                array_merge($getDocument(9, 5), [
+                    'type' => 'additional',
+                    'label' => 'Master Schedule',
+                ]),
+                array_merge($getDocument(15, 5), [
                     'type' => 'additional',
                     'label' => 'Data Dokumentasi',
                 ]),
-                array_merge($getDocument(8, 5, 7), [
+
+            ],
+
+            'Jembatan' => [
+                $getDocument(21, 0, 2), // K33, progres M33
+                $getDocument(22, 0, 2), // K34, progres M34
+                $getDocument(23, 0, 2), // K35, progres M35
+                $getDocument(24, 0, 2), // K36, progres M36
+                $getDocument(25, 0, 2), // K37, progres M37
+                array_merge($getDocument(18, 0), [
                     'type' => 'additional',
                     'label' => 'Master Schedule',
                 ]),
             ],
-
-            'Jembatan' => [
-                $getDocument(20, 0, 2), // KL32 dan M32
-                $getDocument(21, 0, 2), // KL33 dan M33
-                $getDocument(22, 0, 2), // KL34 dan M34
-
-                array_merge($getDocument(23, 0, 2), [
-                    'type' => 'additional',
-                    'label' => 'Data Dokumentasi',
-                ]),
-            ],
         ];
-
         // Normalisasi kategori dan nama dokumen.
         $normalize = function ($value): string {
             $value = mb_strtolower(trim((string) $value));

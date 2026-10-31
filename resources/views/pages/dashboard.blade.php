@@ -195,6 +195,15 @@
                             </button>
                         </a>
                     </div>
+                    <div class="col-6 col-lg-4">
+                        <a href="https://docs.google.com/spreadsheets/d/1kLHzk9_mGCeNcfiCdjibdcm-TpjQSW6dlFq5V52ySw8/edit?usp=sharing"
+                            target="_blank" rel="noopener noreferrer">
+                            <button class="btn-promo">
+                                <i class="bi bi-file-earmark-text-fill me-3"></i>
+                                Rekap Sapras PT KAN
+                            </button>
+                        </a>
+                    </div>
 
                 </div>
             </div>

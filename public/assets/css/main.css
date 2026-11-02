@@ -1404,6 +1404,25 @@ body.sidebar-minimized .sidebar-profile {
     background-color: #FFFFFF;
     color: #2596be;
 }
+.btn-promo2 {
+    background-color: #FFFFFF;
+    color: var(--brand-forest-dark);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    text-align: center;
+    border: none;
+    width: 100%;
+    margin-top: 1.5rem;
+    z-index: 2;
+    transition: all 0.25s ease;
+}
+
+.btn-promo2:hover {
+    background-color: rgb(134, 184, 23);
+    color:  #FFFFFF;
+}
 
 /* ---------------------------------------------------------------------
    12. Responsive Adjustments

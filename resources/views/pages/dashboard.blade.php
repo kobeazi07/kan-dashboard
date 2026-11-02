@@ -204,6 +204,15 @@
                             </button>
                         </a>
                     </div>
+                    <div class="col-6 col-lg-4">
+                        <a href="https://drive.google.com/drive/folders/1Fd3IGA1TbF6wFVStG8ayer7oQ6tCdybs?usp=sharing"
+                            target="_blank" rel="noopener noreferrer">
+                            <button class="btn-promo2">
+                                <i class="bi bi-folder-fill me-3"></i>
+                                Folder Dokumen SLF PT.KAN Kunjungan 1 (29 Oktober 2026)
+                            </button>
+                        </a>
+                    </div>
 
                 </div>
             </div>

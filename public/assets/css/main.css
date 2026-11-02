@@ -1405,8 +1405,8 @@ body.sidebar-minimized .sidebar-profile {
     color: #2596be;
 }
 .btn-promo2 {
-    background-color: #FFFFFF;
-    color: var(--brand-forest-dark);
+    background-color:  rgb(134, 184, 23);
+    color:  #FFFFFF;
     font-weight: 700;
     font-size: 0.85rem;
     padding: 0.75rem 1.25rem;
@@ -1420,8 +1420,8 @@ body.sidebar-minimized .sidebar-profile {
 }
 
 .btn-promo2:hover {
-    background-color: rgb(134, 184, 23);
-    color:  #FFFFFF;
+    background-color: #FFFFFF;
+    color:  var(--brand-forest-dark);
 }
 
 /* ---------------------------------------------------------------------

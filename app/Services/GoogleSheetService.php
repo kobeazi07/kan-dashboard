@@ -779,7 +779,7 @@ class GoogleSheetService
         */
 
             $range = $sheet->rangeToArray(
-                'B3:AG53',
+                'B3:AG69',
                 null,
                 true,
                 true,
@@ -935,7 +935,7 @@ class GoogleSheetService
             */
                 $jadwal = [];
 
-                for ($baris = 7; $baris <= 53; $baris++) {
+                for ($baris = 7; $baris <= 69; $baris++) {
                     for ($kolom = 6; $kolom <= 32; $kolom++) {
                         $namaKolom = Coordinate::stringFromColumnIndex($kolom);
                         $koordinat = $namaKolom . $baris;

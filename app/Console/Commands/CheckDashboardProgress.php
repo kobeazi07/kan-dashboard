@@ -53,11 +53,13 @@ class CheckDashboardProgress extends Command
         // 1. Ambil data terbaru dari Google Sheets
         $data = $googleSheet->getDashboardData();
         $pekerjaanFisik = $googleSheet->getDashboardDataPekerjaanFisik();
+        $timeline    = $googleSheet->getDashboardDataTimeline();
 
         // 2. Buat snapshot untuk kedua jenis data
         $snapshot = md5(json_encode([
             'data' => $data,
             'pekerjaanFisik' => $pekerjaanFisik,
+            'timeline' => $timeline,
         ]));
 
         $previousSnapshot = Cache::get(
@@ -70,6 +72,11 @@ class CheckDashboardProgress extends Command
         Cache::forever(
             'dashboard_pekerjaan_fisik',
             $pekerjaanFisik
+        );
+
+        Cache::forever(
+            'dashboard_timeline',
+            $timeline
         );
 
         // 4. Simpan snapshot terbaru

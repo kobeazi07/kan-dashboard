@@ -19,6 +19,11 @@ use Intervention\Image\Format;
 use App\Models\User;
 use App\Models\Maps;
 use App\Models\Setting;
+use App\Models\Bangunan;
+use App\Models\Kawasan;
+use App\Models\FotoBangunan;
+use Illuminate\Support\Facades\Storage;
+
 
 class DashboardController extends Controller
 {
@@ -313,5 +318,404 @@ class DashboardController extends Controller
             'status' => 1,
             'message' => 'Portfolio berhasil diupdate'
         ]);
+    }
+    public function admin_kawasan()
+    {
+        $kawasan = Kawasan::get();
+
+        return view('pages.kawasan', compact(
+            'kawasan',
+        ));
+    }
+
+    public function tambah_kawasan(Request $request)
+    {
+
+        DB::beginTransaction();
+
+        try {
+
+            // dd($request->all());    
+            $kawasan = Kawasan::create([
+                'nama' => $request->nama,
+                'deskripsi' => $request->deskripsi,
+                'konsultan_pengawas_id' => $request->konsultan_pengawas_id,
+                'owner_id' => $request->owner_id,
+                'kontraktor_pelaksana_id' => $request->kontraktor_pelaksana_id,
+            ]);
+
+            DB::commit();
+            return response()->json([
+                'status' => 1,
+                'message' => 'kawasan berhasil ditambahkan'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 0,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function edit_kawasan(Request $request, $id)
+    {
+
+        $partner = Kawasan::find($id);
+        $data = [
+            'nama' => $request->kode_kawasan,
+            'nama_kawasan' => $request->nama_kawasan,
+            'konsultan_pengawas_id' => $request->konsultan_pengawas_id,
+            'owner_id' => $request->owner_id,
+            'kontraktor_pelaksana_id' => $request->kontraktor_pelaksana_id,
+
+        ];
+
+        Kawasan::where('id', $id)->update($data);
+        return response()->json([
+            'status'  => 1,
+            'message' => 'Data kawasan berhasil diupdate'
+        ]);
+    }
+    public function kawasan_destroy(Kawasan $kawasan)
+    {
+        DB::beginTransaction();
+
+        try {
+            // hapus data
+            $kawasan->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'status'  => 1,
+                'message' => 'Data kawasan berhasil dihapus'
+            ]);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'status'  => 0,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    // controller admin
+    // public function kawasanIndex()
+    // {
+    //     $kawasans = Kawasan::withCount('bangunan')
+    //         ->latest()
+    //         ->get();
+
+    //     return view('pages.kawasan.index', compact('kawasans'));
+    // }
+
+    // public function kawasanCreate()
+    // {
+    //     return view('pages.kawasan.create');
+    // }
+
+    // public function kawasanStore(Request $request)
+    // {
+    //     $request->validate([
+    //         'nama' => 'required|string|max:255',
+    //         'deskripsi' => 'nullable|string',
+    //         'gambar' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+    //     ]);
+
+    //     $gambar = $request->file('gambar')
+    //         ->store('kawasan', 'public');
+
+    //     Kawasan::create([
+    //         'nama' => $request->nama,
+    //         'deskripsi' => $request->deskripsi,
+    //         'gambar' => $gambar,
+    //     ]);
+
+    //     return redirect()
+    //         ->route('kawasan.index')
+    //         ->with('success', 'Kawasan berhasil ditambahkan.');
+    // }
+
+    // public function kawasanEdit(Kawasan $kawasan)
+    // {
+    //     return view(
+    //         'pages.kawasan.edit',
+    //         compact('kawasan')
+    //     );
+    // }
+
+    // public function kawasanUpdate(
+    //     Request $request,
+    //     Kawasan $kawasan
+    // ) {
+    //     $request->validate([
+    //         'nama' => 'required|string|max:255',
+    //         'deskripsi' => 'nullable|string',
+    //         'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+    //     ]);
+
+    //     $data = [
+    //         'nama' => $request->nama,
+    //         'deskripsi' => $request->deskripsi,
+    //     ];
+
+    //     if ($request->hasFile('gambar')) {
+
+    //         if (
+    //             $kawasan->gambar &&
+    //             Storage::disk('public')->exists($kawasan->gambar)
+    //         ) {
+    //             Storage::disk('public')
+    //                 ->delete($kawasan->gambar);
+    //         }
+
+    //         $data['gambar'] = $request
+    //             ->file('gambar')
+    //             ->store('kawasan', 'public');
+    //     }
+
+    //     $kawasan->update($data);
+
+    //     return redirect()
+    //         ->route('kawasan.index')
+    //         ->with('success', 'Kawasan berhasil diperbarui.');
+    // }
+
+    // public function kawasanDestroy(Kawasan $kawasan)
+    // {
+    //     if (
+    //         $kawasan->gambar &&
+    //         Storage::disk('public')->exists($kawasan->gambar)
+    //     ) {
+    //         Storage::disk('public')
+    //             ->delete($kawasan->gambar);
+    //     }
+
+    //     $kawasan->delete();
+
+    //     return redirect()
+    //         ->route('kawasan.index')
+    //         ->with('success', 'Kawasan berhasil dihapus.');
+    // }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | BANGUNAN
+    |--------------------------------------------------------------------------
+    */
+
+    public function bangunanIndex(Kawasan $kawasan)
+    {
+        $bangunans = $kawasan
+            ->bangunan()
+            ->with('fotoBangunan')
+            ->get();
+
+        return view(
+            'pages.bangunan.index',
+            compact('kawasan', 'bangunans')
+        );
+    }
+
+    public function bangunanCreate(Kawasan $kawasan)
+    {
+        return view(
+            'pages.bangunan.create',
+            compact('kawasan')
+        );
+    }
+
+    public function bangunanStore(
+        Request $request,
+        Kawasan $kawasan
+    ) {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string',
+
+            'foto' => 'nullable|array',
+            'foto.*' => 'image|mimes:jpg,jpeg,png,webp|max:5120',
+        ]);
+
+        $bangunan = $kawasan->bangunan()->create([
+            'nama' => $request->nama,
+            'deskripsi' => $request->deskripsi,
+            'posisi_x' => 50,
+            'posisi_y' => 50,
+        ]);
+
+        if ($request->hasFile('foto')) {
+
+            foreach ($request->file('foto') as $file) {
+
+                $path = $file->store(
+                    'bangunan',
+                    'public'
+                );
+
+                $bangunan->fotoBangunan()->create([
+                    'foto' => $path,
+                ]);
+            }
+        }
+
+        return redirect()
+            ->route(
+                'bangunan.index',
+                $kawasan->id
+            )
+            ->with(
+                'success',
+                'Bangunan berhasil ditambahkan.'
+            );
+    }
+
+    public function bangunanEdit(Bangunan $bangunan)
+    {
+        $bangunan->load([
+            'kawasan',
+            'fotoBangunan',
+        ]);
+
+        return view(
+            'pages.bangunan.edit',
+            compact('bangunan')
+        );
+    }
+
+    public function bangunanUpdate(
+        Request $request,
+        Bangunan $bangunan
+    ) {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string',
+        ]);
+
+        $bangunan->update([
+            'nama' => $request->nama,
+            'deskripsi' => $request->deskripsi,
+        ]);
+
+        return redirect()
+            ->route(
+                'bangunan.index',
+                $bangunan->kawasan_id
+            )
+            ->with(
+                'success',
+                'Bangunan berhasil diperbarui.'
+            );
+    }
+
+    public function bangunanDestroy(Bangunan $bangunan)
+    {
+        foreach ($bangunan->fotoBangunan as $foto) {
+
+            if (
+                Storage::disk('public')
+                ->exists($foto->foto)
+            ) {
+                Storage::disk('public')
+                    ->delete($foto->foto);
+            }
+        }
+
+        $kawasanId = $bangunan->kawasan_id;
+
+        $bangunan->delete();
+
+        return redirect()
+            ->route('bangunan.index', $kawasanId)
+            ->with(
+                'success',
+                'Bangunan berhasil dihapus.'
+            );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE POSISI PIN
+    |--------------------------------------------------------------------------
+    */
+
+    public function updatePosition(
+        Request $request,
+        Bangunan $bangunan
+    ) {
+        $request->validate([
+            'posisi_x' => 'required|numeric|min:0|max:100',
+            'posisi_y' => 'required|numeric|min:0|max:100',
+        ]);
+
+        $bangunan->update([
+            'posisi_x' => $request->posisi_x,
+            'posisi_y' => $request->posisi_y,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Posisi pin berhasil diperbarui.',
+        ]);
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FOTO BANGUNAN
+    |--------------------------------------------------------------------------
+    */
+
+    public function storeFoto(
+        Request $request,
+        Bangunan $bangunan
+    ) {
+        $request->validate([
+            'foto' => 'required|array',
+            'foto.*' => 'image|mimes:jpg,jpeg,png,webp|max:5120',
+        ]);
+
+        foreach ($request->file('foto') as $file) {
+
+            $path = $file->store(
+                'bangunan',
+                'public'
+            );
+
+            $bangunan->fotoBangunan()->create([
+                'foto' => $path,
+            ]);
+        }
+
+        return back()->with(
+            'success',
+            'Foto berhasil ditambahkan.'
+        );
+    }
+
+    public function destroyFoto(
+        FotoBangunan $fotoBangunan
+    ) {
+        if (
+            Storage::disk('public')
+            ->exists($fotoBangunan->foto)
+        ) {
+            Storage::disk('public')
+                ->delete($fotoBangunan->foto);
+        }
+
+        $fotoBangunan->delete();
+
+        return back()->with(
+            'success',
+            'Foto berhasil dihapus.'
+        );
     }
 }

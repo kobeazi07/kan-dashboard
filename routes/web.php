@@ -39,27 +39,108 @@ Route::middleware(['auth', 'role:Admin|Owner'])->group(function () {
 
     Route::get('/bangunan/{bangunan}', [PetaController::class, 'detail'])
         ->name('bangunan.detail');
-
     // sementara masukkan admin kesini 
-    Route::resource('kawasan', DashboardController::class);
 
-    Route::resource(
-        'kawasan.bangunan',
-        DashboardController::class
-    );
+    Route::get('admin_kawasan', [DashboardController::class, 'admin_kawasan'])->name('HalamanAdminkawasan');
+    Route::post('/tambah_kawasan', [DashboardController::class, 'tambah_kawasan'])->name('Tambah_kawasan');
+    Route::post('/edit_kawasan/{id}', [DashboardController::class, 'edit_kawasan'])->name('Edit_kawasan');
+    Route::delete('/kawasan/{kawasan}', [DashboardController::class, 'kawasan_destroy'])->name('kawasan.destroy');
 
-    Route::put(
-        'bangunan/{bangunan}/position',
-        [DashboardController::class, 'updatePosition']
-    );
+
+
+    // Route::get(
+    //     '/admin/kawasan',
+    //     [DashboardController::class, 'kawasanIndex']
+    // )->name('kawasan.index');
+
+    // Route::get(
+    //     '/admin/kawasan/create',
+    //     [DashboardController::class, 'kawasanCreate']
+    // )->name('kawasan.create');
+
+    // Route::post(
+    //     '/admin/kawasan',
+    //     [DashboardController::class, 'kawasanStore']
+    // )->name('kawasan.store');
+
+    // Route::get(
+    //     '/admin/kawasan/{kawasan}/edit',
+    //     [DashboardController::class, 'kawasanEdit']
+    // )->name('kawasan.edit');
+
+    // Route::put(
+    //     '/admin/kawasan/{kawasan}',
+    //     [DashboardController::class, 'kawasanUpdate']
+    // )->name('kawasan.update');
+
+    // Route::delete(
+    //     '/admin/kawasan/{kawasan}',
+    //     [DashboardController::class, 'kawasanDestroy']
+    // )->name('kawasan.destroy');
+
+
+    /*
+|--------------------------------------------------------------------------
+| ADMIN - BANGUNAN
+|--------------------------------------------------------------------------
+*/
+
+    Route::get(
+        '/admin/kawasan/{kawasan}/bangunan',
+        [DashboardController::class, 'bangunanIndex']
+    )->name('bangunan.index');
+
+    Route::get(
+        '/admin/kawasan/{kawasan}/bangunan/create',
+        [DashboardController::class, 'bangunanCreate']
+    )->name('bangunan.create');
 
     Route::post(
-        'bangunan/{bangunan}/foto',
-        [DashboardController::class, 'storeFoto']
-    );
+        '/admin/kawasan/{kawasan}/bangunan',
+        [DashboardController::class, 'bangunanStore']
+    )->name('bangunan.store');
+
+    Route::get(
+        '/admin/bangunan/{bangunan}/edit',
+        [DashboardController::class, 'bangunanEdit']
+    )->name('bangunan.edit');
+
+    Route::put(
+        '/admin/bangunan/{bangunan}',
+        [DashboardController::class, 'bangunanUpdate']
+    )->name('bangunan.update');
 
     Route::delete(
-        'foto-bangunan/{fotoBangunan}',
+        '/admin/bangunan/{bangunan}',
+        [DashboardController::class, 'bangunanDestroy']
+    )->name('bangunan.destroy');
+
+
+    /*
+|--------------------------------------------------------------------------
+| ADMIN - POSISI PIN BANGUNAN
+|--------------------------------------------------------------------------
+*/
+
+    Route::put(
+        '/admin/bangunan/{bangunan}/position',
+        [DashboardController::class, 'updatePosition']
+    )->name('bangunan.position');
+
+
+    /*
+|--------------------------------------------------------------------------
+| ADMIN - FOTO BANGUNAN
+|--------------------------------------------------------------------------
+*/
+
+    Route::post(
+        '/admin/bangunan/{bangunan}/foto',
+        [DashboardController::class, 'storeFoto']
+    )->name('bangunan.foto.store');
+
+    Route::delete(
+        '/admin/foto-bangunan/{fotoBangunan}',
         [DashboardController::class, 'destroyFoto']
-    );
+    )->name('bangunan.foto.destroy');
 });

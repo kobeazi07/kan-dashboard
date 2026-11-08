@@ -25,6 +25,8 @@
                  </li>
 
 
+
+
                  {{-- <li class="sidebar-menu-item">
                      <a href="#menu-file" class="sidebar-menu-link" data-bs-toggle="collapse"
                          data-bs-target="#menu-file" aria-expanded="false" aria-controls="menu-file"
@@ -145,6 +147,45 @@
                              <span>Setting</span>
                          </a>
                      </li>
+                     {{-- MANAGEMENT KAWASAN --}}
+                     <hr style="border-top: 0.5px solid #ffffff; opacity: 1;">
+                     <li class="sidebar-menu-item">
+                         {{-- <a href="{{ route('peta.index') }}"
+                             class="sidebar-menu-link {{ request()->routeIs('kawasan.index', 'kawasan.create', 'kawasan.edit') ? 'active' : '' }}"
+                             id="menu-kawasan" title="Management Kawasan">
+
+                             <i class="bi bi-map-fill"></i>
+                             <span>Peta Kawasan</span>
+                         </a>
+                     </li> --}}
+
+                     <li class="sidebar-menu-item">
+                         <a href="{{ route('peta.index') }}"
+                             class="sidebar-menu-link {{ request()->routeIs('peta.*', 'kawasan.show', 'bangunan.detail') ? 'active' : '' }}"
+                             id="menu-peta" title="Peta">
+
+                             <i class="bi bi-map-fill"></i>
+                             <span>Peta Kawasan</span>
+                         </a>
+                     </li>
+                     <li class="sidebar-menu-item">
+                         <a href=""
+                             class="sidebar-menu-link {{ request()->routeIs('kawasan.index', 'kawasan.create', 'kawasan.edit') ? 'active' : '' }}"
+                             id="menu-kawasan" title="Management Kawasan">
+
+                             <i class="bi bi-map"></i>
+                             <span>Management Kawasan</span>
+                         </a>
+                     </li>
+                     {{-- <li class="sidebar-menu-item">
+                         <a href="{{ route('kawasan.index') }}"
+                             class="sidebar-menu-link {{ request()->routeIs('kawasan.index', 'kawasan.create', 'kawasan.edit') ? 'active' : '' }}"
+                             id="menu-kawasan" title="Management Kawasan">
+
+                             <i class="bi bi-map"></i>
+                             <span>Management Kawasan</span>
+                         </a>
+                     </li> --}}
                  @endif
 
              </ul>

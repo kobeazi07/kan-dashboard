@@ -48,6 +48,13 @@ Route::middleware(['auth', 'role:Admin|Owner'])->group(function () {
 
 
 
+    Route::get('admin_bangunan', [DashboardController::class, 'admin_bangunan'])->name('HalamanAdminbangunan');
+    Route::post('/tambah_bangunan', [DashboardController::class, 'tambah_bangunan'])->name('Tambah_bangunan');
+    Route::post('/edit_bangunan/{id}', [DashboardController::class, 'edit_bangunan'])->name('Edit_bangunan');
+    Route::delete('/bangunan/{bangunan}', [DashboardController::class, 'bangunan_destroy'])->name('bangunan.destroy');
+
+
+
     // Route::get(
     //     '/admin/kawasan',
     //     [DashboardController::class, 'kawasanIndex']

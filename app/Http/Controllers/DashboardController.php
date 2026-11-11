@@ -323,7 +323,7 @@ class DashboardController extends Controller
     {
         $kawasan = Kawasan::get();
 
-        return view('pages.kawasan', compact(
+        return view('pages.kawasan.index', compact(
             'kawasan',
         ));
     }
@@ -334,14 +334,30 @@ class DashboardController extends Controller
         DB::beginTransaction();
 
         try {
+            $thumbnailPath = null;
+            if ($request->hasFile('gambar')) {
+                $thumbnail = $request->file('gambar');
 
-            // dd($request->all());    
+                $originalName = $thumbnail->getClientOriginalName();
+
+                // Ganti spasi dengan tanda -
+                $originalName = str_replace(' ', '-', $originalName);
+
+                $thumbnailName = uniqid() . '_gambar_' . $originalName;
+
+                $thumbnail->move(
+                    public_path('inputan/kawasan/'),
+                    $thumbnailName
+                );
+
+                $thumbnailPath = 'inputan/kawasan/' . $thumbnailName;
+            }
+            // dd($request->all());
             $kawasan = Kawasan::create([
                 'nama' => $request->nama,
                 'deskripsi' => $request->deskripsi,
-                'konsultan_pengawas_id' => $request->konsultan_pengawas_id,
-                'owner_id' => $request->owner_id,
-                'kontraktor_pelaksana_id' => $request->kontraktor_pelaksana_id,
+                'gambar' => $thumbnailPath,
+
             ]);
 
             DB::commit();
@@ -362,15 +378,32 @@ class DashboardController extends Controller
     public function edit_kawasan(Request $request, $id)
     {
 
-        $partner = Kawasan::find($id);
+        $kawasan = Kawasan::find($id);
         $data = [
-            'nama' => $request->kode_kawasan,
-            'nama_kawasan' => $request->nama_kawasan,
-            'konsultan_pengawas_id' => $request->konsultan_pengawas_id,
-            'owner_id' => $request->owner_id,
-            'kontraktor_pelaksana_id' => $request->kontraktor_pelaksana_id,
+            'nama' => $request->nama,
+            'deskripsi' => $request->deskripsi,
+
 
         ];
+        if ($request->hasFile('gambar')) {
+            $oldPhoto = $kawasan->gambar;
+            $thumbnail = $request->file('gambar');
+            $originalName = $thumbnail->getClientOriginalName();
+            $originalName = str_replace(' ', '-', $originalName);
+            $thumbnailName = uniqid() . '_gambar_' . $originalName;
+            $thumbnail->move(
+                public_path('inputan/kawasan/'),
+                $thumbnailName
+            );
+            // Simpan path ke database
+            $data['gambar'] = 'inputan/kawasan/' . $thumbnailName;
+            if (!empty($oldPhoto)) {
+                $oldPhotoPath = public_path($oldPhoto);
+                if (file_exists($oldPhotoPath)) {
+                    unlink($oldPhotoPath);
+                }
+            }
+        }
 
         Kawasan::where('id', $id)->update($data);
         return response()->json([
@@ -391,6 +424,124 @@ class DashboardController extends Controller
             return response()->json([
                 'status'  => 1,
                 'message' => 'Data kawasan berhasil dihapus'
+            ]);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'status'  => 0,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function admin_bangunan()
+    {
+        $bangunan = Bangunan::get();
+
+        return view('pages.bangunan.index', compact(
+            'bangunan',
+        ));
+    }
+
+    public function tambah_bangunan(Request $request)
+    {
+
+        DB::beginTransaction();
+
+        try {
+            $thumbnailPath = null;
+            if ($request->hasFile('gambar')) {
+                $thumbnail = $request->file('gambar');
+
+                $originalName = $thumbnail->getClientOriginalName();
+
+                // Ganti spasi dengan tanda -
+                $originalName = str_replace(' ', '-', $originalName);
+
+                $thumbnailName = uniqid() . '_gambar_' . $originalName;
+
+                $thumbnail->move(
+                    public_path('inputan/bangunan/'),
+                    $thumbnailName
+                );
+
+                $thumbnailPath = 'inputan/bangunan/' . $thumbnailName;
+            }
+            // dd($request->all());
+            $bangunan = Bangunan::create([
+                'nama' => $request->nama,
+                'deskripsi' => $request->deskripsi,
+                'gambar' => $thumbnailPath,
+
+            ]);
+
+            DB::commit();
+            return response()->json([
+                'status' => 1,
+                'message' => 'bangunan berhasil ditambahkan'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 0,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function edit_bangunan(Request $request, $id)
+    {
+
+        $bangunan = Bangunan::find($id);
+        $data = [
+            'nama' => $request->nama,
+            'deskripsi' => $request->deskripsi,
+
+
+        ];
+        if ($request->hasFile('gambar')) {
+            $oldPhoto = $bangunan->gambar;
+            $thumbnail = $request->file('gambar');
+            $originalName = $thumbnail->getClientOriginalName();
+            $originalName = str_replace(' ', '-', $originalName);
+            $thumbnailName = uniqid() . '_gambar_' . $originalName;
+            $thumbnail->move(
+                public_path('inputan/bangunan/'),
+                $thumbnailName
+            );
+            // Simpan path ke database
+            $data['gambar'] = 'inputan/bangunan/' . $thumbnailName;
+            if (!empty($oldPhoto)) {
+                $oldPhotoPath = public_path($oldPhoto);
+                if (file_exists($oldPhotoPath)) {
+                    unlink($oldPhotoPath);
+                }
+            }
+        }
+
+        Bangunan::where('id', $id)->update($data);
+        return response()->json([
+            'status'  => 1,
+            'message' => 'Data bangunan berhasil diupdate'
+        ]);
+    }
+    public function bangunan_destroy(Bangunan $bangunan)
+    {
+        DB::beginTransaction();
+
+        try {
+            // hapus data
+            $bangunan->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'status'  => 1,
+                'message' => 'Data bangunan berhasil dihapus'
             ]);
         } catch (\Exception $e) {
 

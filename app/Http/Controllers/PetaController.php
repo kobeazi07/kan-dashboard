@@ -30,12 +30,15 @@ class PetaController extends Controller
 {
     public function index()
     {
-        // $kawasans = Kawasan::withCount('bangunan')
-        //     ->latest()
-        //     ->get();
+        $kawasans = Kawasan::with([
+            'bangunan'
+        ])
+            ->orderBy('id')
+            ->get();
 
         return view(
-            'pages.peta.index'
+            'pages.peta.index',
+            compact('kawasans')
         );
     }
 

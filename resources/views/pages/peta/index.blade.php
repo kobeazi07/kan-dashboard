@@ -2,401 +2,188 @@
 
 @section('konten')
     <div class="container-fluid py-4">
-        <ul class="nav nav-tabs mb-3" id="mapTabs">
 
-            <li class="nav-item">
-                <button class="nav-link active" id="jetty-tab" data-bs-toggle="tab" data-bs-target="#jetty" type="button">
+        {{-- ========================= --}}
+        {{-- NAV TAB KAWASAN --}}
+        {{-- ========================= --}}
+        <ul class="nav nav-tabs mb-4" id="kawasanTabs">
 
-                    Jetty
-                </button>
-            </li>
+            @foreach ($kawasans as $index => $kawasan)
+                <li class="nav-item">
 
-            <li class="nav-item">
-                <button class="nav-link" id="powerplant-tab" data-bs-toggle="tab" data-bs-target="#powerplant"
-                    type="button">
+                    <button type="button" class="nav-link kawasan-tab {{ $index === 0 ? 'active' : '' }}"
+                        data-kawasan="{{ $kawasan->id }}">
+                        {{ $kawasan->nama }}
+                    </button>
 
-                    Power Plant
-                </button>
-            </li>
-
-            <li class="nav-item">
-                <button class="nav-link" id="refinery-tab" data-bs-toggle="tab" data-bs-target="#refinery" type="button">
-
-                    Refinery
-                </button>
-            </li>
-
-            <li class="nav-item">
-                <button class="nav-link" id="redmud-tab" data-bs-toggle="tab" data-bs-target="#redmud" type="button">
-
-                    Red Mud
-                </button>
-            </li>
+                </li>
+            @endforeach
 
         </ul>
-        <div class="tab-content">
-            <div class="tab-pane fade show active" id="jetty">
-
-                <div class="row g-3">
-                    {{-- ============================================
-             SIDEBAR
-        ============================================ --}}
-                    <div class="col-lg-3 mb-3">
-
-                        <div class="card border-0 shadow-sm">
-
-                            <div class="card-body">
-
-                                <h6 class="fw-bold mb-3">
-                                    Kawasan Jetty
-                                </h6>
 
 
-                                {{-- SEARCH --}}
-                                <div class="sidebar-search mb-3">
+        <div class="row">
 
-                                    <input type="text" id="searchBangunan" class="form-control"
-                                        placeholder="Cari kode atau nama bangunan...">
+            {{-- ================================= --}}
+            {{-- SIDEBAR BANGUNAN --}}
+            {{-- ================================= --}}
+            <div class="col-lg-3 mb-3">
 
-                                </div>
+                <div class="card border-0 shadow-sm h-100">
 
+                    <div class="card-body">
 
-                                {{-- LIST BANGUNAN --}}
-                                <div class="list-group" id="buildingList">
+                        {{-- SEARCH --}}
+                        <div class="sidebar-search mb-3">
 
-                                    {{-- JE-1 --}}
-                                    <button type="button"
-                                        class="list-group-item list-group-item-action building-item active" data-code="JE-1"
-                                        data-name="Substation">
-
-                                        <div class="fw-bold">
-                                            JE-1
-                                        </div>
-
-                                        <small>
-                                            Substation
-                                        </small>
-
-                                    </button>
-
-
-                                    {{-- JE-2 --}}
-                                    <button type="button" class="list-group-item list-group-item-action building-item"
-                                        data-code="JE-2" data-name="Office Building">
-
-                                        <div class="fw-bold">
-                                            JE-2
-                                        </div>
-
-                                        <small>
-                                            Office Building
-                                        </small>
-
-                                    </button>
-
-
-                                    {{-- JE-3 --}}
-                                    <button type="button" class="list-group-item list-group-item-action building-item"
-                                        data-code="JE-3" data-name="Comprehensive Building">
-
-                                        <div class="fw-bold">
-                                            JE-3
-                                        </div>
-
-                                        <small>
-                                            Comprehensive Building
-                                        </small>
-
-                                    </button>
-
-
-                                    {{-- JE-4 --}}
-                                    <button type="button" class="list-group-item list-group-item-action building-item"
-                                        data-code="JE-4" data-name="Sewage Treatment Station">
-
-                                        <div class="fw-bold">
-                                            JE-4
-                                        </div>
-
-                                        <small>
-                                            Sewage Treatment Station
-                                        </small>
-
-                                    </button>
-
-                                </div>
-
-
-                                {{-- EMPTY SEARCH --}}
-                                <div id="emptySearch" class="text-center text-muted py-3" style="display: none;">
-
-                                    Data bangunan tidak ditemukan.
-
-                                </div>
-
-                            </div>
+                            <input type="text" id="searchBangunan" class="form-control"
+                                placeholder="Cari kode atau nama bangunan...">
 
                         </div>
 
-                    </div>
 
-
-
-                    {{-- ============================================
-             MAP
-        ============================================ --}}
-                    <div class="col-lg-9">
-
-                        <div class="card border-0 shadow-sm">
-
-                            <div class="card-body">
-
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-
-                                    <h6 class="fw-bold mb-0">
-                                        Site Plan Jetty
-                                    </h6>
-
-
-                                    {{-- MAP CONTROLS --}}
-                                    <div class="btn-group">
-
-                                        <button type="button" class="btn btn-primary" id="zoomIn" title="Zoom In">
-                                            <i class="bi bi-plus-lg"></i>
-                                        </button>
-
-
-                                        <button type="button" class="btn btn-primary" id="zoomOut" title="Zoom Out">
-                                            <i class="bi bi-dash-lg"></i>
-                                        </button>
-
-
-                                        <button type="button" class="btn btn-secondary" id="resetMap" title="Reset Peta">
-                                            <i class="bi bi-arrow-counterclockwise"></i>
-                                        </button>
-
-                                    </div>
-
-                                </div>
-
-
-
-                                {{-- =====================================
-                         MAP VIEWPORT
-                    ====================================== --}}
-                                <div class="map-viewport" id="mapViewport">
-
-                                    {{-- =====================================
-                             MAP CONTENT
-                             Gambar dan pin berada di sini.
-                             Jadi ketika zoom/pan, semuanya
-                             bergerak bersama.
-                        ====================================== --}}
-                                    <div class="map-content" id="mapContent">
-
-                                        {{-- GAMBAR --}}
-                                        <img src="{{ asset('assets/images/SITEPLANJETTY_A1_1.png') }}" alt="Site Plan Jetty"
-                                            class="map-image" id="mapImage" draggable="false">
-
-
-                                        {{-- PIN JE-1 --}}
-                                        <button type="button" class="map-pin" data-code="JE-1" data-name="Substation"
-                                            style="
-                                    left: 59%;
-                                    top: 40.5%;
-                                ">
-                                            JE-1
-                                        </button>
-
-
-                                        {{-- PIN JE-2 --}}
-                                        <button type="button" class="map-pin" data-code="JE-2"
-                                            data-name="Office Building"
-                                            style="
-                                    left: 53.5%;
-                                    top: 40.5%;
-                                ">
-                                            JE-2
-                                        </button>
-
-
-                                        {{-- PIN JE-3 --}}
-                                        <button type="button" class="map-pin" data-code="JE-3"
-                                            data-name="Comprehensive Building"
-                                            style="
-                                    left: 45.5%;
-                                    top: 40.5%;
-                                ">
-                                            JE-3
-                                        </button>
-
-
-                                        {{-- PIN JE-4 --}}
-                                        <button type="button" class="map-pin" data-code="JE-4"
-                                            data-name="Sewage Treatment Station"
-                                            style="
-                                    left: 17%;
-                                    top: 45%;
-                                ">
-                                            JE-4
-                                        </button>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
-            {{-- akhir jetty --}}
-
-            {{-- =====================================================
-            TAB POWER PLANT
-        ====================================================== --}}
-            <div class="tab-pane fade" id="powerplant">
-
-                <div class="alert alert-secondary text-center py-5">
-                    <h5 class="mb-2">
-                        Power Plant
-                    </h5>
-
-                    <p class="mb-0">
-                        Data belum tersedia.
-                    </p>
-                </div>
-
-            </div>
-
-
-            {{-- =====================================================
-            TAB REFINERY
-        ====================================================== --}}
-            <div class="tab-pane fade" id="refinery">
-
-                <div class="alert alert-secondary text-center py-5">
-                    <h5 class="mb-2">
-                        Refinery
-                    </h5>
-
-                    <p class="mb-0">
-                        Data belum tersedia.
-                    </p>
-                </div>
-
-            </div>
-
-
-            {{-- =====================================================
-            TAB RED MUD
-        ====================================================== --}}
-            <div class="tab-pane fade" id="redmud">
-
-                <div class="alert alert-secondary text-center py-5">
-                    <h5 class="mb-2">
-                        Red Mud
-                    </h5>
-
-                    <p class="mb-0">
-                        Data belum tersedia.
-                    </p>
-                </div>
-
-            </div>
-
-        </div>
-
-
-
-        {{-- ============================================
-     MODAL DETAIL BANGUNAN
-============================================ --}}
-        <div class="modal fade" id="buildingModal" tabindex="-1" aria-labelledby="buildingModalLabel"
-            aria-hidden="true">
-
-            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-
-                <div class="modal-content">
-
-                    <div class="modal-header">
-
-                        <div>
-
-                            <h5 class="modal-title fw-bold" id="buildingModalLabel">
-                                Detail Bangunan
-                            </h5>
-
-                            <small id="modalBuildingCode" class="text-muted">
-                            </small>
-
-                        </div>
-
-
-                        <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        </button>
-
-                    </div>
-
-
-                    <div class="modal-body">
-
-                        <div class="row">
-
-                            {{-- INFO --}}
-                            <div class="col-12 mb-4">
-
-                                <div class="card bg-light border-0">
-
-                                    <div class="card-body">
-
-                                        <div class="row">
-
-                                            <div class="col-md-6">
-
-                                                <small class="text-muted">
-                                                    Kode Bangunan
-                                                </small>
-
-                                                <h6 id="modalCode">
-                                                </h6>
-
+                        {{-- ========================= --}}
+                        {{-- LIST BANGUNAN --}}
+                        {{-- ========================= --}}
+                        @foreach ($kawasans as $index => $kawasan)
+                            <div class="bangunan-list-kawasan {{ $index !== 0 ? 'd-none' : '' }}"
+                                data-kawasan="{{ $kawasan->id }}">
+
+                                <div class="list-group">
+
+                                    @forelse ($kawasan->bangunan as $bangunan)
+                                        <button type="button" class="list-group-item list-group-item-action bangunan-item"
+                                            data-id="{{ $bangunan->id }}" data-kawasan="{{ $kawasan->id }}"
+                                            data-kode="{{ $bangunan->kode }}" data-nama="{{ $bangunan->nama }}"
+                                            data-deskripsi="{{ $bangunan->deskripsi }}"
+                                            data-x="{{ $bangunan->position_x }}" data-y="{{ $bangunan->position_y }}">
+
+                                            <div class="fw-bold">
+                                                {{ $bangunan->kode }}
                                             </div>
 
+                                            <small>
+                                                {{ $bangunan->nama }}
+                                            </small>
 
-                                            <div class="col-md-6">
+                                        </button>
 
-                                                <small class="text-muted">
-                                                    Nama Bangunan
-                                                </small>
+                                    @empty
 
-                                                <h6 id="modalName">
-                                                </h6>
+                                        <div class="text-muted text-center py-3">
 
-                                            </div>
+                                            Data bangunan belum tersedia
 
                                         </div>
-
-                                    </div>
+                                    @endforelse
 
                                 </div>
 
                             </div>
+                        @endforeach
 
 
-                            {{-- DOKUMENTASI --}}
-                            <div class="col-12">
+                        {{-- SEARCH EMPTY --}}
+                        <div id="emptySearch" class="text-center text-muted py-3 d-none">
+                            Bangunan tidak ditemukan
+                        </div>
 
-                                <h6 class="fw-bold mb-3">
-                                    Dokumentasi
-                                </h6>
+                    </div>
+
+                </div>
+
+            </div>
 
 
-                                <div class="row g-3" id="documentationContainer">
-                                </div>
+            {{-- ================================= --}}
+            {{-- PETA --}}
+            {{-- ================================= --}}
+            <div class="col-lg-9">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+
+                            <h6 class="fw-bold mb-0" id="mapTitle">
+                                @if ($kawasans->count())
+                                    {{ $kawasans->first()->nama }}
+                                @endif
+                            </h6>
+
+
+                            {{-- CONTROL ZOOM --}}
+                            <div class="map-controls">
+
+                                <button type="button" class="btn btn-primary" id="zoomIn" title="Zoom In">
+                                    <i class="bi bi-plus-lg"></i>
+                                </button>
+
+
+                                <button type="button" class="btn btn-primary" id="zoomOut" title="Zoom Out">
+                                    <i class="bi bi-dash-lg"></i>
+                                </button>
+
+
+                                <button type="button" class="btn btn-secondary" id="resetMap" title="Reset Peta">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        {{-- ========================= --}}
+                        {{-- CONTAINER PETA --}}
+                        {{-- ========================= --}}
+                        <div class="map-viewport" id="mapViewport">
+
+                            <div class="map-stage" id="mapStage">
+
+
+                                {{-- ========================= --}}
+                                {{-- LOOP SETIAP KAWASAN --}}
+                                {{-- ========================= --}}
+                                @foreach ($kawasans as $index => $kawasan)
+                                    <div class="map-kawasan {{ $index !== 0 ? 'd-none' : '' }}"
+                                        data-kawasan="{{ $kawasan->id }}">
+
+
+                                        {{-- GAMBAR KAWASAN --}}
+                                        @if ($kawasan->gambar)
+                                            <img src="{{ asset($kawasan->gambar) }}" alt="{{ $kawasan->nama }}"
+                                                class="map-image" draggable="false">
+                                        @else
+                                            <div class="map-empty">
+
+                                                Gambar kawasan belum tersedia
+
+                                            </div>
+                                        @endif
+
+
+                                        {{-- ========================= --}}
+                                        {{-- PIN BANGUNAN --}}
+                                        {{-- ========================= --}}
+                                        @foreach ($kawasan->bangunan as $bangunan)
+                                            @if ($bangunan->position_x !== null && $bangunan->position_y !== null)
+                                                <button type="button" class="map-pin" data-id="{{ $bangunan->id }}"
+                                                    data-kawasan="{{ $kawasan->id }}" data-kode="{{ $bangunan->kode }}"
+                                                    data-nama="{{ $bangunan->nama }}"
+                                                    data-deskripsi="{{ $bangunan->deskripsi }}"
+                                                    style="
+                                                    left: {{ $bangunan->position_x }}%;
+                                                    top: {{ $bangunan->position_y }}%;
+                                                ">
+                                                    {{ $bangunan->kode }}
+                                                </button>
+                                            @endif
+                                        @endforeach
+
+                                    </div>
+                                @endforeach
 
                             </div>
 
@@ -409,14 +196,70 @@
             </div>
 
         </div>
-    @endsection
 
+    </div>
+
+
+    {{-- ================================= --}}
+    {{-- MODAL DETAIL BANGUNAN --}}
+    {{-- ================================= --}}
+    <div class="modal fade" id="bangunanModal" tabindex="-1">
+
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <div>
+
+                        <h5 class="modal-title" id="modalNama">
+                            -
+                        </h5>
+
+                        <small class="text-muted" id="modalKode">
+                            -
+                        </small>
+
+                    </div>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
+                </div>
+
+
+                <div class="modal-body">
+
+                    <div id="modalDeskripsi">
+
+                        -
+
+                    </div>
+                    <div class="col-12">
+
+                        {{-- <h6 class="fw-bold mb-3">
+                            Dokumentasi
+                        </h6> --}}
+
+
+                        <div class="row g-3" id="documentationContainer">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 
     <style>
-        /* =========================================
-           MAP
-        ========================================= */
+        /* ================================= */
+        /* MAP */
+        /* ================================= */
 
         .map-viewport {
             position: relative;
@@ -442,11 +285,11 @@
 
 
         /* =========================================
-           MAP CONTENT
+                                                                       MAP CONTENT
 
-           Semua isi peta berada di sini.
-           Gambar + pin akan ikut bergerak bersama.
-        ========================================= */
+                                                                       Semua isi peta berada di sini.
+                                                                       Gambar + pin akan ikut bergerak bersama.
+                                                                    ========================================= */
 
         .map-content {
             position: absolute;
@@ -461,8 +304,8 @@
 
 
         /* =========================================
-           IMAGE
-        ========================================= */
+                                                                       IMAGE
+                                                                    ========================================= */
 
         .map-image {
             display: block;
@@ -478,8 +321,8 @@
 
 
         /* =========================================
-           PIN
-        ========================================= */
+                                                                       PIN
+                                                                    ========================================= */
 
         .map-pin {
             position: absolute;
@@ -533,10 +376,10 @@
 
 
         /* =========================================
-           SIDEBAR
-        ========================================= */
+                                                                       SIDEBAR
+                                                                    ========================================= */
 
-        .building-item {
+        .bangunan-item {
 
             text-align: left;
 
@@ -545,7 +388,7 @@
         }
 
 
-        .building-item.active {
+        .bangunan-item.active {
 
             border-left-color: #0d6efd;
 
@@ -553,10 +396,10 @@
 
 
         /* =========================================
-           DOKUMENTASI
+                                                                       DOKUMENTASI
 
-           Landscape seperti kamera HP
-        ========================================= */
+                                                                       Landscape seperti kamera HP
+                                                                    ========================================= */
 
         .documentation-image {
 
@@ -569,31 +412,76 @@
             border-radius: 8px;
 
         }
-    </style>
 
+
+        /* ================================= */
+        /* RESPONSIVE */
+        /* ================================= */
+
+        @media (max-width: 991px) {
+
+            .map-viewport {
+
+                height: 500px;
+
+            }
+
+        }
+    </style>
 
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
-
             /* =========================================
                ELEMENT
             ========================================= */
 
-            const viewport =
-                document.getElementById('mapViewport');
+            const kawasanTabs = document.querySelectorAll('.kawasan-tab');
 
-            const mapContent =
-                document.getElementById('mapContent');
+            const bangunanLists = document.querySelectorAll(
+                '.bangunan-list-kawasan'
+            );
 
-            const mapImage =
-                document.getElementById('mapImage');
+            const mapKawasans = document.querySelectorAll(
+                '.map-kawasan'
+            );
+
+            const mapTitle = document.getElementById('mapTitle');
+
+            const searchInput = document.getElementById(
+                'searchBangunan'
+            );
+
+            const emptySearch = document.getElementById(
+                'emptySearch'
+            );
 
 
             /* =========================================
-               MAP STATE
+               ZOOM & PAN
             ========================================= */
+
+            const mapViewport = document.getElementById(
+                'mapViewport'
+            );
+
+            const mapStage = document.getElementById(
+                'mapStage'
+            );
+
+            const zoomIn = document.getElementById(
+                'zoomIn'
+            );
+
+            const zoomOut = document.getElementById(
+                'zoomOut'
+            );
+
+            const resetMap = document.getElementById(
+                'resetMap'
+            );
+
 
             let scale = 1;
 
@@ -601,31 +489,60 @@
 
             let translateY = 0;
 
+            let isDragging = false;
 
-            const minScale = 0.5;
+            let startX = 0;
 
-            const maxScale = 4;
+            let startY = 0;
 
-            const zoomStep = 0.2;
-
-
-            /* =========================================
-               UPDATE TRANSFORM
-            ========================================= */
 
             function updateTransform() {
 
-                mapContent.style.transform =
+                mapStage.style.transform =
                     `translate(${translateX}px, ${translateY}px) scale(${scale})`;
 
             }
 
 
             /* =========================================
+               ZOOM IN
+            ========================================= */
+
+            zoomIn.addEventListener('click', function() {
+
+                scale += 0.2;
+
+                if (scale > 3) {
+                    scale = 3;
+                }
+
+                updateTransform();
+
+            });
+
+
+            /* =========================================
+               ZOOM OUT
+            ========================================= */
+
+            zoomOut.addEventListener('click', function() {
+
+                scale -= 0.2;
+
+                if (scale < 0.5) {
+                    scale = 0.5;
+                }
+
+                updateTransform();
+
+            });
+
+
+            /* =========================================
                RESET MAP
             ========================================= */
 
-            function resetMap() {
+            resetMap.addEventListener('click', function() {
 
                 scale = 1;
 
@@ -635,469 +552,375 @@
 
                 updateTransform();
 
-            }
+            });
 
 
             /* =========================================
-               ZOOM
+               DRAG START
             ========================================= */
 
-            function zoomMap(newScale, centerX, centerY) {
+            mapViewport.addEventListener('mousedown', function(e) {
 
-                newScale =
-                    Math.min(
-                        Math.max(newScale, minScale),
-                        maxScale
-                    );
-
-
-                const rect =
-                    viewport.getBoundingClientRect();
-
-
-                const x =
-                    centerX ?? rect.width / 2;
-
-                const y =
-                    centerY ?? rect.height / 2;
-
-
-                /*
-                 * Posisi mouse sebelum zoom
-                 */
-
-                const mapX =
-                    (x - translateX) / scale;
-
-                const mapY =
-                    (y - translateY) / scale;
-
-
-                /*
-                 * Scale baru
-                 */
-
-                scale = newScale;
-
-
-                /*
-                 * Hitung translate agar zoom
-                 * tetap fokus ke titik yang sama
-                 */
-
-                translateX =
-                    x - (mapX * scale);
-
-                translateY =
-                    y - (mapY * scale);
-
-
-                updateTransform();
-
-            }
-
-
-            /* =========================================
-               ZOOM BUTTON
-            ========================================= */
-
-            document
-                .getElementById('zoomIn')
-                .addEventListener('click', function() {
-
-                    zoomMap(
-                        scale + zoomStep
-                    );
-
-                });
-
-
-            document
-                .getElementById('zoomOut')
-                .addEventListener('click', function() {
-
-                    zoomMap(
-                        scale - zoomStep
-                    );
-
-                });
-
-
-            document
-                .getElementById('resetMap')
-                .addEventListener('click', function() {
-
-                    resetMap();
-
-                });
-
-
-            /* =========================================
-               MOUSE WHEEL ZOOM
-            ========================================= */
-
-            viewport.addEventListener(
-                'wheel',
-                function(event) {
-
-                    event.preventDefault();
-
-
-                    const rect =
-                        viewport.getBoundingClientRect();
-
-
-                    const mouseX =
-                        event.clientX - rect.left;
-
-                    const mouseY =
-                        event.clientY - rect.top;
-
-
-                    const direction =
-                        event.deltaY > 0 ?
-                        -zoomStep :
-                        zoomStep;
-
-
-                    zoomMap(
-                        scale + direction,
-                        mouseX,
-                        mouseY
-                    );
-
-                }, {
-                    passive: false
-                }
-            );
-
-
-            /* =========================================
-               DRAG / PAN
-            ========================================= */
-
-            let isDragging = false;
-
-            let startX = 0;
-
-            let startY = 0;
-
-            let initialTranslateX = 0;
-
-            let initialTranslateY = 0;
-
-
-            viewport.addEventListener(
-                'mousedown',
-                function(event) {
-
-                    /*
-                     * Jangan drag jika klik PIN
-                     */
-
-                    if (
-                        event.target.classList.contains('map-pin')
-                    ) {
-                        return;
-                    }
-
-
-                    isDragging = true;
-
-
-                    viewport.classList.add(
-                        'dragging'
-                    );
-
-
-                    startX =
-                        event.clientX;
-
-                    startY =
-                        event.clientY;
-
-
-                    initialTranslateX =
-                        translateX;
-
-                    initialTranslateY =
-                        translateY;
-
-                }
-            );
-
-
-            window.addEventListener(
-                'mousemove',
-                function(event) {
-
-                    if (!isDragging) {
-                        return;
-                    }
-
-
-                    const deltaX =
-                        event.clientX - startX;
-
-                    const deltaY =
-                        event.clientY - startY;
-
-
-                    translateX =
-                        initialTranslateX + deltaX;
-
-                    translateY =
-                        initialTranslateY + deltaY;
-
-
-                    updateTransform();
-
-                }
-            );
-
-
-            window.addEventListener(
-                'mouseup',
-                function() {
-
-                    isDragging = false;
-
-
-                    viewport.classList.remove(
-                        'dragging'
-                    );
-
-                }
-            );
-
-
-            /* =========================================
-               FOCUS BUILDING
-
-               Saat sidebar diklik,
-               peta otomatis menuju pin.
-            ========================================= */
-
-            function focusBuilding(code) {
-
-                const pin =
-                    document.querySelector(
-                        `.map-pin[data-code="${code}"]`
-                    );
-
-
-                if (!pin) {
+                if (e.target.classList.contains('map-pin')) {
                     return;
                 }
 
+                isDragging = true;
 
-                /*
-                 * Ambil ukuran viewport
-                 */
+                startX = e.clientX - translateX;
 
-                const viewportWidth =
-                    viewport.clientWidth;
+                startY = e.clientY - translateY;
 
-                const viewportHeight =
-                    viewport.clientHeight;
+                mapViewport.style.cursor = 'grabbing';
 
-
-                /*
-                 * Posisi pin pada MAP ASLI.
-                 *
-                 * offsetLeft dan offsetTop tidak
-                 * terpengaruh oleh zoom.
-                 */
-
-                const pinX =
-                    pin.offsetLeft;
-
-                const pinY =
-                    pin.offsetTop;
+            });
 
 
-                /*
-                 * Zoom otomatis minimal 1.5
-                 *
-                 * Kalau user sudah zoom lebih besar,
-                 * zoom user tidak dikurangi.
-                 */
+            /* =========================================
+               DRAG MOVE
+            ========================================= */
 
-                const targetScale =
-                    Math.max(scale, 1.5);
+            window.addEventListener('mousemove', function(e) {
 
+                if (!isDragging) return;
 
-                scale =
-                    targetScale;
+                translateX = e.clientX - startX;
 
-
-                /*
-                 * Geser peta agar PIN berada
-                 * tepat di tengah viewport.
-                 */
-
-                translateX =
-                    (viewportWidth / 2) -
-                    (pinX * scale);
-
-
-                translateY =
-                    (viewportHeight / 2) -
-                    (pinY * scale);
-
+                translateY = e.clientY - startY;
 
                 updateTransform();
 
+            });
 
-                /*
-                 * Reset active pin
-                 */
 
-                document
-                    .querySelectorAll('.map-pin')
-                    .forEach(function(item) {
+            /* =========================================
+               DRAG END
+            ========================================= */
 
-                        item.classList.remove(
-                            'active-pin'
-                        );
+            window.addEventListener('mouseup', function() {
+
+                isDragging = false;
+
+                mapViewport.style.cursor = 'grab';
+
+            });
+
+
+            /* =========================================
+               PILIH KAWASAN
+            ========================================= */
+
+            kawasanTabs.forEach(function(tab) {
+
+                tab.addEventListener('click', function() {
+
+                    const kawasanId = this.dataset.kawasan;
+
+                    const kawasanNama = this.textContent.trim();
+
+
+                    /* ACTIVE TAB */
+
+                    kawasanTabs.forEach(function(item) {
+
+                        item.classList.remove('active');
+
+                    });
+
+                    this.classList.add('active');
+
+
+                    /* SIDEBAR */
+
+                    bangunanLists.forEach(function(list) {
+
+                        if (
+                            String(list.dataset.kawasan) ===
+                            String(kawasanId)
+                        ) {
+
+                            list.classList.remove('d-none');
+
+                        } else {
+
+                            list.classList.add('d-none');
+
+                        }
 
                     });
 
 
-                pin.classList.add(
-                    'active-pin'
-                );
+                    /* MAP */
 
-            }
+                    mapKawasans.forEach(function(map) {
+
+                        if (
+                            String(map.dataset.kawasan) ===
+                            String(kawasanId)
+                        ) {
+
+                            map.classList.remove('d-none');
+
+                        } else {
+
+                            map.classList.add('d-none');
+
+                        }
+
+                    });
+
+
+                    /* TITLE */
+
+                    mapTitle.textContent = kawasanNama;
+
+
+                    /* RESET SEARCH */
+
+                    searchInput.value = '';
+
+
+                    document
+                        .querySelectorAll('.bangunan-item')
+                        .forEach(function(item) {
+
+                            item.style.display = '';
+
+                        });
+
+
+                    emptySearch.classList.add('d-none');
+
+
+                    /* RESET MAP */
+
+                    scale = 1;
+
+                    translateX = 0;
+
+                    translateY = 0;
+
+                    updateTransform();
+
+                });
+
+            });
 
 
             /* =========================================
-               SIDEBAR CLICK
+               SEARCH BANGUNAN
             ========================================= */
 
-            document
-                .querySelectorAll('.building-item')
-                .forEach(function(item) {
+            searchInput.addEventListener('input', function() {
 
-                    item.addEventListener(
-                        'click',
-                        function() {
-
-                            const code =
-                                this.dataset.code;
+                const keyword = this.value
+                    .toLowerCase()
+                    .trim();
 
 
-                            /*
-                             * Fokus peta ke bangunan
-                             */
-
-                            focusBuilding(code);
+                const activeList = document.querySelector(
+                    '.bangunan-list-kawasan:not(.d-none)'
+                );
 
 
-                            /*
-                             * Active sidebar
-                             */
-
-                            document
-                                .querySelectorAll('.building-item')
-                                .forEach(function(button) {
-
-                                    button.classList.remove(
-                                        'active'
-                                    );
-
-                                });
+                if (!activeList) {
+                    return;
+                }
 
 
-                            this.classList.add(
-                                'active'
-                            );
+                const bangunanItems = activeList.querySelectorAll(
+                    '.bangunan-item'
+                );
 
-                        }
-                    );
+
+                let totalVisible = 0;
+
+
+                bangunanItems.forEach(function(item) {
+
+                    const kode =
+                        (item.dataset.kode || '')
+                        .toLowerCase();
+
+                    const nama =
+                        (item.dataset.nama || '')
+                        .toLowerCase();
+
+
+                    const cocok =
+                        kode.includes(keyword) ||
+                        nama.includes(keyword);
+
+
+                    if (cocok) {
+
+                        item.style.display = '';
+
+                        totalVisible++;
+
+                    } else {
+
+                        item.style.display = 'none';
+
+                    }
 
                 });
 
 
+                if (
+                    totalVisible === 0 &&
+                    keyword !== ''
+                ) {
+
+                    emptySearch.classList.remove('d-none');
+
+                } else {
+
+                    emptySearch.classList.add('d-none');
+
+                }
+
+            });
+
+
             /* =========================================
-               PIN CLICK
+               KLIK SIDEBAR
+               FOCUS KE PIN
             ========================================= */
 
             document
-                .querySelectorAll('.map-pin')
-                .forEach(function(pin) {
+                .querySelectorAll('.bangunan-item')
+                .forEach(function(item) {
 
-                    pin.addEventListener(
-                        'click',
-                        function(event) {
+                    item.addEventListener('click', function() {
 
-                            event.stopPropagation();
+                        const kawasanId =
+                            this.dataset.kawasan;
 
+                        const kode =
+                            this.dataset.kode;
 
-                            const code =
-                                this.dataset.code;
+                        const nama =
+                            this.dataset.nama;
 
-                            const name =
-                                this.dataset.name;
+                        const x =
+                            parseFloat(this.dataset.x);
 
-
-                            /*
-                             * Active pin
-                             */
-
-                            document
-                                .querySelectorAll('.map-pin')
-                                .forEach(function(item) {
-
-                                    item.classList.remove(
-                                        'active-pin'
-                                    );
-
-                                });
+                        const y =
+                            parseFloat(this.dataset.y);
 
 
-                            this.classList.add(
-                                'active-pin'
+                        /* ACTIVE SIDEBAR */
+
+                        document
+                            .querySelectorAll('.bangunan-item')
+                            .forEach(function(item) {
+
+                                item.classList.remove('active');
+
+                            });
+
+
+                        this.classList.add('active');
+
+
+                        /* CARI PIN */
+
+                        const pin = document.querySelector(
+
+                            `.map-pin[data-kawasan="${kawasanId}"][data-kode="${kode}"]`
+
+                        );
+
+
+                        if (!pin) {
+
+                            console.log(
+                                'Pin tidak ditemukan:',
+                                kode
                             );
 
-
-                            /*
-                             * Active sidebar
-                             */
-
-                            document
-                                .querySelectorAll('.building-item')
-                                .forEach(function(item) {
-
-                                    item.classList.remove(
-                                        'active'
-                                    );
-
-
-                                    if (
-                                        item.dataset.code === code
-                                    ) {
-
-                                        item.classList.add(
-                                            'active'
-                                        );
-
-                                    }
-
-                                });
-
-
-                            /*
-                             * Isi modal
-                             */
-
-                            showBuildingModal(
-                                code,
-                                name
-                            );
+                            return;
 
                         }
-                    );
+
+
+                        /* ZOOM */
+
+                        scale = 1.8;
+
+
+                        /*
+                         * Ambil ukuran viewport
+                         */
+
+                        const viewportWidth =
+                            mapViewport.clientWidth;
+
+                        const viewportHeight =
+                            mapViewport.clientHeight;
+
+
+                        /*
+                         * Ambil ukuran gambar
+                         */
+
+                        const image =
+                            pin
+                            .closest('.map-kawasan')
+                            .querySelector('.map-image');
+
+
+                        const imageWidth =
+                            image.offsetWidth;
+
+                        const imageHeight =
+                            image.offsetHeight;
+
+
+                        /*
+                         * Posisi asli pin
+                         */
+
+                        const pinX =
+                            imageWidth * (x / 100);
+
+                        const pinY =
+                            imageHeight * (y / 100);
+
+
+                        /*
+                         * Posisi tengah viewport
+                         */
+
+                        translateX =
+                            (viewportWidth / 2) -
+                            (pinX * scale);
+
+                        translateY =
+                            (viewportHeight / 2) -
+                            (pinY * scale);
+
+
+                        updateTransform();
+
+
+                        /*
+                         * Highlight pin
+                         */
+
+                        document
+                            .querySelectorAll('.map-pin')
+                            .forEach(function(item) {
+
+                                item.style.zIndex = '';
+
+                            });
+
+
+                        pin.style.zIndex = '999';
+
+                    });
 
                 });
 
@@ -1106,211 +929,56 @@
                MODAL DETAIL
             ========================================= */
 
-            function showBuildingModal(code, name) {
+            const modalElement =
+                document.getElementById('bangunanModal');
 
-                document
-                    .getElementById('buildingModalLabel')
-                    .textContent =
-                    name;
+            const bangunanModal =
+                new bootstrap.Modal(modalElement);
 
 
-                document
-                    .getElementById('modalBuildingCode')
-                    .textContent =
-                    code;
+            document
+                .querySelectorAll('.map-pin')
+                .forEach(function(pin) {
 
+                    pin.addEventListener('click', function(e) {
 
-                document
-                    .getElementById('modalCode')
-                    .textContent =
-                    code;
+                        e.stopPropagation();
 
 
-                document
-                    .getElementById('modalName')
-                    .textContent =
-                    name;
+                        const kode =
+                            this.dataset.kode;
 
+                        const nama =
+                            this.dataset.nama;
 
-                /*
-                 * Dokumentasi sementara.
-                 *
-                 * Nantinya dapat diganti dari database.
-                 */
+                        const deskripsi =
+                            this.dataset.deskripsi;
 
-                const documentationContainer =
-                    document.getElementById(
-                        'documentationContainer'
-                    );
 
+                        document.getElementById(
+                            'modalKode'
+                        ).textContent = kode;
 
-                documentationContainer.innerHTML = `
 
-            <div class="col-12">
+                        document.getElementById(
+                            'modalNama'
+                        ).textContent = nama;
 
-                <div
-                    class="
-                        border
-                        rounded
-                        p-4
-                        text-center
-                        text-muted
-                    "
-                >
 
-                    <i
-                        class="
-                            bi
-                            bi-image
-                            fs-1
-                            d-block
-                            mb-2
-                        "
-                    >
-                    </i>
+                        document.getElementById(
+                                'modalDeskripsi'
+                            ).textContent =
+                            deskripsi ||
+                            'Informasi bangunan belum tersedia.';
 
-                    Dokumentasi belum tersedia.
 
-                </div>
+                        bangunanModal.show();
 
-            </div>
+                    });
 
-        `;
-
-
-                const modalElement =
-                    document.getElementById(
-                        'buildingModal'
-                    );
-
-
-                const modal =
-                    bootstrap.Modal.getOrCreateInstance(
-                        modalElement
-                    );
-
-
-                modal.show();
-
-            }
-
-
-            /* =========================================
-               SEARCH SIDEBAR
-            ========================================= */
-
-            const searchInput =
-                document.getElementById(
-                    'searchBangunan'
-                );
-
-
-            const buildingItems =
-                document.querySelectorAll(
-                    '#buildingList .building-item'
-                );
-
-
-            const emptySearch =
-                document.getElementById(
-                    'emptySearch'
-                );
-
-
-            searchInput.addEventListener(
-                'input',
-                function() {
-
-                    const keyword =
-                        this.value
-                        .toLowerCase()
-                        .trim();
-
-
-                    let totalVisible = 0;
-
-
-                    buildingItems.forEach(
-                        function(item) {
-
-                            const code =
-                                (item.dataset.code || '')
-                                .toLowerCase();
-
-
-                            const name =
-                                (item.dataset.name || '')
-                                .toLowerCase();
-
-
-                            const match =
-                                code.includes(keyword) ||
-                                name.includes(keyword);
-
-
-                            if (match) {
-
-                                item.style.display = '';
-
-                                totalVisible++;
-
-                            } else {
-
-                                item.style.display = 'none';
-
-                            }
-
-                        }
-                    );
-
-
-                    if (totalVisible === 0) {
-
-                        emptySearch.style.display =
-                            'block';
-
-                    } else {
-
-                        emptySearch.style.display =
-                            'none';
-
-                    }
-
-                }
-            );
-
-
-            /* =========================================
-               SET UKURAN MAP SETELAH IMAGE LOAD
-            ========================================= */
-
-            mapImage.addEventListener(
-                'load',
-                function() {
-
-                    /*
-                     * Pastikan mapContent mengikuti
-                     * ukuran asli gambar.
-                     */
-
-                    mapContent.style.width =
-                        mapImage.offsetWidth + 'px';
-
-                }
-            );
-
-
-            /*
-             * Jika gambar sudah cache
-             */
-
-            if (mapImage.complete) {
-
-                mapContent.style.width =
-                    mapImage.offsetWidth + 'px';
-
-            }
+                });
 
 
         });
     </script>
+@endsection

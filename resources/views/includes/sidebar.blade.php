@@ -169,23 +169,23 @@
                          </a>
                      </li>
                      <li class="sidebar-menu-item">
-                         <a href=""
-                             class="sidebar-menu-link {{ request()->routeIs('kawasan.index', 'kawasan.create', 'kawasan.edit') ? 'active' : '' }}"
+                         <a href="{{ route('HalamanAdminkawasan') }}"
+                             class="sidebar-menu-link {{ request()->routeIs('HalamanAdminkawasan') ? 'active' : '' }}"
                              id="menu-kawasan" title="Management Kawasan">
 
-                             <i class="bi bi-map"></i>
-                             <span>Management Kawasan</span>
+                             <i class="bi bi-pin-map-fill"></i>
+                             <span>Master Kawasan</span>
                          </a>
                      </li>
-                     {{-- <li class="sidebar-menu-item">
-                         <a href="{{ route('kawasan.index') }}"
-                             class="sidebar-menu-link {{ request()->routeIs('kawasan.index', 'kawasan.create', 'kawasan.edit') ? 'active' : '' }}"
-                             id="menu-kawasan" title="Management Kawasan">
+                     <li class="sidebar-menu-item">
+                         <a href="{{ route('HalamanAdminbangunan') }}"
+                             class="sidebar-menu-link   {{ request()->routeIs('HalamanAdminbangunan') ? 'active' : '' }}"
+                             id="menu-bangunan" title="Management Bangunan">
 
-                             <i class="bi bi-map"></i>
-                             <span>Management Kawasan</span>
+                             <i class="bi bi-building-fill-gear"></i>
+                             <span>Master Bangunan</span>
                          </a>
-                     </li> --}}
+                     </li>
                  @endif
 
              </ul>

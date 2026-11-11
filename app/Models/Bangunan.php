@@ -12,6 +12,7 @@ class Bangunan extends Model
 
     protected $fillable = [
         'kawasan_id',
+        'kode',
         'nama',
         'deskripsi',
         'posisi_x',

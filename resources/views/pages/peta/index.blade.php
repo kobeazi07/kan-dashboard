@@ -177,7 +177,7 @@
                                                     left: {{ $bangunan->position_x }}%;
                                                     top: {{ $bangunan->position_y }}%;
                                                 ">
-                                                    {{ $bangunan->kode }}
+                                                    {{ last(explode('-', $bangunan->kode)) }}
                                                 </button>
                                             @endif
                                         @endforeach
@@ -285,11 +285,11 @@
 
 
         /* =========================================
-                                                                       MAP CONTENT
+                                                                                                                                                                                                   MAP CONTENT
 
-                                                                       Semua isi peta berada di sini.
-                                                                       Gambar + pin akan ikut bergerak bersama.
-                                                                    ========================================= */
+                                                                                                                                                                                                   Semua isi peta berada di sini.
+                                                                                                                                                                                                   Gambar + pin akan ikut bergerak bersama.
+                                                                                                                                                                                                ========================================= */
 
         .map-content {
             position: absolute;
@@ -304,8 +304,8 @@
 
 
         /* =========================================
-                                                                       IMAGE
-                                                                    ========================================= */
+                                                                                                                                                                                                   IMAGE
+                                                                                                                                                                                                ========================================= */
 
         .map-image {
             display: block;
@@ -321,63 +321,63 @@
 
 
         /* =========================================
-                                                                       PIN
-                                                                    ========================================= */
+                                                                                                                                                                                                   PIN
+                                                                                                                                                                                                ========================================= */
 
         .map-pin {
             position: absolute;
-
             transform: translate(-50%, -50%);
-
             z-index: 10;
 
-            border: 2px solid #ffffff;
+            width: 32px;
+            height: 32px;
 
-            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 0;
+
+            border: 2px solid #ffffff;
+            border-radius: 50%;
 
             background: #0d6efd;
-
             color: #ffffff;
 
             font-size: 13px;
-
             font-weight: 700;
 
-            padding: 7px 12px;
-
-            min-width: 52px;
-
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
-
             cursor: pointer;
-
             white-space: nowrap;
 
-            transition: transform 0.2s ease;
+            transition:
+                transform 0.2s ease,
+                width 0.2s ease,
+                height 0.2s ease,
+                background 0.2s ease;
         }
-
 
         .map-pin:hover {
-
-            transform:
-                translate(-50%, -50%) scale(1.1);
-
+            transform: translate(-50%, -50%) scale(1.1);
         }
 
 
+        /* PIN AKTIF */
         .map-pin.active-pin {
-
             background: #dc3545;
 
-            transform:
-                translate(-50%, -50%) scale(1.15);
+            width: 52px;
+            height: 52px;
 
+            z-index: 999;
+
+            transform: translate(-50%, -50%) scale(1.15);
         }
 
-
         /* =========================================
-                                                                       SIDEBAR
-                                                                    ========================================= */
+                                                                                                                                                                                                   SIDEBAR
+                                                                                                                                                                                                ========================================= */
 
         .bangunan-item {
 
@@ -396,10 +396,10 @@
 
 
         /* =========================================
-                                                                       DOKUMENTASI
+                                                                                                                                                                                                   DOKUMENTASI
 
-                                                                       Landscape seperti kamera HP
-                                                                    ========================================= */
+                                                                                                                                                                                                   Landscape seperti kamera HP
+                                                                                                                                                                                                ========================================= */
 
         .documentation-image {
 
@@ -498,10 +498,27 @@
 
             function updateTransform() {
 
+                mapStage.style.transformOrigin = 'top left';
+
                 mapStage.style.transform =
                     `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-
             }
+
+            // function updateTransform() {
+
+            //     if (!mapStage) return;
+
+            //     mapStage.style.transform =
+            //         translate($ {
+            //                 translateX
+            //             }
+            //             px, $ {
+            //                 translateY
+            //             }
+            //             px) scale($ {
+            //             scale
+            //         });
+            // }
 
 
             /* =========================================
@@ -811,99 +828,133 @@
 
 
                         /* ACTIVE SIDEBAR */
+                        /* ACTIVE SIDEBAR */
 
-                        document
-                            .querySelectorAll('.bangunan-item')
-                            .forEach(function(item) {
+                        document.querySelectorAll('.bangunan-item')
+                            .forEach(function(el) {
 
-                                item.classList.remove('active');
+                                el.classList.remove('active');
 
                             });
 
-
                         this.classList.add('active');
+                        /* CENTER KE PIN */
 
-
-                        /* CARI PIN */
-
-                        const pin = document.querySelector(
-
-                            `.map-pin[data-kawasan="${kawasanId}"][data-kode="${kode}"]`
-
+                        centerPin(
+                            kawasanId,
+                            kode,
+                            x,
+                            y
                         );
 
+                        function centerPin(kawasanId, kode, x, y) {
 
-                        if (!pin) {
+                            /* =========================
+                               CARI PIN
+                            ========================= */
 
-                            console.log(
-                                'Pin tidak ditemukan:',
-                                kode
+                            const pin = document.querySelector(
+                                `.map-pin[data-kawasan="${kawasanId}"][data-kode="${kode}"]`
                             );
 
-                            return;
+                            if (!pin) {
 
+                                console.log(
+                                    'Pin tidak ditemukan:',
+                                    kode
+                                );
+
+                                return;
+                            }
+
+
+                            /* =========================
+                               ZOOM
+                            ========================= */
+
+                            scale = 1.8;
+
+
+                            /* =========================
+                               AMBIL UKURAN VIEWPORT
+                            ========================= */
+
+                            const viewportWidth =
+                                mapViewport.clientWidth;
+
+                            const viewportHeight =
+                                mapViewport.clientHeight;
+
+
+                            /* =========================
+                               AMBIL GAMBAR KAWASAN
+                            ========================= */
+
+                            const mapKawasan =
+                                pin.closest('.map-kawasan');
+
+                            if (!mapKawasan) {
+
+                                console.log('Map kawasan tidak ditemukan');
+
+                                return;
+                            }
+
+
+                            const image =
+                                mapKawasan.querySelector('.map-image');
+
+                            if (!image) {
+
+                                console.log('Map image tidak ditemukan');
+
+                                return;
+                            }
+
+
+                            const imageWidth =
+                                image.offsetWidth;
+
+                            const imageHeight =
+                                image.offsetHeight;
+
+
+                            /* =========================
+                               POSISI ASLI PIN
+                            ========================= */
+
+
+
+                            const pinX = pin.offsetLeft;
+
+                            const pinY = pin.offsetTop;
+
+                            /* =========================
+                               CENTER PIN
+                            ========================= */
+
+                            translateX =
+                                (viewportWidth / 2) -
+                                (pinX * scale);
+
+                            translateY =
+                                (viewportHeight / 2) -
+                                (pinY * scale);
+
+                            /* =========================
+                               UPDATE MAP
+                            ========================= */
+
+                            updateTransform();
+                            /* HAPUS ACTIVE PIN SEBELUMNYA */
+                            document.querySelectorAll('.map-pin').forEach(function(item) {
+                                item.classList.remove('active-pin');
+                            });
+
+
+                            /* BESARKAN PIN TERPILIH */
+                            pin.classList.add('active-pin');
                         }
-
-
-                        /* ZOOM */
-
-                        scale = 1.8;
-
-
-                        /*
-                         * Ambil ukuran viewport
-                         */
-
-                        const viewportWidth =
-                            mapViewport.clientWidth;
-
-                        const viewportHeight =
-                            mapViewport.clientHeight;
-
-
-                        /*
-                         * Ambil ukuran gambar
-                         */
-
-                        const image =
-                            pin
-                            .closest('.map-kawasan')
-                            .querySelector('.map-image');
-
-
-                        const imageWidth =
-                            image.offsetWidth;
-
-                        const imageHeight =
-                            image.offsetHeight;
-
-
-                        /*
-                         * Posisi asli pin
-                         */
-
-                        const pinX =
-                            imageWidth * (x / 100);
-
-                        const pinY =
-                            imageHeight * (y / 100);
-
-
-                        /*
-                         * Posisi tengah viewport
-                         */
-
-                        translateX =
-                            (viewportWidth / 2) -
-                            (pinX * scale);
-
-                        translateY =
-                            (viewportHeight / 2) -
-                            (pinY * scale);
-
-
-                        updateTransform();
-
 
                         /*
                          * Highlight pin

@@ -23,7 +23,15 @@
                          <span>Dashboard</span>
                      </a>
                  </li>
+                 <li class="sidebar-menu-item">
+                     <a href="{{ route('peta.index') }}"
+                         class="sidebar-menu-link {{ request()->routeIs('peta.*', 'kawasan.show', 'bangunan.detail') ? 'active' : '' }}"
+                         id="menu-peta" title="Peta">
 
+                         <i class="bi bi-map-fill"></i>
+                         <span>Peta Kawasan</span>
+                     </a>
+                 </li>
 
 
 
@@ -159,15 +167,7 @@
                          </a>
                      </li> --}}
 
-                     <li class="sidebar-menu-item">
-                         <a href="{{ route('peta.index') }}"
-                             class="sidebar-menu-link {{ request()->routeIs('peta.*', 'kawasan.show', 'bangunan.detail') ? 'active' : '' }}"
-                             id="menu-peta" title="Peta">
 
-                             <i class="bi bi-map-fill"></i>
-                             <span>Peta Kawasan</span>
-                         </a>
-                     </li>
                      <li class="sidebar-menu-item">
                          <a href="{{ route('HalamanAdminkawasan') }}"
                              class="sidebar-menu-link {{ request()->routeIs('HalamanAdminkawasan') ? 'active' : '' }}"

@@ -67,6 +67,16 @@
                                             </small>
 
                                         </button>
+                                        <div class="bangunan-dokumentasi d-none mb-5"
+                                            data-bangunan-id="{{ $bangunan->id }}" style="margin-bottm  :50px;">
+
+                                            @foreach ($bangunan->fotoBangunan as $fotob)
+                                                <div class="foto-item"
+                                                    data-gambar="{{ asset('inputan/bangunan/detailimg/' . $fotob->foto) }}">
+                                                </div>
+                                            @endforeach
+
+                                        </div>
 
                                     @empty
 
@@ -237,9 +247,13 @@
                     </div>
                     <div class="col-12">
 
-                        {{-- <h6 class="fw-bold mb-3">
-                            Dokumentasi
-                        </h6> --}}
+                        <div class="row g-3 mb-5" id="documentationContainer">
+
+                            {{-- Foto akan dimasukkan oleh JavaScript --}}
+
+                        </div>
+
+
 
 
                         <div class="row g-3" id="documentationContainer">
@@ -257,6 +271,17 @@
 
 
     <style>
+        .documentation-image {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+
+            object-fit: cover;
+
+            border-radius: 10px;
+
+            display: block;
+        }
+
         /* ================================= */
         /* MAP */
         /* ================================= */
@@ -285,11 +310,11 @@
 
 
         /* =========================================
-                                                                                                                                                                                                       MAP CONTENT
+                                                                                                                                                                                                                                                                               MAP CONTENT
 
-                                                                                                                                                                                                       Semua isi peta berada di sini.
-                                                                                                                                                                                                       Gambar + pin akan ikut bergerak bersama.
-                                                                                                                                                                                                    ========================================= */
+                                                                                                                                                                                                                                                                               Semua isi peta berada di sini.
+                                                                                                                                                                                                                                                                               Gambar + pin akan ikut bergerak bersama.
+                                                                                                                                                                                                                                                                            ========================================= */
 
         .map-content {
             position: absolute;
@@ -304,8 +329,8 @@
 
 
         /* =========================================
-                                                                                                                                                                                                       IMAGE
-                                                                                                                                                                                                    ========================================= */
+                                                                                                                                                                                                                                                                               IMAGE
+                                                                                                                                                                                                                                                                            ========================================= */
 
         .map-image {
             display: block;
@@ -321,8 +346,8 @@
 
 
         /* =========================================
-                                                                                                                                                                                                       PIN
-                                                                                                                                                                                                    ========================================= */
+                                                                                                                                                                                                                                                                               PIN
+                                                                                                                                                                                                                                                                            ========================================= */
 
         .map-pin {
             position: absolute;
@@ -376,8 +401,8 @@
         }
 
         /* =========================================
-                                                                                                                                                                                                       SIDEBAR
-                                                                                                                                                                                                    ========================================= */
+                                                                                                                                                                                                                                                                               SIDEBAR
+                                                                                                                                                                                                                                                                            ========================================= */
 
         .bangunan-item {
 
@@ -396,10 +421,10 @@
 
 
         /* =========================================
-                                                                                                                                                                                                       DOKUMENTASI
+                                                                                                                                                                                                                                                                               DOKUMENTASI
 
-                                                                                                                                                                                                       Landscape seperti kamera HP
-                                                                                                                                                                                                    ========================================= */
+                                                                                                                                                                                                                                                                               Landscape seperti kamera HP
+                                                                                                                                                                                                                                                                            ========================================= */
 
         .documentation-image {
 
@@ -986,6 +1011,9 @@
             const bangunanModal =
                 new bootstrap.Modal(modalElement);
 
+            const documentationContainer =
+                document.getElementById('documentationContainer');
+
 
             document
                 .querySelectorAll('.map-pin')
@@ -996,6 +1024,10 @@
                         e.stopPropagation();
 
 
+                        /* =========================
+                           AMBIL DATA BANGUNAN
+                        ========================= */
+
                         const kode =
                             this.dataset.kode;
 
@@ -1005,6 +1037,13 @@
                         const deskripsi =
                             this.dataset.deskripsi;
 
+                        const bangunanId =
+                            this.dataset.id;
+
+
+                        /* =========================
+                           ISI MODAL
+                        ========================= */
 
                         document.getElementById(
                             'modalKode'
@@ -1023,12 +1062,102 @@
                             'Informasi bangunan belum tersedia.';
 
 
+                        /* =========================
+                           KOSONGKAN DOKUMENTASI
+                        ========================= */
+
+                        documentationContainer.innerHTML = '';
+
+
+                        /* =========================
+                           CARI DATA FOTO
+                           BERDASARKAN BANGUNAN ID
+                        ========================= */
+
+                        const dokumentasiBangunan =
+                            document.querySelector(
+                                `.bangunan-dokumentasi[data-bangunan-id="${bangunanId}"]`
+                            );
+
+
+                        /* =========================
+                           AMBIL FOTO
+                        ========================= */
+
+                        const fotoItems =
+                            dokumentasiBangunan ?
+                            dokumentasiBangunan.querySelectorAll('.foto-item') : [];
+
+
+                        /* =========================
+                           JIKA FOTO TIDAK ADA
+                        ========================= */
+
+                        if (fotoItems.length === 0) {
+
+                            documentationContainer.innerHTML = `
+
+                    <div class="col-12">
+
+                        <div class="text-center text-muted py-4 border rounded">
+
+                            <i class="bi bi-image fs-2 d-block mb-2"></i>
+
+                            Dokumentasi belum tersedia
+
+                        </div>
+
+                    </div>
+
+                `;
+
+                        } else {
+
+                            /* =========================
+                               TAMPILKAN FOTO
+                            ========================= */
+
+                            fotoItems.forEach(function(foto) {
+
+                                const gambar =
+                                    foto.dataset.gambar;
+
+
+                                documentationContainer.innerHTML += `
+
+                        <div class="col-md-6 col-lg-4">
+
+                            <a href="${gambar}"
+                                data-lightbox="bangunan-${bangunanId}"
+                                data-title="${nama}"
+                                class="lightbox-link">
+
+                                <img src="${gambar}"
+                                    class="img-fluid rounded documentation-image"
+                                    alt="${nama}"
+                                    loading="lazy">
+
+                            </a>
+
+                        </div>
+
+                    `;
+
+                            });
+
+                        }
+
+
+                        /* =========================
+                           TAMPILKAN MODAL
+                        ========================= */
+
                         bangunanModal.show();
 
                     });
 
                 });
-
+            // akhir modal
 
         });
     </script>

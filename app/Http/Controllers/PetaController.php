@@ -31,7 +31,7 @@ class PetaController extends Controller
     public function index()
     {
         $kawasans = Kawasan::with([
-            'bangunan'
+            'bangunan.fotoBangunan'
         ])
             ->orderBy('id')
             ->get();

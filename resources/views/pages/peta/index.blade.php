@@ -285,11 +285,11 @@
 
 
         /* =========================================
-                                                                                                                                                                                                   MAP CONTENT
+                                                                                                                                                                                                       MAP CONTENT
 
-                                                                                                                                                                                                   Semua isi peta berada di sini.
-                                                                                                                                                                                                   Gambar + pin akan ikut bergerak bersama.
-                                                                                                                                                                                                ========================================= */
+                                                                                                                                                                                                       Semua isi peta berada di sini.
+                                                                                                                                                                                                       Gambar + pin akan ikut bergerak bersama.
+                                                                                                                                                                                                    ========================================= */
 
         .map-content {
             position: absolute;
@@ -304,8 +304,8 @@
 
 
         /* =========================================
-                                                                                                                                                                                                   IMAGE
-                                                                                                                                                                                                ========================================= */
+                                                                                                                                                                                                       IMAGE
+                                                                                                                                                                                                    ========================================= */
 
         .map-image {
             display: block;
@@ -321,16 +321,16 @@
 
 
         /* =========================================
-                                                                                                                                                                                                   PIN
-                                                                                                                                                                                                ========================================= */
+                                                                                                                                                                                                       PIN
+                                                                                                                                                                                                    ========================================= */
 
         .map-pin {
             position: absolute;
             transform: translate(-50%, -50%);
             z-index: 10;
 
-            width: 32px;
-            height: 32px;
+            width: 22px;
+            height: 22px;
 
             display: flex;
             align-items: center;
@@ -376,8 +376,8 @@
         }
 
         /* =========================================
-                                                                                                                                                                                                   SIDEBAR
-                                                                                                                                                                                                ========================================= */
+                                                                                                                                                                                                       SIDEBAR
+                                                                                                                                                                                                    ========================================= */
 
         .bangunan-item {
 
@@ -396,10 +396,10 @@
 
 
         /* =========================================
-                                                                                                                                                                                                   DOKUMENTASI
+                                                                                                                                                                                                       DOKUMENTASI
 
-                                                                                                                                                                                                   Landscape seperti kamera HP
-                                                                                                                                                                                                ========================================= */
+                                                                                                                                                                                                       Landscape seperti kamera HP
+                                                                                                                                                                                                    ========================================= */
 
         .documentation-image {
 

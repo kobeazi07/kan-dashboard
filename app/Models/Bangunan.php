@@ -15,8 +15,8 @@ class Bangunan extends Model
         'kode',
         'nama',
         'deskripsi',
-        'posisi_x',
-        'posisi_y',
+        'position_x',
+        'position_y',
     ];
 
     public function kawasan(): BelongsTo

@@ -439,10 +439,16 @@ class DashboardController extends Controller
 
     public function admin_bangunan()
     {
-        $bangunan = Bangunan::get();
+        $kawasan = Kawasan::get();
+        $kawasan1 = Kawasan::get();
+        $bangunan = Bangunan::orderBy('kawasan_id', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
 
         return view('pages.bangunan.index', compact(
             'bangunan',
+            'kawasan',
+            'kawasan1'
         ));
     }
 
@@ -472,12 +478,55 @@ class DashboardController extends Controller
             }
             // dd($request->all());
             $bangunan = Bangunan::create([
+                'kode' => $request->kode,
                 'nama' => $request->nama,
                 'deskripsi' => $request->deskripsi,
-                'gambar' => $thumbnailPath,
-
+                'kawasan_id' => $request->kawasan_id,
+                'position_x' => $request->position_x,
+                'position_y' => $request->position_y
             ]);
+            $bangunan_id = $bangunan->id;
+            if ($request->hasFile('files')) {
 
+                // Gunakan Image Manager
+                $manager = ImageManager::usingDriver(Driver::class);
+
+                foreach ($request->file('files') as $file) {
+                    $originalName = pathinfo(
+                        $file->getClientOriginalName(),
+                        PATHINFO_FILENAME
+                    );
+                    $originalName = str_replace(' ', '-', $originalName);
+                    $fileName = uniqid() . '_' . $originalName . '.webp';
+                    $destination = public_path(
+                        'inputan/bangunan/detailimg'
+                    );
+                    if (!file_exists($destination)) {
+                        mkdir($destination, 0755, true);
+                    }
+                    $image = $manager->decode($file);
+
+                    // Resize maksimal 1920px
+                    $image->scaleDown(width: 1920);
+
+                    // Convert ke WebP quality 80
+                    $encoded = $image->encodeUsingFormat(
+                        Format::WEBP,
+                        quality: 80
+                    );
+                    $encoded->save(
+                        $destination . '/' . $fileName
+                    );
+
+                    // Simpan ke database
+                    FotoBangunan::create([
+                        'bangunan_id' => $bangunan_id,
+                        'foto'        => $fileName,
+                        'created_at'   => now(),
+                        'updated_at'   => now(),
+                    ]);
+                }
+            }
             DB::commit();
             return response()->json([
                 'status' => 1,
@@ -498,32 +547,56 @@ class DashboardController extends Controller
 
         $bangunan = Bangunan::find($id);
         $data = [
+            'kode' => $request->kode,
             'nama' => $request->nama,
             'deskripsi' => $request->deskripsi,
-
-
+            'kawasan_id' => $request->kawasan_id,
+            'position_x' => $request->position_x,
+            'position_y' => $request->position_y,
         ];
-        if ($request->hasFile('gambar')) {
-            $oldPhoto = $bangunan->gambar;
-            $thumbnail = $request->file('gambar');
-            $originalName = $thumbnail->getClientOriginalName();
-            $originalName = str_replace(' ', '-', $originalName);
-            $thumbnailName = uniqid() . '_gambar_' . $originalName;
-            $thumbnail->move(
-                public_path('inputan/bangunan/'),
-                $thumbnailName
-            );
-            // Simpan path ke database
-            $data['gambar'] = 'inputan/bangunan/' . $thumbnailName;
-            if (!empty($oldPhoto)) {
-                $oldPhotoPath = public_path($oldPhoto);
-                if (file_exists($oldPhotoPath)) {
-                    unlink($oldPhotoPath);
-                }
-            }
-        }
 
         Bangunan::where('id', $id)->update($data);
+        $bangunan_id = $id;
+        if ($request->hasFile('files')) {
+
+            // Gunakan Image Manager
+            $manager = ImageManager::usingDriver(Driver::class);
+            foreach ($request->file('files') as $file) {
+                $originalName = pathinfo(
+                    $file->getClientOriginalName(),
+                    PATHINFO_FILENAME
+                );
+                $originalName = str_replace(' ', '-', $originalName);
+                $fileName = uniqid() . '_' . $originalName . '.webp';
+                $destination = public_path(
+                    'inputan/bangunan/detailimg'
+                );
+                if (!file_exists($destination)) {
+                    mkdir($destination, 0755, true);
+                }
+                $image = $manager->decode($file);
+                // Resize maksimal 1920px
+                $image->scaleDown(width: 1920);
+                // Convert ke WebP quality 80
+                $encoded = $image->encodeUsingFormat(
+                    Format::WEBP,
+                    quality: 80
+                );
+                $encoded->save(
+                    $destination . '/' . $fileName
+                );
+
+
+
+                // Simpan ke database
+                FotoBangunan::create([
+                    'bangunan_id' => $bangunan_id,
+                    'foto'        => $fileName,
+                    'created_at'   => now(),
+                    'updated_at'   => now(),
+                ]);
+            }
+        }
         return response()->json([
             'status'  => 1,
             'message' => 'Data bangunan berhasil diupdate'
@@ -553,7 +626,25 @@ class DashboardController extends Controller
             ], 500);
         }
     }
+    public function deletePicturebangunan($id)
+    {
+        $picture = FotoBangunan::findOrFail($id);
 
+        // hapus file fisik
+        $filePath = public_path('inputan/bangunan/detailimg/' . $picture->foto);
+        // $filePath = public_path($picture->image);
+
+
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+
+        $picture->delete();
+
+        return response()->json([
+            'success' => true
+        ]);
+    }
 
     // controller admin
     // public function kawasanIndex()

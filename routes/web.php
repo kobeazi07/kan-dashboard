@@ -52,6 +52,7 @@ Route::middleware(['auth', 'role:Admin|Owner'])->group(function () {
     Route::post('/tambah_bangunan', [DashboardController::class, 'tambah_bangunan'])->name('Tambah_bangunan');
     Route::post('/edit_bangunan/{id}', [DashboardController::class, 'edit_bangunan'])->name('Edit_bangunan');
     Route::delete('/bangunan/{bangunan}', [DashboardController::class, 'bangunan_destroy'])->name('bangunan.destroy');
+    Route::delete('/bangunan/detail-picture/{id}', [DashboardController::class, 'deletePicturebangunan'])->name('bangunan.delete-picture');
 
 
 

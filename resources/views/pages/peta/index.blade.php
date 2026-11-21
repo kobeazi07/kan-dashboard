@@ -222,6 +222,9 @@
                 <div class="modal-header">
 
                     <div>
+                        <div class="input-hidden-id" id="inputHidenID">
+
+                        </div>
 
                         <h5 class="modal-title" id="modalNama">
                             -
@@ -244,6 +247,14 @@
 
                         -
 
+                    </div>
+                    <div class="row mt-3 mb-3">
+                        <a href="#" id="btnDokumentasiBangunan" class="btn btn-primary w-100">
+
+                            <i class="bi bi-camera-fill me-3"></i>
+                            Dokumentasi Bangunan
+
+                        </a>
                     </div>
                     <div class="col-12">
 
@@ -310,11 +321,11 @@
 
 
         /* =========================================
-                                                                                                                                                                                                                                                                               MAP CONTENT
+                                                                                                                                                                                                                                                                                                                                                   MAP CONTENT
 
-                                                                                                                                                                                                                                                                               Semua isi peta berada di sini.
-                                                                                                                                                                                                                                                                               Gambar + pin akan ikut bergerak bersama.
-                                                                                                                                                                                                                                                                            ========================================= */
+                                                                                                                                                                                                                                                                                                                                                   Semua isi peta berada di sini.
+                                                                                                                                                                                                                                                                                                                                                   Gambar + pin akan ikut bergerak bersama.
+                                                                                                                                                                                                                                                                                                                                                ========================================= */
 
         .map-content {
             position: absolute;
@@ -329,8 +340,8 @@
 
 
         /* =========================================
-                                                                                                                                                                                                                                                                               IMAGE
-                                                                                                                                                                                                                                                                            ========================================= */
+                                                                                                                                                                                                                                                                                                                                                   IMAGE
+                                                                                                                                                                                                                                                                                                                                                ========================================= */
 
         .map-image {
             display: block;
@@ -346,8 +357,8 @@
 
 
         /* =========================================
-                                                                                                                                                                                                                                                                               PIN
-                                                                                                                                                                                                                                                                            ========================================= */
+                                                                                                                                                                                                                                                                                                                                                   PIN
+                                                                                                                                                                                                                                                                                                                                                ========================================= */
 
         .map-pin {
             position: absolute;
@@ -401,8 +412,8 @@
         }
 
         /* =========================================
-                                                                                                                                                                                                                                                                               SIDEBAR
-                                                                                                                                                                                                                                                                            ========================================= */
+                                                                                                                                                                                                                                                                                                                                                   SIDEBAR
+                                                                                                                                                                                                                                                                                                                                                ========================================= */
 
         .bangunan-item {
 
@@ -421,10 +432,10 @@
 
 
         /* =========================================
-                                                                                                                                                                                                                                                                               DOKUMENTASI
+                                                                                                                                                                                                                                                                                                                                                   DOKUMENTASI
 
-                                                                                                                                                                                                                                                                               Landscape seperti kamera HP
-                                                                                                                                                                                                                                                                            ========================================= */
+                                                                                                                                                                                                                                                                                                                                                   Landscape seperti kamera HP
+                                                                                                                                                                                                                                                                                                                                                ========================================= */
 
         .documentation-image {
 
@@ -830,177 +841,206 @@
                FOCUS KE PIN
             ========================================= */
 
-            document
-                .querySelectorAll('.bangunan-item')
-                .forEach(function(item) {
+            document.querySelectorAll('.bangunan-item').forEach(function(item) {
 
-                    item.addEventListener('click', function() {
+                item.addEventListener('click', function() {
 
-                        const kawasanId =
-                            this.dataset.kawasan;
+                    const kawasanId =
+                        this.dataset.kawasan;
 
-                        const kode =
-                            this.dataset.kode;
+                    const kode =
+                        this.dataset.kode;
 
-                        const nama =
-                            this.dataset.nama;
+                    const nama =
+                        this.dataset.nama;
 
-                        const x =
-                            parseFloat(this.dataset.x);
+                    const x =
+                        parseFloat(this.dataset.x);
 
-                        const y =
-                            parseFloat(this.dataset.y);
+                    const y =
+                        parseFloat(this.dataset.y);
 
 
-                        /* ACTIVE SIDEBAR */
-                        /* ACTIVE SIDEBAR */
+                    /* ACTIVE SIDEBAR */
+                    /* ACTIVE SIDEBAR */
 
-                        document.querySelectorAll('.bangunan-item')
-                            .forEach(function(el) {
+                    document.querySelectorAll('.bangunan-item')
+                        .forEach(function(el) {
 
-                                el.classList.remove('active');
+                            el.classList.remove('active');
 
-                            });
+                        });
 
-                        this.classList.add('active');
-                        /* CENTER KE PIN */
+                    this.classList.add('active');
+                    /* CENTER KE PIN */
 
-                        centerPin(
-                            kawasanId,
-                            kode,
-                            x,
-                            y
+                    centerPin(
+                        kawasanId,
+                        kode,
+                        x,
+                        y
+                    );
+
+                    function centerPin(kawasanId, kode, x, y) {
+
+                        /* =========================
+                           CARI PIN
+                        ========================= */
+
+                        const pin = document.querySelector(
+                            `.map-pin[data-kawasan="${kawasanId}"][data-kode="${kode}"]`
                         );
 
-                        function centerPin(kawasanId, kode, x, y) {
+                        if (!pin) {
 
-                            /* =========================
-                               CARI PIN
-                            ========================= */
-
-                            const pin = document.querySelector(
-                                `.map-pin[data-kawasan="${kawasanId}"][data-kode="${kode}"]`
+                            console.log(
+                                'Pin tidak ditemukan:',
+                                kode
                             );
 
-                            if (!pin) {
-
-                                console.log(
-                                    'Pin tidak ditemukan:',
-                                    kode
-                                );
-
-                                return;
-                            }
-
-
-                            /* =========================
-                               ZOOM
-                            ========================= */
-
-                            scale = 1.8;
-
-
-                            /* =========================
-                               AMBIL UKURAN VIEWPORT
-                            ========================= */
-
-                            const viewportWidth =
-                                mapViewport.clientWidth;
-
-                            const viewportHeight =
-                                mapViewport.clientHeight;
-
-
-                            /* =========================
-                               AMBIL GAMBAR KAWASAN
-                            ========================= */
-
-                            const mapKawasan =
-                                pin.closest('.map-kawasan');
-
-                            if (!mapKawasan) {
-
-                                console.log('Map kawasan tidak ditemukan');
-
-                                return;
-                            }
-
-
-                            const image =
-                                mapKawasan.querySelector('.map-image');
-
-                            if (!image) {
-
-                                console.log('Map image tidak ditemukan');
-
-                                return;
-                            }
-
-
-                            const imageWidth =
-                                image.offsetWidth;
-
-                            const imageHeight =
-                                image.offsetHeight;
-
-
-                            /* =========================
-                               POSISI ASLI PIN
-                            ========================= */
-
-
-
-                            const pinX = pin.offsetLeft;
-
-                            const pinY = pin.offsetTop;
-
-                            /* =========================
-                               CENTER PIN
-                            ========================= */
-
-                            translateX =
-                                (viewportWidth / 2) -
-                                (pinX * scale);
-
-                            translateY =
-                                (viewportHeight / 2) -
-                                (pinY * scale);
-
-                            /* =========================
-                               UPDATE MAP
-                            ========================= */
-
-                            updateTransform();
-                            /* HAPUS ACTIVE PIN SEBELUMNYA */
-                            document.querySelectorAll('.map-pin').forEach(function(item) {
-                                item.classList.remove('active-pin');
-                            });
-
-
-                            /* BESARKAN PIN TERPILIH */
-                            pin.classList.add('active-pin');
+                            return;
                         }
 
-                        /*
-                         * Highlight pin
-                         */
 
-                        document
-                            .querySelectorAll('.map-pin')
-                            .forEach(function(item) {
+                        /* =========================
+                           ZOOM
+                        ========================= */
 
-                                item.style.zIndex = '';
-
-                            });
+                        scale = 1.8;
 
 
-                        pin.style.zIndex = '999';
+                        /* =========================
+                           AMBIL UKURAN VIEWPORT
+                        ========================= */
 
-                    });
+                        const viewportWidth =
+                            mapViewport.clientWidth;
+
+                        const viewportHeight =
+                            mapViewport.clientHeight;
+
+
+                        /* =========================
+                           AMBIL GAMBAR KAWASAN
+                        ========================= */
+
+                        const mapKawasan =
+                            pin.closest('.map-kawasan');
+
+                        if (!mapKawasan) {
+
+                            console.log('Map kawasan tidak ditemukan');
+
+                            return;
+                        }
+
+
+                        const image =
+                            mapKawasan.querySelector('.map-image');
+
+                        if (!image) {
+
+                            console.log('Map image tidak ditemukan');
+
+                            return;
+                        }
+
+
+                        const imageWidth =
+                            image.offsetWidth;
+
+                        const imageHeight =
+                            image.offsetHeight;
+
+
+                        /* =========================
+                           POSISI ASLI PIN
+                        ========================= */
+
+
+
+                        const pinX = pin.offsetLeft;
+
+                        const pinY = pin.offsetTop;
+
+                        /* =========================
+                           CENTER PIN
+                        ========================= */
+
+                        translateX =
+                            (viewportWidth / 2) -
+                            (pinX * scale);
+
+                        translateY =
+                            (viewportHeight / 2) -
+                            (pinY * scale);
+
+                        /* =========================
+                           UPDATE MAP
+                        ========================= */
+
+                        updateTransform();
+                        /* HAPUS ACTIVE PIN SEBELUMNYA */
+                        document.querySelectorAll('.map-pin').forEach(function(item) {
+                            item.classList.remove('active-pin');
+                        });
+
+
+                        /* BESARKAN PIN TERPILIH */
+                        pin.classList.add('active-pin');
+                    }
+
+                    /*
+                     * Highlight pin
+                     */
+
+                    document
+                        .querySelectorAll('.map-pin')
+                        .forEach(function(item) {
+
+                            item.style.zIndex = '';
+
+                        });
+
+
+                    pin.style.zIndex = '999';
 
                 });
 
+            });
 
+
+            // =========================================
+            // AUTO FOCUS SAAT HALAMAN DIBUKA
+            // =========================================
+            function fokusPinPertama() {
+
+                const bangunanPertama = document.querySelector(
+                    '.bangunan-list-kawasan:not(.d-none) .bangunan-item'
+                );
+
+                const gambarPeta = document.querySelector(
+                    '.map-kawasan:not(.d-none) .map-image'
+                );
+
+                if (!bangunanPertama || !gambarPeta) return;
+
+                function jalankanFokus() {
+                    requestAnimationFrame(function() {
+                        bangunanPertama.click();
+                    });
+                }
+
+                if (!gambarPeta.complete || gambarPeta.naturalWidth === 0) {
+                    gambarPeta.addEventListener('load', jalankanFokus, {
+                        once: true
+                    });
+                } else {
+                    jalankanFokus();
+                }
+            }
+
+            fokusPinPertama();
             /* =========================================
                MODAL DETAIL
             ========================================= */
@@ -1062,6 +1102,9 @@
                             'Informasi bangunan belum tersedia.';
 
 
+                        document.getElementById(
+                            'btnDokumentasiBangunan'
+                        ).href = "{{ url('halfoto_lapharian') }}/" + bangunanId;
                         /* =========================
                            KOSONGKAN DOKUMENTASI
                         ========================= */

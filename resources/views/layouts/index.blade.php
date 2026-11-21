@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Dashboard Project SLF PT. KAN</title>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- SEO Optimization -->
     <meta name="description" content="Spark Admin - Premium Bootstrap 5 Admin Dashboard Template">

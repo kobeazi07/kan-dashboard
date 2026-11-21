@@ -39,7 +39,20 @@ Route::middleware(['auth', 'role:Admin|Owner'])->group(function () {
 
     Route::get('/bangunan/{bangunan}', [PetaController::class, 'detail'])
         ->name('bangunan.detail');
+
+
+    // foto survey
+    Route::get('halfoto_lapharian/{id}', [PetaController::class, 'halfoto_lapharian'])->name('HalamanFotolapharian');
+    Route::post('/dokumentasi/upload', [
+        PetaController::class,
+        'upload_foto'
+    ])->name('dokumentasi.upload');
+    Route::delete(
+        '/dokumentasi/{dokumentasi}',
+        [PetaController::class, 'hapus_foto']
+    )->name('dokumentasi.destroy');
     // sementara masukkan admin kesini 
+
 
     Route::get('admin_kawasan', [DashboardController::class, 'admin_kawasan'])->name('HalamanAdminkawasan');
     Route::post('/tambah_kawasan', [DashboardController::class, 'tambah_kawasan'])->name('Tambah_kawasan');

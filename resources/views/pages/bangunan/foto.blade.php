@@ -1,346 +1,269 @@
 @extends('layouts.index')
 
 @section('konten')
-    <style>
-        .body-wrapper-inner {
-            margin-top: 0 !important;
-            padding: 20px;
-        }
+    @include('pages.bangunan.includes.css_foto')
 
-        .page-title {
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
 
-        .building-info {
-            background: #fff;
-            border: 1px solid #e9ecef;
-            border-radius: 12px;
-            padding: 15px 18px;
-        }
+    <div class="body-wrapper-inner kamera-page ">
 
-        .building-name {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
+        <div class="">
 
-        .building-meta {
-            color: #6c757d;
-            font-size: 13px;
-        }
-
-        .kamera-card {
-            border: 0;
-            border-radius: 16px;
-            overflow: hidden;
-        }
-
-        .kamera-preview {
-            width: 100%;
-            max-height: 520px;
-            min-height: 250px;
-            object-fit: contain;
-            background: #171717;
-            border-radius: 12px;
-        }
-
-        .kamera-status {
-            background: #f8f9fa;
-            border: 1px solid #edf0f2;
-            border-radius: 12px;
-            padding: 14px;
-            font-size: 13px;
-            overflow-wrap: anywhere;
-        }
-
-        .gps-line {
-            margin-top: 5px;
-            color: #495057;
-        }
-
-        #canvasFoto {
-            width: 100%;
-            height: auto;
-            border-radius: 12px;
-            background: #eee;
-        }
-
-        .btn-kamera {
-            min-height: 50px;
-            border-radius: 10px;
-            font-weight: 600;
-        }
-
-        .label-section {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .foto-card {
-            height: 100%;
-            overflow: hidden;
-            border-radius: 12px;
-            background: #fff;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, .07);
-        }
-
-        .foto-card .blog-img {
-            position: relative;
-        }
-
-        .foto-card .blog-img img {
-            width: 100%;
-            height: 190px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .btn-submit-delete {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 38px;
-            height: 38px;
-            border: 0;
-            border-radius: 8px;
-            background: rgba(220, 53, 69, .95);
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .gallery-title {
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-
-        @media (max-width: 767.98px) {
-            .body-wrapper-inner {
-                padding: 12px !important;
-            }
-
-            .page-title {
-                font-size: 20px;
-            }
-
-            .building-info {
-                padding: 13px;
-            }
-
-            .building-name {
-                font-size: 16px;
-            }
-
-            .kamera-card .card-body {
-                padding: 13px !important;
-            }
-
-            .kamera-preview {
-                min-height: 230px;
-                max-height: 65vh;
-            }
-
-            .kamera-status {
-                padding: 12px;
-                font-size: 12px;
-            }
-
-            .btn-kamera {
-                min-height: 52px;
-                font-size: 14px;
-            }
-
-            .foto-card .blog-img img {
-                height: 145px;
-            }
-        }
-
-        @media (max-width: 375px) {
-            .foto-card .blog-img img {
-                height: 120px;
-            }
-
-            .building-meta {
-                font-size: 12px;
-            }
-        }
-    </style>
-
-    <div class="body-wrapper-inner">
-        <div class="container-fluid">
-
-            {{-- Header --}}
-            <div class="mb-3">
-                <h4 class="page-title">Dokumentasi Lapangan</h4>
-                <p class="text-muted mb-0">
-                    Ambil foto dokumentasi dengan informasi lokasi dan waktu otomatis.
+            {{-- HEADER --}}
+            <div class="kamera-header">
+                <h4>Dokumentasi Lapangan</h4>
+                <p>
+                    Ambil foto dengan informasi lokasi dan waktu otomatis.
                 </p>
             </div>
 
-            {{-- Informasi Bangunan --}}
-            <div class="building-info mb-3">
-                <div class="building-name">
-                    {{ $bangunan->nama ?? '-' }}
-                </div>
 
-                <div class="building-meta">
-                    <span>Kode: {{ $bangunan->kode ?? '-' }}</span>
-                    <span class="mx-1">•</span>
-                    <span>Kawasan: {{ $bangunan->kawasan->nama ?? '-' }}</span>
-                </div>
-            </div>
+            {{-- KARTU DOKUMENTASI --}}
+            <div class="card kamera-card shadow-sm">
 
-            {{-- ID Bangunan dan nama untuk JavaScript --}}
-            <input type="hidden" name="bangunan_id" value="{{ $bangunan->id }}">
-            <input type="hidden" id="namaProyek" value="{{ $bangunan->nama ?? '' }}">
-
-            {{-- Kamera --}}
-            <div class="card kamera-card shadow-sm mb-4">
                 <div class="card-body p-3 p-md-4">
 
-                    {{-- Informasi GPS --}}
+                    {{-- INFORMASI BANGUNAN --}}
+                    <input type="hidden" name="bangunan_id" value="{{ $bangunan->id }}">
+
+                    <input type="hidden" id="namaProyek" value="{{ $bangunan->nama ?? '' }}">
+
+                    <div class="bangunan-info">
+
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-building text-primary"></i>
+                            <small class="text-muted fw-semibold">
+                                INFORMASI BANGUNAN
+                            </small>
+                        </div>
+
+                        <h5>{{ $bangunan->nama ?? '' }}</h5>
+
+                        <div class="bangunan-meta">
+                            <span>
+                                <i class="bi bi-upc-scan me-1"></i>
+                                {{ $bangunan->kode ?? '' }}
+                            </span>
+
+                            <span>
+                                <i class="bi bi-geo-alt me-1"></i>
+                                {{ $bangunan->kawasan->nama ?? '' }}
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    {{-- INFORMASI GPS --}}
                     <div class="kamera-status mb-3">
-                        <div class="fw-bold mb-2">
-                            <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+
+                        <div class="gps-heading">
+                            <i class="bi bi-geo-alt-fill"></i>
                             Informasi Lokasi
                         </div>
 
-                        <div id="statusGPS" class="text-muted">
+                        <div id="statusGPS" class="text-muted mb-2">
                             Lokasi belum diambil.
                         </div>
 
-                        <div id="koordinatGPS" class="gps-line">
-                            Latitude: - | Longitude: -
+                        <div class="gps-item">
+                            <i class="bi bi-crosshair"></i>
+                            <span id="koordinatGPS">
+                                Latitude: - | Longitude: -
+                            </span>
                         </div>
 
-                        <div id="akurasiGPS" class="gps-line">
-                            Akurasi GPS: -
+                        <div class="gps-item">
+                            <i class="bi bi-bullseye"></i>
+                            <span id="akurasiGPS">
+                                Akurasi GPS: -
+                            </span>
                         </div>
 
-                        <div id="alamatGPS" class="gps-line">
-                            Alamat: menunggu lokasi.
+                        <div class="gps-item">
+                            <i class="bi bi-map"></i>
+                            <span id="alamatGPS">
+                                Alamat: sedang menunggu lokasi.
+                            </span>
                         </div>
 
-                        <div id="waktuGPS" class="gps-line">
-                            Waktu: -
+                        <div class="gps-item">
+                            <i class="bi bi-clock"></i>
+                            <span id="waktuGPS">
+                                Waktu: -
+                            </span>
                         </div>
+
                     </div>
 
+
+                    {{-- AREA KAMERA --}}
                     {{-- Area Kamera --}}
                     <div id="areaKamera" class="mb-3" style="display:none;">
+
                         <div class="label-section">Kamera</div>
 
-                        <video id="videoKamera" class="kamera-preview" autoplay playsinline muted>
-                        </video>
+                        {{-- Parent kamera --}}
+                        <div class="kamera-frame">
 
-                        <div class="row g-2 mt-2">
-                            <div class="col-3">
-                                <button type="button" id="btnCancelFoto" class="btn btn-outline-danger btn-kamera w-100">
-                                    <i class="bi bi-x-lg"></i>
-                                </button>
-                            </div>
+                            {{-- Video kamera --}}
+                            <video id="videoKamera" class="kamera-preview" autoplay playsinline muted>
+                            </video>
 
-                            <div class="col-9">
-                                <button type="button" id="btnAmbilFoto" class="btn btn-success btn-kamera w-100">
-                                    <i class="bi bi-camera-fill me-1"></i>
-                                    Ambil Foto
-                                </button>
-                            </div>
+                            {{-- Tombol batal: kiri atas --}}
+                            <button type="button" id="btnCancelFoto" class="btn-camera-cancel"
+                                title="Batalkan pengambilan foto">
+
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+
+                            {{-- Tombol ambil foto: kanan tengah --}}
+                            <button type="button" id="btnAmbilFoto" class="btn-camera-capture" title="Ambil Foto">
+                            </button>
+
                         </div>
+
                     </div>
 
-                    {{-- Area Preview --}}
-                    <div id="areaPreview" class="mb-3" style="display:none;">
-                        <div class="label-section">Preview Foto Watermark</div>
+                </div>
+
+
+                {{-- PREVIEW FOTO WATERMARK --}}
+                <div id="areaPreview" style="display:none;" class="mb-3">
+
+                    <div class="label-section">
+                        Preview Foto Watermark
+                    </div>
+
+                    <div class="preview-container">
 
                         <canvas id="canvasFoto"></canvas>
 
-                        <div class="row g-2 mt-2">
-                            <div class="col-6">
-                                <button type="button" id="btnUlangi" class="btn btn-outline-secondary btn-kamera w-100">
-                                    <i class="bi bi-arrow-counterclockwise me-1"></i>
-                                    Foto Ulang
-                                </button>
-                            </div>
-
-                            <div class="col-6">
-                                <button type="button" id="btnUpload" class="btn btn-primary btn-kamera w-100">
-                                    <i class="bi bi-cloud-arrow-up me-1"></i>
-                                    Upload Foto
-                                </button>
-                            </div>
-                        </div>
                     </div>
 
-                    {{-- Tombol Mulai --}}
-                    <div id="areaMulai">
-                        <div class="d-grid">
-                            <button type="button" id="btnBukaKamera" class="btn btn-primary btn-kamera">
-                                <i class="bi bi-camera-fill me-1"></i>
-                                Buka Kamera dan Ambil Lokasi
+                    <div class="row g-2 mt-2">
+
+                        <div class="col-6">
+                            <button type="button" id="btnUlangi" class="btn btn-outline-secondary btn-kamera w-100">
+                                <i class="bi bi-arrow-repeat me-1"></i>
+                                Foto Ulang
                             </button>
                         </div>
+
+                        <div class="col-6">
+                            <button type="button" id="btnUpload" class="btn btn-primary btn-kamera w-100">
+                                <i class="bi bi-cloud-upload me-1"></i>
+                                Upload Foto
+                            </button>
+                        </div>
+
                     </div>
 
-                    <div id="pesanUpload" class="mt-3" aria-live="polite"></div>
+                </div>
 
+
+                {{-- TOMBOL MULAI --}}
+                <div id="areaMulai">
+
+                    <div class="d-grid">
+
+                        <button type="button" id="btnBukaKamera" class="btn btn-primary btn-kamera">
+                            <i class="bi bi-camera-fill me-1"></i>
+                            Buka Kamera dan Ambil Lokasi
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                {{-- PESAN UPLOAD --}}
+                <div id="pesanUpload" class="mt-3" aria-live="polite"></div>
+
+            </div>
+
+        </div>
+
+
+        {{-- GALERI DOKUMENTASI --}}
+        <div class="mt-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="galeri-heading mb-1">
+                        <i class="bi bi-images me-1"></i>
+                        Dokumentasi Foto
+                    </h5>
+
+                    <small class="text-muted">
+                        Foto dokumentasi bangunan
+                    </small>
                 </div>
             </div>
 
-            {{-- Galeri Dokumentasi --}}
-            <div class="mb-3">
-                <h5 class="gallery-title">
-                    <i class="bi bi-images me-1"></i>
-                    Galeri Dokumentasi
-                </h5>
-            </div>
-
             <div class="row g-3">
+
                 @forelse ($foto as $itemFoto)
                     <div class="col-6 col-md-4 col-xl-3">
-                        <div class="foto-card">
+
+                        <div class="blog-item foto-card">
+
                             <div class="blog-img">
 
+                                {{-- FOTO --}}
                                 <a href="{{ asset('inputan/bangunan/detailimg/' . $itemFoto->foto) }}"
-                                    data-lightbox="DokumentasiBangunan" data-title="Dokumentasi {{ $bangunan->nama ?? '' }}"
-                                    class="lightbox-link">
+                                    data-lightbox="Blog-1" data-title="Dokumentasi laporan harian" class="lightbox-link">
 
                                     <img src="{{ asset('inputan/bangunan/detailimg/' . $itemFoto->foto) }}"
-                                        class="img-fluid" alt="Dokumentasi bangunan" loading="lazy">
+                                        class="img-fluid rounded-image" alt="Dokumentasi laporan harian" loading="lazy">
+
                                 </a>
 
+
+                                {{-- TOMBOL HAPUS --}}
                                 <form action="{{ route('dokumentasi.destroy', $itemFoto->id) }}" method="POST"
                                     class="form-delete-foto">
 
                                     @csrf
                                     @method('DELETE')
 
-                                    <button type="submit" class="btn-submit-delete" aria-label="Hapus foto"
+                                    <button type="submit" class="btn-submit-delete" aria-label="Hapus foto dokumentasi"
                                         title="Hapus foto">
-
                                         <i class="bi bi-trash"></i>
                                     </button>
+
                                 </form>
 
                             </div>
+
                         </div>
+
                     </div>
+
                 @empty
+
                     <div class="col-12">
-                        <div class="text-center text-muted py-4 bg-white rounded shadow-sm">
-                            <i class="bi bi-image fs-1 d-block mb-2"></i>
-                            Belum ada dokumentasi foto untuk bangunan ini.
+
+                        <div class="empty-gallery">
+                            <i class="bi bi-image"></i>
+                            <div class="fw-semibold">
+                                Dokumentasi belum tersedia
+                            </div>
+                            <small>
+                                Foto yang berhasil diunggah akan tampil di sini.
+                            </small>
                         </div>
+
                     </div>
                 @endforelse
+
             </div>
 
         </div>
+
     </div>
+
+    </div>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -355,21 +278,20 @@
             const btnUpload = document.getElementById('btnUpload');
             const btnCancelFoto = document.getElementById('btnCancelFoto');
 
-            const areaKamera = document.getElementById('areaKamera');
-            const areaPreview = document.getElementById('areaPreview');
-            const areaMulai = document.getElementById('areaMulai');
-            const pesanUpload = document.getElementById('pesanUpload');
-
-            const bangunanId = document.querySelector('input[name="bangunan_id"]').value;
-            const namaProyek = document.getElementById('namaProyek').value;
-
             let streamKamera = null;
             let fotoSiapUpload = null;
             let posisiGPS = null;
             let alamat = '';
             let metadataFoto = null;
 
+            const areaKamera = document.getElementById('areaKamera');
+            const areaPreview = document.getElementById('areaPreview');
+            const areaMulai = document.getElementById('areaMulai');
+            const pesanUpload = document.getElementById('pesanUpload');
+
+
             function tampilkanPesan(pesan, jenis = 'info') {
+
                 pesanUpload.innerHTML = '';
 
                 const alert = document.createElement('div');
@@ -379,41 +301,55 @@
                 pesanUpload.appendChild(alert);
             }
 
+
             function formatTanggal(waktu) {
+
                 return waktu.toLocaleDateString('id-ID', {
                     day: '2-digit',
                     month: 'long',
                     year: 'numeric'
                 });
+
             }
 
+
             function formatJam(waktu) {
+
                 return waktu.toLocaleTimeString('id-ID', {
                     hour: '2-digit',
                     minute: '2-digit',
                     second: '2-digit',
                     hour12: false
                 });
+
             }
 
+
             function hentikanKamera() {
+
                 if (streamKamera) {
+
                     streamKamera.getTracks().forEach(track => track.stop());
                     streamKamera = null;
+
                 }
 
                 video.srcObject = null;
+
             }
 
+
             async function ambilGPS() {
+
                 if (!navigator.geolocation) {
                     throw new Error('Browser tidak mendukung GPS.');
                 }
 
                 document.getElementById('statusGPS').textContent =
-                    'Sedang mengambil lokasi GPS...';
+                    'Meminta lokasi GPS...';
 
                 const posisi = await new Promise((resolve, reject) => {
+
                     navigator.geolocation.getCurrentPosition(
                         resolve,
                         reject, {
@@ -422,6 +358,7 @@
                             maximumAge: 0
                         }
                     );
+
                 });
 
                 posisiGPS = {
@@ -431,7 +368,8 @@
                 };
 
                 document.getElementById('koordinatGPS').textContent =
-                    `Latitude: ${posisiGPS.latitude.toFixed(6)} | Longitude: ${posisiGPS.longitude.toFixed(6)}`;
+                    `Latitude: ${posisiGPS.latitude.toFixed(6)} | ` +
+                    `Longitude: ${posisiGPS.longitude.toFixed(6)}`;
 
                 document.getElementById('akurasiGPS').textContent =
                     `Akurasi GPS: ±${Math.round(posisiGPS.accuracy)} meter`;
@@ -439,10 +377,13 @@
                 document.getElementById('statusGPS').textContent =
                     'Koordinat berhasil diperoleh.';
 
+
+                // Reverse geocoding untuk mencari alamat.
                 document.getElementById('alamatGPS').textContent =
                     'Alamat sedang dicari...';
 
                 try {
+
                     const params = new URLSearchParams({
                         format: 'jsonv2',
                         lat: posisiGPS.latitude,
@@ -458,31 +399,43 @@
                     }
 
                     const data = await response.json();
+
                     alamat = data.display_name || 'Alamat tidak ditemukan';
 
                 } catch (error) {
+
                     alamat = 'Alamat tidak berhasil diperoleh';
+
                 }
 
                 document.getElementById('alamatGPS').textContent =
                     `Alamat: ${alamat}`;
 
                 return posisiGPS;
+
             }
 
-            async function bukaKamera() {
+
+            // BUKA KAMERA DAN AMBIL GPS
+            btnBuka.addEventListener('click', async function() {
+
                 btnBuka.disabled = true;
-                tampilkanPesan('Mengambil lokasi dan membuka kamera...', 'info');
+
+                tampilkanPesan(
+                    'Mengambil lokasi dan membuka kamera...',
+                    'info'
+                );
 
                 try {
-                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                        throw new Error('Browser tidak mendukung akses kamera. Gunakan HTTPS atau localhost.');
-                    }
 
+                    // Ambil GPS terlebih dahulu.
                     await ambilGPS();
 
+                    // Meminta kamera belakang jika tersedia.
                     streamKamera = await navigator.mediaDevices.getUserMedia({
+
                         audio: false,
+
                         video: {
                             facingMode: {
                                 ideal: 'environment'
@@ -494,69 +447,111 @@
                                 ideal: 1080
                             }
                         }
+
                     });
 
                     video.srcObject = streamKamera;
+
                     await video.play();
 
                     areaKamera.style.display = 'block';
-                    areaPreview.style.display = 'none';
                     areaMulai.style.display = 'none';
+                    areaPreview.style.display = 'none';
 
                     tampilkanPesan('Kamera siap digunakan.', 'success');
 
                 } catch (error) {
+
                     console.error(error);
 
-                    let pesan = error.message || 'Tidak dapat membuka kamera atau mengambil GPS.';
+                    let pesan = 'Tidak dapat membuka kamera atau mengambil GPS.';
 
                     if (error.code === 1) {
+
                         pesan = 'Izin lokasi ditolak. Aktifkan izin lokasi di browser.';
+
+                    } else if (error.code === 2) {
+
+                        pesan = 'Lokasi tidak tersedia. Periksa pengaturan GPS perangkat.';
+
+                    } else if (error.code === 3) {
+
+                        pesan = 'Waktu pengambilan GPS habis. Coba kembali.';
+
                     } else if (error.name === 'NotAllowedError') {
+
                         pesan = 'Izin kamera ditolak. Aktifkan izin kamera di browser.';
+
                     } else if (error.name === 'NotFoundError') {
+
                         pesan = 'Kamera tidak ditemukan pada perangkat ini.';
+
                     } else if (error.name === 'NotReadableError') {
+
                         pesan = 'Kamera sedang digunakan aplikasi lain.';
+
+                    } else if (error.message) {
+
+                        pesan = error.message;
+
                     }
 
                     tampilkanPesan(pesan, 'danger');
 
                 } finally {
+
                     btnBuka.disabled = false;
+
                 }
-            }
 
-            btnBuka.addEventListener('click', bukaKamera);
+            });
 
-            // Ambil foto dan tambahkan watermark
+
+            // AMBIL FOTO
             btnAmbil.addEventListener('click', function() {
 
                 if (!streamKamera || !posisiGPS || !video.videoWidth) {
-                    tampilkanPesan('Kamera atau GPS belum siap.', 'warning');
+
+                    tampilkanPesan(
+                        'Kamera atau GPS belum siap.',
+                        'warning'
+                    );
+
                     return;
+
                 }
 
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
 
+                // Ambil gambar dari kamera.
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
+                // Waktu dicatat ketika foto diambil.
                 const waktuFoto = new Date();
 
                 metadataFoto = {
+
                     tanggal: formatTanggal(waktuFoto),
                     jam: formatJam(waktuFoto),
                     tanggal_jam_iso: waktuFoto.toISOString(),
+
                     latitude: posisiGPS.latitude,
                     longitude: posisiGPS.longitude,
                     akurasi_gps: posisiGPS.accuracy,
+
                     alamat: alamat,
-                    nama_proyek: namaProyek
+
+                    nama_proyek: document.getElementById('namaProyek').value.trim()
+
                 };
 
                 document.getElementById('waktuGPS').textContent =
                     `Waktu pengambilan: ${metadataFoto.tanggal} ${metadataFoto.jam}`;
+
+
+                // WATERMARK
+                const namaProyek = metadataFoto.nama_proyek || 'Dokumentasi Proyek';
 
                 const padding = Math.round(canvas.width * 0.025);
                 const fontSize = Math.max(18, Math.round(canvas.width * 0.018));
@@ -564,13 +559,15 @@
                 const maxWidth = canvas.width - padding * 2;
 
                 const lines = [
-                    `Bangunan: ${metadataFoto.nama_proyek || 'Dokumentasi Bangunan'}`,
+
+                    `Proyek: ${namaProyek}`,
                     `Tanggal: ${metadataFoto.tanggal}`,
                     `Jam: ${metadataFoto.jam}`,
                     `Latitude: ${metadataFoto.latitude.toFixed(6)}`,
                     `Longitude: ${metadataFoto.longitude.toFixed(6)}`,
                     `Akurasi GPS: ±${Math.round(metadataFoto.akurasi_gps)} meter`,
                     metadataFoto.alamat
+
                 ];
 
                 ctx.font = `bold ${fontSize}px Arial`;
@@ -578,40 +575,76 @@
                 const wrappedLines = [];
 
                 lines.forEach(line => {
+
                     let current = '';
 
-                    for (const word of String(line).split(/\s+/)) {
+                    for (const word of line.split(/\s+/)) {
+
                         const test = current ? `${current} ${word}` : word;
 
                         if (ctx.measureText(test).width > maxWidth && current) {
+
                             wrappedLines.push(current);
                             current = word;
+
                         } else {
+
                             current = test;
+
                         }
+
                     }
 
-                    if (current) wrappedLines.push(current);
+                    if (current) {
+                        wrappedLines.push(current);
+                    }
+
                 });
 
-                const panelHeight = padding * 2 + wrappedLines.length * lineHeight;
+                const panelWidth = canvas.width * 0.7;
+
+                const panelHeight =
+                    padding * 1 + wrappedLines.length * lineHeight;
+
+                const panelX = 0;
                 const panelY = canvas.height - panelHeight;
 
-                // Latar watermark
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
-                ctx.fillRect(0, panelY, canvas.width, panelHeight);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+                ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
 
-                // Teks watermark
                 ctx.fillStyle = '#fff';
                 ctx.textBaseline = 'top';
-                ctx.font = `bold ${fontSize}px Arial`;
+
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.9)';
+                ctx.lineJoin = 'round';
 
                 wrappedLines.forEach((line, index) => {
+
+                    const x = padding;
                     const y = panelY + padding + index * lineHeight;
-                    ctx.fillText(line, padding, y, maxWidth);
+
+                    ctx.strokeText(line, x, y, maxWidth);
+
+                    ctx.fillStyle = '#fff';
+                    ctx.fillText(line, x, y, maxWidth);
+
                 });
 
+                wrappedLines.forEach((line, index) => {
+
+                    ctx.fillText(
+                        line,
+                        padding,
+                        panelY + padding + index * lineHeight,
+                        maxWidth
+                    );
+
+                });
+
+
                 canvas.toBlob(function(blob) {
+
                     if (!blob) {
                         tampilkanPesan('Gagal memproses foto.', 'danger');
                         return;
@@ -619,9 +652,11 @@
 
                     fotoSiapUpload = blob;
 
+                    // Langsung tampilkan preview
                     areaPreview.style.display = 'block';
                     areaKamera.style.display = 'none';
 
+                    // Matikan kamera
                     hentikanKamera();
 
                     tampilkanPesan(
@@ -632,8 +667,10 @@
                 }, 'image/jpeg', 0.92);
             });
 
-            // Foto ulang
-            btnUlangi.addEventListener('click', async function() {
+
+            // FOTO ULANG
+            btnUlangi.addEventListener('click', function() {
+
                 fotoSiapUpload = null;
                 metadataFoto = null;
 
@@ -641,17 +678,18 @@
                 areaKamera.style.display = 'none';
                 areaMulai.style.display = 'block';
 
-                await bukaKamera();
+                btnBuka.click();
+
             });
 
-            // Batalkan pengambilan foto
+
+            // BATAL FOTO
             btnCancelFoto.addEventListener('click', function() {
+
                 hentikanKamera();
 
                 fotoSiapUpload = null;
                 metadataFoto = null;
-                posisiGPS = null;
-                alamat = '';
 
                 areaKamera.style.display = 'none';
                 areaPreview.style.display = 'none';
@@ -659,45 +697,88 @@
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                tampilkanPesan('Pengambilan foto dibatalkan.', 'warning');
+                tampilkanPesan(
+                    'Pengambilan foto dibatalkan.',
+                    'warning'
+                );
+
             });
 
-            // Upload foto
+
+            // UPLOAD FOTO
             btnUpload.addEventListener('click', async function() {
 
                 if (!fotoSiapUpload || !metadataFoto) {
-                    tampilkanPesan('Silakan ambil foto terlebih dahulu.', 'warning');
+
+                    tampilkanPesan(
+                        'Silakan ambil foto terlebih dahulu.',
+                        'warning'
+                    );
+
                     return;
+
                 }
 
                 const formData = new FormData();
 
-                formData.append('bangunan_id', bangunanId);
-                formData.append('foto', fotoSiapUpload, 'dokumentasi.jpg');
-                formData.append('nama_proyek', metadataFoto.nama_proyek);
-                formData.append('latitude', metadataFoto.latitude);
-                formData.append('longitude', metadataFoto.longitude);
-                formData.append('akurasi_gps', metadataFoto.akurasi_gps);
-                formData.append('alamat', metadataFoto.alamat);
-                formData.append('tanggal_jam', metadataFoto.tanggal_jam_iso);
+                formData.append(
+                    'bangunan_id',
+                    $('input[name="bangunan_id"]').val()
+                );
+
+                formData.append(
+                    'foto',
+                    fotoSiapUpload,
+                    'dokumentasi.jpg'
+                );
+
+                formData.append(
+                    'nama_proyek',
+                    metadataFoto.nama_proyek
+                );
+
+                formData.append(
+                    'latitude',
+                    metadataFoto.latitude
+                );
+
+                formData.append(
+                    'longitude',
+                    metadataFoto.longitude
+                );
+
+                formData.append(
+                    'akurasi_gps',
+                    metadataFoto.akurasi_gps
+                );
+
+                formData.append(
+                    'alamat',
+                    metadataFoto.alamat
+                );
+
+                formData.append(
+                    'tanggal_jam',
+                    metadataFoto.tanggal_jam_iso
+                );
 
                 btnUpload.disabled = true;
                 btnUpload.textContent = 'Mengunggah...';
 
                 try {
-                    const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-
-                    if (!csrfMeta) {
-                        throw new Error('Meta CSRF tidak ditemukan di layout.');
-                    }
 
                     const response = await fetch(
                         "{{ route('dokumentasi.upload') }}", {
                             method: 'POST',
+
                             headers: {
-                                'X-CSRF-TOKEN': csrfMeta.content,
+                                'X-CSRF-TOKEN': document.querySelector(
+                                    'meta[name="csrf-token"]'
+                                ).content,
+
                                 'Accept': 'application/json'
                             },
+
                             body: formData
                         }
                     );
@@ -705,12 +786,20 @@
                     const result = await response.json();
 
                     if (!response.ok) {
+
                         if (result.errors) {
-                            const firstError = Object.values(result.errors).flat()[0];
-                            throw new Error(firstError || result.message || 'Upload gagal.');
+
+                            const firstError =
+                                Object.values(result.errors).flat()[0];
+
+                            throw new Error(
+                                firstError || result.message || 'Upload gagal.'
+                            );
+
                         }
 
                         throw new Error(result.message || 'Upload gagal.');
+
                     }
 
                     tampilkanPesan(
@@ -724,44 +813,90 @@
                     areaPreview.style.display = 'none';
                     areaMulai.style.display = 'block';
 
-                    setTimeout(function() {
+                    // Refresh halaman setelah upload berhasil.
+                    setTimeout(() => {
                         window.location.reload();
                     }, 1000);
 
                 } catch (error) {
-                    console.error(error);
+
                     tampilkanPesan(error.message, 'danger');
 
                 } finally {
+
                     btnUpload.disabled = false;
-                    btnUpload.innerHTML =
-                        '<i class="bi bi-cloud-arrow-up me-1"></i> Upload Foto';
+                    btnUpload.textContent = 'Upload Foto';
+
                 }
+
             });
 
-            // Hentikan kamera ketika halaman ditinggalkan
+
+            // Hentikan kamera jika pengguna meninggalkan halaman.
             window.addEventListener('pagehide', hentikanKamera);
+
         });
 
-        // Hapus foto dengan konfirmasi SweetAlert
+
+        // HAPUS FOTO
         $(document).on('submit', '.form-delete-foto', function(e) {
+
             e.preventDefault();
 
-            const form = this;
+            let form = $(this);
+            let url = form.attr('action');
+
+            console.log('DELETE URL:', url);
 
             Swal.fire({
-                title: 'Hapus dokumentasi?',
-                text: 'Foto yang dihapus tidak dapat dikembalikan.',
+
+                title: 'Yakin?',
+                text: 'Data akan dihapus permanen!',
                 icon: 'warning',
+
                 showCancelButton: true,
+
                 confirmButtonText: 'Ya, hapus',
-                cancelButtonText: 'Batal',
-                confirmButtonColor: '#dc3545'
+                cancelButtonText: 'Batal'
+
             }).then((result) => {
+
                 if (result.isConfirmed) {
-                    form.submit();
+
+                    $.ajax({
+
+                        url: url,
+                        type: 'POST',
+                        data: form.serialize(),
+
+                        success: function(response) {
+
+                            Swal.fire(
+                                'Terhapus!',
+                                response.message,
+                                'success'
+                            ).then(() => location.reload());
+
+                        },
+
+                        error: function(xhr) {
+
+                            console.log(xhr.responseText);
+
+                            Swal.fire(
+                                'Error',
+                                'Gagal menghapus data',
+                                'error'
+                            );
+
+                        }
+
+                    });
+
                 }
+
             });
+
         });
     </script>
 @endsection

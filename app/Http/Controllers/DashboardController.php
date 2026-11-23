@@ -945,6 +945,7 @@ class DashboardController extends Controller
     public function destroyFoto(
         FotoBangunan $fotoBangunan
     ) {
+
         if (
             Storage::disk('public')
             ->exists($fotoBangunan->foto)
@@ -959,5 +960,12 @@ class DashboardController extends Controller
             'success',
             'Foto berhasil dihapus.'
         );
+    }
+
+    public function actfoto($id)
+    {
+        $bangunan = Bangunan::with('kawasan')->findOrFail($id);
+
+        return view('pages.bangunan.actfoto', compact('bangunan'));
     }
 }

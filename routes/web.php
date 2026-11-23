@@ -48,7 +48,7 @@ Route::middleware(['auth', 'role:Admin|Owner'])->group(function () {
         'upload_foto'
     ])->name('dokumentasi.upload');
     Route::delete(
-        '/dokumentasi/{dokumentasi}',
+        '/dokumentasi/{fotoBangunan}',
         [PetaController::class, 'hapus_foto']
     )->name('dokumentasi.destroy');
     // sementara masukkan admin kesini 
@@ -164,4 +164,11 @@ Route::middleware(['auth', 'role:Admin|Owner'])->group(function () {
         '/admin/foto-bangunan/{fotoBangunan}',
         [DashboardController::class, 'destroyFoto']
     )->name('bangunan.foto.destroy');
+
+
+    // foto
+    Route::get(
+        '/admin/bangunan/actfoto/{id}',
+        [DashboardController::class, 'actfoto']
+    )->name('actfoto');
 });

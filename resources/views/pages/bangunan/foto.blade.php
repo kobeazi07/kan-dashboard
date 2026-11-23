@@ -165,7 +165,7 @@
                 <div id="areaMulai">
 
                     <div class="d-grid">
-
+                        <input type="hidden" name="bangunan_id" value="{{ $bangunan->id }}">
                         <button type="button" id="btnBukaKamera" class="btn btn-primary btn-kamera">
                             <i class="bi bi-camera-fill me-1"></i>
                             Buka Kamera dan Ambil Lokasi
@@ -417,58 +417,196 @@
 
 
             // BUKA KAMERA DAN AMBIL GPS
+            // btnBuka.addEventListener('click', async function() {
+
+            //     btnBuka.disabled = true;
+
+            //     tampilkanPesan(
+            //         'Mengambil lokasi dan membuka kamera...',
+            //         'info'
+            //     );
+
+            //     try {
+
+            //         // Ambil GPS terlebih dahulu.
+            //         await ambilGPS();
+            //         const bangunanId = document.querySelector(
+            //             'input[name="bangunan_id"]'
+            //         ).value;
+
+            //         // Simpan data GPS sementara
+            //         const dataKamera = {
+            //             bangunan_id: bangunanId,
+            //             latitude: posisiGPS.latitude,
+            //             longitude: posisiGPS.longitude,
+            //             akurasi_gps: posisiGPS.accuracy,
+            //             alamat: alamat
+            //         };
+
+            //         sessionStorage.setItem(
+            //             'dataKamera',
+            //             JSON.stringify(dataKamera)
+            //         );
+
+            //         // Redirect dengan ID bangunan
+            //         window.location.href =
+            //             "{{ url('/admin/bangunan/actfoto') }}/" + bangunanId;
+
+            //         // Meminta kamera belakang jika tersedia.
+            //         streamKamera = await navigator.mediaDevices.getUserMedia({
+
+            //             audio: false,
+
+            //             video: {
+            //                 facingMode: {
+            //                     ideal: 'environment'
+            //                 },
+            //                 width: {
+            //                     ideal: 1920
+            //                 },
+            //                 height: {
+            //                     ideal: 1080
+            //                 }
+            //             }
+
+            //         });
+
+            //         video.srcObject = streamKamera;
+
+            //         await video.play();
+
+            //         areaKamera.style.display = 'block';
+            //         areaMulai.style.display = 'none';
+            //         areaPreview.style.display = 'none';
+
+            //         tampilkanPesan('Kamera siap digunakan.', 'success');
+
+            //     } catch (error) {
+
+            //         console.error(error);
+
+            //         let pesan = 'Tidak dapat membuka kamera atau mengambil GPS.';
+
+            //         if (error.code === 1) {
+
+            //             pesan = 'Izin lokasi ditolak. Aktifkan izin lokasi di browser.';
+
+            //         } else if (error.code === 2) {
+
+            //             pesan = 'Lokasi tidak tersedia. Periksa pengaturan GPS perangkat.';
+
+            //         } else if (error.code === 3) {
+
+            //             pesan = 'Waktu pengambilan GPS habis. Coba kembali.';
+
+            //         } else if (error.name === 'NotAllowedError') {
+
+            //             pesan = 'Izin kamera ditolak. Aktifkan izin kamera di browser.';
+
+            //         } else if (error.name === 'NotFoundError') {
+
+            //             pesan = 'Kamera tidak ditemukan pada perangkat ini.';
+
+            //         } else if (error.name === 'NotReadableError') {
+
+            //             pesan = 'Kamera sedang digunakan aplikasi lain.';
+
+            //         } else if (error.message) {
+
+            //             pesan = error.message;
+
+            //         }
+
+            //         tampilkanPesan(pesan, 'danger');
+
+            //     } finally {
+
+            //         btnBuka.disabled = false;
+
+            //     }
+
+            // });
+
+            // BUKA HALAMAN KAMERA SETELAH GPS BERHASIL
             btnBuka.addEventListener('click', async function() {
 
+                // Nonaktifkan tombol agar tidak diklik berulang kali
                 btnBuka.disabled = true;
 
                 tampilkanPesan(
-                    'Mengambil lokasi dan membuka kamera...',
+                    'Sedang mengambil lokasi GPS...',
                     'info'
                 );
 
                 try {
 
-                    // Ambil GPS terlebih dahulu.
+                    // ==========================================
+                    // 1. AMBIL GPS TERLEBIH DAHULU
+                    // ==========================================
                     await ambilGPS();
 
-                    // Meminta kamera belakang jika tersedia.
-                    streamKamera = await navigator.mediaDevices.getUserMedia({
+                    // Pastikan GPS berhasil diperoleh
+                    if (!posisiGPS) {
+                        throw new Error('Koordinat GPS belum berhasil diperoleh.');
+                    }
 
-                        audio: false,
+                    // ==========================================
+                    // 2. AMBIL ID BANGUNAN
+                    // ==========================================
+                    const inputBangunan = document.querySelector(
+                        'input[name="bangunan_id"]'
+                    );
 
-                        video: {
-                            facingMode: {
-                                ideal: 'environment'
-                            },
-                            width: {
-                                ideal: 1920
-                            },
-                            height: {
-                                ideal: 1080
-                            }
-                        }
+                    if (!inputBangunan || !inputBangunan.value) {
+                        throw new Error('ID bangunan tidak ditemukan.');
+                    }
 
-                    });
+                    const bangunanId = inputBangunan.value;
 
-                    video.srcObject = streamKamera;
+                    // ==========================================
+                    // 3. SIAPKAN DATA GPS
+                    // ==========================================
+                    const dataKamera = {
+                        bangunan_id: bangunanId,
+                        latitude: posisiGPS.latitude,
+                        longitude: posisiGPS.longitude,
+                        akurasi_gps: posisiGPS.accuracy,
+                        alamat: alamat || '',
+                        // tanggal_jam: new Date().toISOString()
+                        tanggal_jam: new Date().toLocaleString('sv-SE', {
+                            timeZone: 'Asia/Jakarta'
+                        })
+                    };
 
-                    await video.play();
+                    // ==========================================
+                    // 4. SIMPAN DATA GPS SEMENTARA
+                    // ==========================================
+                    sessionStorage.setItem(
+                        'dataKamera',
+                        JSON.stringify(dataKamera)
+                    );
 
-                    areaKamera.style.display = 'block';
-                    areaMulai.style.display = 'none';
-                    areaPreview.style.display = 'none';
+                    // ==========================================
+                    // 5. REDIRECT KE HALAMAN KAMERA
+                    // ==========================================
+                    tampilkanPesan(
+                        'Lokasi berhasil diperoleh. Membuka kamera...',
+                        'success'
+                    );
 
-                    tampilkanPesan('Kamera siap digunakan.', 'success');
+                    window.location.href =
+                        "{{ url('/admin/bangunan/actfoto') }}/" + encodeURIComponent(bangunanId);
 
                 } catch (error) {
 
-                    console.error(error);
+                    console.error('Kesalahan GPS:', error);
 
-                    let pesan = 'Tidak dapat membuka kamera atau mengambil GPS.';
+                    let pesan = 'Tidak dapat mengambil lokasi GPS.';
 
+                    // Pesan berdasarkan jenis error GPS
                     if (error.code === 1) {
 
-                        pesan = 'Izin lokasi ditolak. Aktifkan izin lokasi di browser.';
+                        pesan = 'Izin lokasi ditolak. Silakan aktifkan izin lokasi pada browser.';
 
                     } else if (error.code === 2) {
 
@@ -476,19 +614,7 @@
 
                     } else if (error.code === 3) {
 
-                        pesan = 'Waktu pengambilan GPS habis. Coba kembali.';
-
-                    } else if (error.name === 'NotAllowedError') {
-
-                        pesan = 'Izin kamera ditolak. Aktifkan izin kamera di browser.';
-
-                    } else if (error.name === 'NotFoundError') {
-
-                        pesan = 'Kamera tidak ditemukan pada perangkat ini.';
-
-                    } else if (error.name === 'NotReadableError') {
-
-                        pesan = 'Kamera sedang digunakan aplikasi lain.';
+                        pesan = 'Waktu pengambilan GPS habis. Silakan coba kembali.';
 
                     } else if (error.message) {
 
@@ -498,15 +624,18 @@
 
                     tampilkanPesan(pesan, 'danger');
 
+                    // Hapus data GPS lama jika proses gagal
+                    sessionStorage.removeItem('dataKamera');
+
                 } finally {
 
+                    // Aktifkan kembali tombol jika proses gagal
+                    // Jika redirect berhasil, browser akan berpindah halaman
                     btnBuka.disabled = false;
 
                 }
 
             });
-
-
             // AMBIL FOTO
             btnAmbil.addEventListener('click', function() {
 

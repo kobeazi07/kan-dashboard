@@ -183,26 +183,26 @@ class PetaController extends Controller
         }
     }
 
-    public function hapus_foto(FotoBangunan $FotoBangunan)
+    public function hapus_foto(FotoBangunan $fotoBangunan)
     {
         DB::beginTransaction();
 
         try {
-            // hapus data
-            $FotoBangunan->delete();
+
+            $fotoBangunan->delete();
 
             DB::commit();
 
             return response()->json([
-                'status'  => 1,
-                'message' => 'Data FotoBangunan berhasil dihapus'
+                'status' => 1,
+                'message' => 'Data FotoBangunan berhasil dihapus.'
             ]);
         } catch (\Exception $e) {
 
             DB::rollBack();
 
             return response()->json([
-                'status'  => 0,
+                'status' => 0,
                 'message' => $e->getMessage()
             ], 500);
         }

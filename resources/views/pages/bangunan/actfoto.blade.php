@@ -737,7 +737,7 @@
 
 
                         tampilkanPesan(
-                            'Foto berhasil diambil. Periksa hasil preview sebelum upload.',
+                            '',
                             'success'
                         );
 

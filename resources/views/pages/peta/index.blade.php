@@ -10,7 +10,6 @@
 
             @foreach ($kawasans as $index => $kawasan)
                 <li class="nav-item">
-
                     <button type="button" class="nav-link kawasan-tab {{ $index === 0 ? 'active' : '' }}"
                         data-kawasan="{{ $kawasan->id }}">
                         {{ $kawasan->nama }}
@@ -125,17 +124,12 @@
 
                             {{-- CONTROL ZOOM --}}
                             <div class="map-controls">
-
                                 <button type="button" class="btn btn-primary" id="zoomIn" title="Zoom In">
                                     <i class="bi bi-plus-lg"></i>
                                 </button>
-
-
                                 <button type="button" class="btn btn-primary" id="zoomOut" title="Zoom Out">
                                     <i class="bi bi-dash-lg"></i>
                                 </button>
-
-
                                 <button type="button" class="btn btn-secondary" id="resetMap" title="Reset Peta">
                                     <i class="bi bi-arrow-counterclockwise"></i>
                                 </button>
@@ -143,8 +137,6 @@
                             </div>
 
                         </div>
-
-
                         {{-- ========================= --}}
                         {{-- CONTAINER PETA --}}
                         {{-- ========================= --}}
@@ -321,11 +313,11 @@
 
 
         /* =========================================
-                                                                                                                                                                                                                                                                                                                                                   MAP CONTENT
+                                                                                                                                                                                                                                                                                                                                                                   MAP CONTENT
 
-                                                                                                                                                                                                                                                                                                                                                   Semua isi peta berada di sini.
-                                                                                                                                                                                                                                                                                                                                                   Gambar + pin akan ikut bergerak bersama.
-                                                                                                                                                                                                                                                                                                                                                ========================================= */
+                                                                                                                                                                                                                                                                                                                                                                   Semua isi peta berada di sini.
+                                                                                                                                                                                                                                                                                                                                                                   Gambar + pin akan ikut bergerak bersama.
+                                                                                                                                                                                                                                                                                                                                                                ========================================= */
 
         .map-content {
             position: absolute;
@@ -340,8 +332,8 @@
 
 
         /* =========================================
-                                                                                                                                                                                                                                                                                                                                                   IMAGE
-                                                                                                                                                                                                                                                                                                                                                ========================================= */
+                                                                                                                                                                                                                                                                                                                                                                   IMAGE
+                                                                                                                                                                                                                                                                                                                                                                ========================================= */
 
         .map-image {
             display: block;
@@ -357,8 +349,8 @@
 
 
         /* =========================================
-                                                                                                                                                                                                                                                                                                                                                   PIN
-                                                                                                                                                                                                                                                                                                                                                ========================================= */
+                                                                                                                                                                                                                                                                                                                                                                   PIN
+                                                                                                                                                                                                                                                                                                                                                                ========================================= */
 
         .map-pin {
             position: absolute;
@@ -412,8 +404,8 @@
         }
 
         /* =========================================
-                                                                                                                                                                                                                                                                                                                                                   SIDEBAR
-                                                                                                                                                                                                                                                                                                                                                ========================================= */
+                                                                                                                                                                                                                                                                                                                                                                   SIDEBAR
+                                                                                                                                                                                                                                                                                                                                                                ========================================= */
 
         .bangunan-item {
 
@@ -432,10 +424,10 @@
 
 
         /* =========================================
-                                                                                                                                                                                                                                                                                                                                                   DOKUMENTASI
+                                                                                                                                                                                                                                                                                                                                                                   DOKUMENTASI
 
-                                                                                                                                                                                                                                                                                                                                                   Landscape seperti kamera HP
-                                                                                                                                                                                                                                                                                                                                                ========================================= */
+                                                                                                                                                                                                                                                                                                                                                                   Landscape seperti kamera HP
+                                                                                                                                                                                                                                                                                                                                                                ========================================= */
 
         .documentation-image {
 
@@ -606,25 +598,31 @@
                 updateTransform();
 
             });
-
-
             /* =========================================
                DRAG START
             ========================================= */
 
-            mapViewport.addEventListener('mousedown', function(e) {
+            mapViewport.addEventListener('pointerdown', function(e) {
 
-                if (e.target.classList.contains('map-pin')) {
+                // Jangan drag ketika pin peta ditekan
+                if (e.target.closest('.map-pin')) {
+                    return;
+                }
+
+                // Hanya tombol utama mouse atau sentuhan
+                if (e.pointerType === 'mouse' && e.button !== 0) {
                     return;
                 }
 
                 isDragging = true;
 
                 startX = e.clientX - translateX;
-
                 startY = e.clientY - translateY;
 
                 mapViewport.style.cursor = 'grabbing';
+
+                // Mempertahankan event meskipun pointer keluar viewport
+                mapViewport.setPointerCapture(e.pointerId);
 
             });
 
@@ -633,12 +631,11 @@
                DRAG MOVE
             ========================================= */
 
-            window.addEventListener('mousemove', function(e) {
+            mapViewport.addEventListener('pointermove', function(e) {
 
                 if (!isDragging) return;
 
                 translateX = e.clientX - startX;
-
                 translateY = e.clientY - startY;
 
                 updateTransform();
@@ -650,13 +647,71 @@
                DRAG END
             ========================================= */
 
-            window.addEventListener('mouseup', function() {
+            function stopDragging() {
+
+                if (!isDragging) return;
 
                 isDragging = false;
 
                 mapViewport.style.cursor = 'grab';
 
-            });
+            }
+
+            mapViewport.addEventListener('pointerup', stopDragging);
+
+            mapViewport.addEventListener('pointercancel', stopDragging);
+
+            mapViewport.addEventListener('lostpointercapture', stopDragging);
+
+            // /* =========================================
+            //    DRAG START
+            // ========================================= */
+
+            // mapViewport.addEventListener('mousedown', function(e) {
+
+            //     if (e.target.classList.contains('map-pin')) {
+            //         return;
+            //     }
+
+            //     isDragging = true;
+
+            //     startX = e.clientX - translateX;
+
+            //     startY = e.clientY - translateY;
+
+            //     mapViewport.style.cursor = 'grabbing';
+
+            // });
+
+
+            // /* =========================================
+            //    DRAG MOVE
+            // ========================================= */
+
+            // window.addEventListener('mousemove', function(e) {
+
+            //     if (!isDragging) return;
+
+            //     translateX = e.clientX - startX;
+
+            //     translateY = e.clientY - startY;
+
+            //     updateTransform();
+
+            // });
+
+
+            // /* =========================================
+            //    DRAG END
+            // ========================================= */
+
+            // window.addEventListener('mouseup', function() {
+
+            //     isDragging = false;
+
+            //     mapViewport.style.cursor = 'grab';
+
+            // });
 
 
             /* =========================================

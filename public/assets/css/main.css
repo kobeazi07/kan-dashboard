@@ -254,6 +254,20 @@ a:hover {
     outline: 2px solid #86b817;
     outline-offset: 2px;
 }
+ /* Area peta bisa digeser menggunakan touchscreen */
+#mapViewport {
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    overflow: hidden;
+}
+
+/* Pin tetap bisa diklik */
+.map-pin {
+    touch-action: manipulation;
+    cursor: pointer;
+}
 /* ---------------------------------------------------------------------
    4. Sidebar Component (.sidebar-wrapper)
    Extremely dark sidebar layout

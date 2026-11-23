@@ -560,7 +560,7 @@
 
                 const lines = [
 
-                    `Proyek: ${namaProyek}`,
+                    `Bangunan: ${namaProyek}`,
                     `Tanggal: ${metadataFoto.tanggal}`,
                     `Jam: ${metadataFoto.jam}`,
                     `Latitude: ${metadataFoto.latitude.toFixed(6)}`,

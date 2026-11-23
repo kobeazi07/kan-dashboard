@@ -966,7 +966,7 @@
                     // ==================================================
 
                     tampilkanPesan(
-                        result.message || 'Foto berhasil diunggah.',
+                        result.message || '',
                         'success'
                     );
 

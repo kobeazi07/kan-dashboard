@@ -563,7 +563,7 @@
 
 
                 // Background watermark
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
 
                 ctx.fillRect(
                     panelX,
